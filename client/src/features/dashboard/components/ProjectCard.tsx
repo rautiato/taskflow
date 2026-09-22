@@ -2,6 +2,8 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import LinearProgress from '@mui/material/LinearProgress'
 import type { SxProps, Theme } from '@mui/material/styles'
+import type { ProjectPaletteColor } from '../../../models/project'
+import { ProjectBadge } from '../../../components/ProjectBadge'
 
 const styles = {
   root: {
@@ -19,17 +21,6 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: 1.25,
-  },
-  badge: {
-    width: 34,
-    height: 34,
-    borderRadius: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontWeight: 700,
-    fontSize: 13,
-    flexShrink: 0,
   },
   name: {
     fontSize: 14,
@@ -51,8 +42,6 @@ const styles = {
   },
 } satisfies Record<string, SxProps<Theme>>
 
-type PaletteColor = 'error' | 'primary' | 'success'
-
 export function ProjectCard({
   name,
   initials,
@@ -66,22 +55,16 @@ export function ProjectCard({
   tasks: number
   updated: string
   progress: number
-  paletteColor: PaletteColor
+  paletteColor: ProjectPaletteColor
 }) {
   return (
     <Box sx={styles.root}>
       <Box sx={styles.header}>
-        <Box
-          sx={[
-            styles.badge,
-            {
-              bgcolor: `${paletteColor}.light`,
-              color: `${paletteColor}.main`,
-            },
-          ]}
-        >
-          {initials}
-        </Box>
+        <ProjectBadge
+          initials={initials}
+          paletteColor={paletteColor}
+          size="sm"
+        />
         <Box>
           <Typography sx={styles.name}>{name}</Typography>
           <Typography sx={styles.meta}>
