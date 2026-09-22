@@ -1,15 +1,16 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import SearchIcon from '@mui/icons-material/Search'
+import { Link as RouterLink, useLocation } from 'react-router-dom'
 import type { SxProps, Theme } from '@mui/material/styles'
 import { Logo } from '../../../components/Logo'
 import { AccountMenu } from './AccountMenu'
 import type { UserDto } from '../../../models/user'
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', active: true },
-  { label: 'Projects', active: false },
-  { label: 'My Tasks', active: false },
+  { label: 'Dashboard', path: '/dashboard' },
+  { label: 'Projects', path: '/projects' },
+  { label: 'My Tasks', path: undefined },
 ] as const
 
 const styles = {
@@ -54,6 +55,9 @@ const styles = {
     borderBottom: 2,
     borderColor: 'transparent',
   },
+  navLink: {
+    textDecoration: 'none',
+  },
   navItemActive: {
     fontWeight: 700,
     color: 'primary.main',
@@ -85,6 +89,8 @@ const styles = {
 } satisfies Record<string, SxProps<Theme>>
 
 export function AppHeader({ user }: { user: UserDto }) {
+  const location = useLocation()
+
   return (
     <Box sx={styles.root}>
       <Box sx={styles.brandGroup}>
@@ -93,14 +99,27 @@ export function AppHeader({ user }: { user: UserDto }) {
           <Typography sx={styles.brandText}>TaskFlow</Typography>
         </Box>
         <Box sx={styles.navRow}>
-          {NAV_ITEMS.map((item) => (
-            <Box
-              key={item.label}
-              sx={[styles.navItem, item.active && styles.navItemActive]}
-            >
-              {item.label}
-            </Box>
-          ))}
+          {NAV_ITEMS.map((item) => {
+            const active = item.path === location.pathname
+            return item.path ? (
+              <Box
+                key={item.label}
+                component={RouterLink}
+                to={item.path}
+                sx={[
+                  styles.navItem,
+                  styles.navLink,
+                  active && styles.navItemActive,
+                ]}
+              >
+                {item.label}
+              </Box>
+            ) : (
+              <Box key={item.label} sx={styles.navItem}>
+                {item.label}
+              </Box>
+            )
+          })}
         </Box>
       </Box>
       <Box sx={styles.actionsGroup}>

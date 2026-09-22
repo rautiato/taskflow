@@ -2,6 +2,10 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { AppLayout } from '../features/layout/components/AppLayout'
 import { authService } from '../features/auth/authService'
+import {
+  projectService,
+  formatProjectDate,
+} from '../features/projects/projectService'
 import { StatCard } from '../features/dashboard/components/StatCard'
 import { ProjectCard } from '../features/dashboard/components/ProjectCard'
 
@@ -26,36 +30,10 @@ const STAT_CARDS = [
   },
 ]
 
-const PROJECTS = [
-  {
-    name: 'Task Management App',
-    initials: 'TA',
-    tasks: 18,
-    updated: 'Sep 19',
-    progress: 60,
-    paletteColor: 'error' as const,
-  },
-  {
-    name: 'Mobile App',
-    initials: 'MA',
-    tasks: 32,
-    updated: 'Sep 18',
-    progress: 34,
-    paletteColor: 'primary' as const,
-  },
-  {
-    name: 'Internal Tools',
-    initials: 'IT',
-    tasks: 11,
-    updated: 'Sep 12',
-    progress: 73,
-    paletteColor: 'success' as const,
-  },
-]
-
 export function DashboardPage() {
   const user = authService.getSession()
   const firstName = user?.name.split(' ')[0] ?? ''
+  const projects = projectService.listProjects().slice(0, 3)
 
   return (
     <AppLayout user={user!}>
@@ -81,13 +59,13 @@ export function DashboardPage() {
             My Projects
           </Typography>
           <Box sx={{ display: 'flex', gap: 2.25 }}>
-            {PROJECTS.map((project) => (
+            {projects.map((project) => (
               <ProjectCard
-                key={project.name}
+                key={project.id}
                 name={project.name}
                 initials={project.initials}
-                tasks={project.tasks}
-                updated={project.updated}
+                tasks={project.taskCount}
+                updated={formatProjectDate(project.updatedAt)}
                 progress={project.progress}
                 paletteColor={project.paletteColor}
               />
