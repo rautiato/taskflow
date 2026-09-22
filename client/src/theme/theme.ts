@@ -26,4 +26,13 @@ export const theme = createTheme({
   shape: {
     borderRadius: 8,
   },
+  components: {
+    MuiTextField: {
+      defaultProps: {
+        slotProps: {
+          inputLabel: { shrink: true },
+        },
+      },
+    },
+  },
 })

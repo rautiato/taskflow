@@ -9,6 +9,7 @@ import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
+import { Link as RouterLink } from 'react-router-dom'
 import { emailSchema } from '../validation'
 import { AuthHeading } from './AuthHeading'
 import { PasswordField } from './PasswordField'
@@ -63,7 +64,8 @@ export function LoginForm() {
         <PasswordField<LoginFormValues> name="password" control={control} />
         <Box sx={{ textAlign: 'right' }}>
           <Link
-            href="/forgot-password"
+            component={RouterLink}
+            to="/forgot-password"
             underline="hover"
             sx={{ fontSize: 12, fontWeight: 600 }}
           >
@@ -103,7 +105,12 @@ export function LoginForm() {
         sx={{ textAlign: 'center' }}
       >
         Don&apos;t have an account?{' '}
-        <Link href="/signup" underline="hover" sx={{ fontWeight: 600 }}>
+        <Link
+          component={RouterLink}
+          to="/signup"
+          underline="hover"
+          sx={{ fontWeight: 600 }}
+        >
           Sign up
         </Link>
       </Typography>
