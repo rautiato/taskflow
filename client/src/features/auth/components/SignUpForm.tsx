@@ -1,16 +1,20 @@
+import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useNavigate } from 'react-router-dom'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
+import Alert from '@mui/material/Alert'
 import { Link as RouterLink } from 'react-router-dom'
 import { emailSchema } from '../validation'
 import { AuthHeading } from './AuthHeading'
 import { PasswordField } from './PasswordField'
 import { PhaseOneNote } from './PhaseOneNote'
+import { authService } from '../authService'
 
 const signUpSchema = z
   .object({
@@ -27,14 +31,23 @@ const signUpSchema = z
 type SignUpFormValues = z.infer<typeof signUpSchema>
 
 export function SignUpForm() {
+  const navigate = useNavigate()
+  const [authError, setAuthError] = useState<string | null>(null)
   const { control, handleSubmit } = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: { name: '', email: '', password: '', confirmPassword: '' },
   })
 
   function onSubmit(values: SignUpFormValues) {
-    // TODO: wire to authService once the mocked, seeded-user auth lands
-    console.log('sign up', values)
+    setAuthError(null)
+    try {
+      authService.signUp(values.name, values.email, values.password)
+      navigate('/dashboard')
+    } catch (error) {
+      setAuthError(
+        error instanceof Error ? error.message : 'Unable to create account.',
+      )
+    }
   }
 
   return (
@@ -48,6 +61,8 @@ export function SignUpForm() {
         title="Create your account"
         subtitle="Start organizing your work"
       />
+
+      {authError && <Alert severity="error">{authError}</Alert>}
 
       <Controller
         name="name"
@@ -109,9 +124,8 @@ export function SignUpForm() {
       </Typography>
 
       <PhaseOneNote>
-        Phase 1 note: sign-up creates a local mock account (seeded users in
-        this browser only) — real account creation arrives with the Phase 3
-        backend.
+        Phase 1 note: sign-up creates a local mock account (seeded users in this
+        browser only) — real account creation arrives with the Phase 3 backend.
       </PhaseOneNote>
     </Stack>
   )

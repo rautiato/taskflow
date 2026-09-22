@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -9,11 +11,13 @@ import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
+import Alert from '@mui/material/Alert'
 import { Link as RouterLink } from 'react-router-dom'
 import { emailSchema } from '../validation'
 import { AuthHeading } from './AuthHeading'
 import { PasswordField } from './PasswordField'
 import { PhaseOneNote } from './PhaseOneNote'
+import { authService } from '../authService'
 
 const loginSchema = z.object({
   email: emailSchema,
@@ -24,14 +28,23 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>
 
 export function LoginForm() {
+  const navigate = useNavigate()
+  const [authError, setAuthError] = useState<string | null>(null)
   const { control, handleSubmit } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '', rememberMe: false },
   })
 
   function onSubmit(values: LoginFormValues) {
-    // TODO: wire to authService once the mocked, seeded-user auth lands
-    console.log('sign in', values)
+    setAuthError(null)
+    try {
+      authService.signIn(values.email, values.password)
+      navigate('/dashboard')
+    } catch (error) {
+      setAuthError(
+        error instanceof Error ? error.message : 'Unable to sign in.',
+      )
+    }
   }
 
   return (
@@ -42,6 +55,8 @@ export function LoginForm() {
       onSubmit={handleSubmit(onSubmit)}
     >
       <AuthHeading title="TaskFlow" subtitle="Sign in to continue" />
+
+      {authError && <Alert severity="error">{authError}</Alert>}
 
       <Controller
         name="email"

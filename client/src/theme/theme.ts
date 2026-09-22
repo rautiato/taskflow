@@ -5,10 +5,15 @@ export const theme = createTheme({
     primary: {
       main: '#1976D2',
       dark: '#115293',
+      light: '#E8F0FE',
     },
     error: {
       main: '#D32F2F',
       light: '#FDECEA',
+    },
+    success: {
+      main: '#1E7E34',
+      light: '#E6F4EA',
     },
     background: {
       default: '#F4F5F7',
@@ -20,6 +25,7 @@ export const theme = createTheme({
     },
     divider: '#E0E3E8',
   },
+
   typography: {
     fontFamily: "'Roboto', sans-serif",
   },
@@ -32,6 +38,17 @@ export const theme = createTheme({
         slotProps: {
           inputLabel: { shrink: true },
         },
+      },
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: ({ ownerState }) => ({
+          ...(ownerState.variant === 'standard' &&
+            ownerState.severity === 'error' && {
+              color: '#D32F2F',
+              backgroundColor: '#FDECEA',
+            }),
+        }),
       },
     },
   },
