@@ -6,6 +6,7 @@ import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined'
 import SearchIcon from '@mui/icons-material/Search'
 import type { SxProps } from '@mui/material/styles'
 import type { Theme } from '@mui/material/styles'
+import { Logo } from '../../../components/Logo'
 
 const FEATURES = [
   { icon: GridViewIcon, label: 'Kanban boards for every project' },
@@ -48,18 +49,6 @@ const styles = {
   logoRow: {
     position: 'relative',
     alignItems: 'center',
-  },
-  logoBadge: {
-    width: 34,
-    height: 34,
-    borderRadius: '8px',
-    bgcolor: '#fff',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: 'primary.main',
-    fontWeight: 700,
-    fontSize: 15,
   },
   logoText: {
     color: '#fff',
@@ -108,7 +97,7 @@ export function BrandPanel() {
         spacing={1.25}
         sx={{ position: 'relative', alignItems: 'center' }}
       >
-        <Box sx={styles.logoBadge}>TF</Box>
+        <Logo variant="inverted" />
         <Typography sx={styles.logoText}>TaskFlow</Typography>
       </Stack>
 
