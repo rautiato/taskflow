@@ -20,6 +20,14 @@ const SEEDED_USERS: User[] = [
     role: 'Member',
     createdAt: '2026-01-01T00:00:00.000Z',
   },
+  {
+    id: 'seed-3',
+    name: 'Ha Tran',
+    email: 'hatran@example.com',
+    password: 'password123',
+    role: 'Member',
+    createdAt: '2026-01-01T00:00:00.000Z',
+  },
 ]
 
 function loadUsers(): User[] {
@@ -88,9 +96,14 @@ function getSession(): UserDto | null {
   return user ? toUserDto(user) : null
 }
 
+function listUsers(): UserDto[] {
+  return loadUsers().map(toUserDto)
+}
+
 export const authService = {
   signIn,
   signUp,
   signOut,
   getSession,
+  listUsers,
 }

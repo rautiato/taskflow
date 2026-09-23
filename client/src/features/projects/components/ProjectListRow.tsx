@@ -52,11 +52,24 @@ const STATUS_COLOR = {
   'On Hold': 'warning',
 } as const
 
-export function ProjectListRow({ project }: { project: Project }) {
+export function ProjectListRow({
+  project,
+  onClick,
+}: {
+  project: Project
+  onClick?: () => void
+}) {
   const statusColor = STATUS_COLOR[project.status]
 
   return (
-    <Box sx={[styles.root, project.status === 'On Hold' && { opacity: 0.75 }]}>
+    <Box
+      onClick={onClick}
+      sx={[
+        styles.root,
+        { cursor: 'pointer' },
+        project.status === 'On Hold' && { opacity: 0.75 },
+      ]}
+    >
       <ProjectBadge
         initials={project.initials}
         paletteColor={project.paletteColor}

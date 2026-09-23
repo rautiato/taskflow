@@ -49,6 +49,7 @@ export function ProjectCard({
   updated,
   progress,
   paletteColor,
+  onClick,
 }: {
   name: string
   initials: string
@@ -56,9 +57,10 @@ export function ProjectCard({
   updated: string
   progress: number
   paletteColor: ProjectPaletteColor
+  onClick?: () => void
 }) {
   return (
-    <Box sx={styles.root}>
+    <Box onClick={onClick} sx={[styles.root, { cursor: 'pointer' }]}>
       <Box sx={styles.header}>
         <ProjectBadge
           initials={initials}

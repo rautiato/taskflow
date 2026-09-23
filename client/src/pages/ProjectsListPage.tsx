@@ -12,6 +12,7 @@ import { authService } from '../features/auth/authService'
 import { projectService } from '../features/projects/projectService'
 import { ProjectListRow } from '../features/projects/components/ProjectListRow'
 import type { ProjectStatus } from '../models/project'
+import { useNavigate } from 'react-router-dom'
 
 const STATUS_FILTERS: Array<'All' | ProjectStatus> = [
   'All',
@@ -23,6 +24,7 @@ export function ProjectsListPage() {
   const user = authService.getSession()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<'All' | ProjectStatus>('All')
+  const navigate = useNavigate()
 
   const projects = projectService.listProjects()
 
@@ -102,7 +104,11 @@ export function ProjectsListPage() {
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
           {filteredProjects.map((project) => (
-            <ProjectListRow key={project.id} project={project} />
+            <ProjectListRow
+              key={project.id}
+              project={project}
+              onClick={() => navigate(`/projects/${project.id}/board`)}
+            />
           ))}
           {filteredProjects.length === 0 && (
             <Typography

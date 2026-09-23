@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import { useNavigate } from 'react-router-dom'
 import { AppLayout } from '../features/layout/components/AppLayout'
 import { authService } from '../features/auth/authService'
 import {
@@ -34,6 +35,7 @@ export function DashboardPage() {
   const user = authService.getSession()
   const firstName = user?.name.split(' ')[0] ?? ''
   const projects = projectService.listProjects().slice(0, 3)
+  const navigate = useNavigate()
 
   return (
     <AppLayout user={user!}>
@@ -68,6 +70,7 @@ export function DashboardPage() {
                 updated={formatProjectDate(project.updatedAt)}
                 progress={project.progress}
                 paletteColor={project.paletteColor}
+                onClick={() => navigate(`/projects/${project.id}/board`)}
               />
             ))}
           </Box>
