@@ -5,6 +5,7 @@ import { ForgotPasswordPage } from '../pages/ForgotPasswordPage'
 import { ResetPasswordPage } from '../pages/ResetPasswordPage'
 import { DashboardPage } from '../pages/DashboardPage'
 import { ProjectsListPage } from '../pages/ProjectsListPage'
+import { KanbanBoardPage } from '../pages/KanbanBoardPage'
 import { ProtectedRoute } from './ProtectedRoute'
 
 export function AppRoutes() {
@@ -20,6 +21,7 @@ export function AppRoutes() {
       </Route>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="/projects/:projectId/board" element={<KanbanBoardPage />} />
     </Routes>
   )
 }
