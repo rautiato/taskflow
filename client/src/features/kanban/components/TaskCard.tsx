@@ -55,15 +55,18 @@ function getDueChip(task: TaskItem, isDone: boolean) {
 export function TaskCard({
   task,
   isDoneColumn,
+  onClick,
 }: {
   task: TaskItem
   isDoneColumn: boolean
+  onClick?: () => void
 }) {
   const dueChip = getDueChip(task, isDoneColumn)
   const priorityStyle = PRIORITY_STYLES[task.priority]
 
   return (
     <Box
+      onClick={onClick}
       sx={{
         bgcolor: 'background.paper',
         border: 1,
@@ -75,6 +78,7 @@ export function TaskCard({
         display: 'flex',
         flexDirection: 'column',
         gap: 0.75,
+        cursor: 'pointer',
         ...(isDoneColumn && { opacity: 0.75 }),
         ...(task.isFavorite &&
           !isDoneColumn && {
