@@ -9,10 +9,10 @@ import SearchIcon from '@mui/icons-material/Search'
 import AddIcon from '@mui/icons-material/Add'
 import { AppLayout } from '../features/layout/components/AppLayout'
 import { authService } from '../features/auth/authService'
-import { projectService } from '../features/projects/projectService'
+import { useProjects } from '../features/projects/useProjects'
 import { ProjectListRow } from '../features/projects/components/ProjectListRow'
 import type { ProjectStatus } from '../models/project'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 
 const STATUS_FILTERS: Array<'All' | ProjectStatus> = [
   'All',
@@ -25,8 +25,7 @@ export function ProjectsListPage() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<'All' | ProjectStatus>('All')
   const navigate = useNavigate()
-
-  const projects = projectService.listProjects()
+  const { projects } = useProjects()
 
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
@@ -39,8 +38,12 @@ export function ProjectsListPage() {
     })
   }, [projects, search, statusFilter])
 
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+
   return (
-    <AppLayout user={user!}>
+    <AppLayout user={user}>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
         <Box
           sx={{

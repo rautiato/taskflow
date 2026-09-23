@@ -11,9 +11,11 @@ export const COLUMN_WIDTH = 320
 export function ColumnHeaderRow({
   columns,
   taskCountByColumn,
+  onAddTask,
 }: {
   columns: KanbanColumn[]
   taskCountByColumn: Record<string, number>
+  onAddTask: (columnId: string) => void
 }) {
   return (
     <Box
@@ -54,7 +56,11 @@ export function ColumnHeaderRow({
               {taskCountByColumn[column.id] ?? 0}
             </Box>
             <Box sx={{ flexGrow: 1 }} />
-            <IconButton size="small" disabled sx={{ color: '#B7BBC1' }}>
+            <IconButton
+              size="small"
+              onClick={() => onAddTask(column.id)}
+              sx={{ color: 'text.secondary' }}
+            >
               <AddIcon sx={{ fontSize: 16 }} />
             </IconButton>
             <IconButton size="small" disabled sx={{ color: '#B7BBC1' }}>

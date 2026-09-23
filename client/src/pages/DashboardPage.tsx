@@ -1,12 +1,10 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { AppLayout } from '../features/layout/components/AppLayout'
 import { authService } from '../features/auth/authService'
-import {
-  projectService,
-  formatProjectDate,
-} from '../features/projects/projectService'
+import { formatProjectDate } from '../features/projects/projectService'
+import { useProjects } from '../features/projects/useProjects'
 import { StatCard } from '../features/dashboard/components/StatCard'
 import { ProjectCard } from '../features/dashboard/components/ProjectCard'
 
@@ -33,12 +31,17 @@ const STAT_CARDS = [
 
 export function DashboardPage() {
   const user = authService.getSession()
-  const firstName = user?.name.split(' ')[0] ?? ''
-  const projects = projectService.listProjects().slice(0, 3)
   const navigate = useNavigate()
+  const { projects } = useProjects()
+
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+
+  const firstName = user.name.split(' ')[0]
 
   return (
-    <AppLayout user={user!}>
+    <AppLayout user={user}>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         <Typography sx={{ fontSize: 24, fontWeight: 700 }}>
           Welcome back, {firstName}
@@ -61,7 +64,7 @@ export function DashboardPage() {
             My Projects
           </Typography>
           <Box sx={{ display: 'flex', gap: 2.25 }}>
-            {projects.map((project) => (
+            {projects.slice(0, 3).map((project) => (
               <ProjectCard
                 key={project.id}
                 name={project.name}

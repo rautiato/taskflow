@@ -1,42 +1,12 @@
 import type { UserDto, User } from '../../models/user'
+import { SEEDED_USERS, USERS_SEED_VERSION } from '../../mockData/users.seed'
+import { loadSeededData } from '../../services/localStorageSeed'
 
 const USERS_KEY = 'taskflow.users'
 const SESSION_KEY = 'taskflow.session'
 
-const SEEDED_USERS: User[] = [
-  {
-    id: 'seed-1',
-    name: 'Jane Doe',
-    email: 'jane@example.com',
-    password: 'password123',
-    role: 'Member',
-    createdAt: '2026-01-01T00:00:00.000Z',
-  },
-  {
-    id: 'seed-2',
-    name: 'John Smith',
-    email: 'john@example.com',
-    password: 'password123',
-    role: 'Member',
-    createdAt: '2026-01-01T00:00:00.000Z',
-  },
-  {
-    id: 'seed-3',
-    name: 'Ha Tran',
-    email: 'hatran@example.com',
-    password: 'password123',
-    role: 'Member',
-    createdAt: '2026-01-01T00:00:00.000Z',
-  },
-]
-
 function loadUsers(): User[] {
-  const raw = localStorage.getItem(USERS_KEY)
-  if (!raw) {
-    localStorage.setItem(USERS_KEY, JSON.stringify(SEEDED_USERS))
-    return SEEDED_USERS
-  }
-  return JSON.parse(raw) as User[]
+  return loadSeededData(USERS_KEY, USERS_SEED_VERSION, SEEDED_USERS)
 }
 
 function saveUsers(users: User[]): void {

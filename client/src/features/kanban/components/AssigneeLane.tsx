@@ -78,10 +78,12 @@ export function AssigneeLane({
   lane,
   columns,
   colorIndex,
+  onTaskClick,
 }: {
   lane: AssigneeLaneData
   columns: KanbanColumn[]
   colorIndex: number
+  onTaskClick: (task: AssigneeLaneData['tasksByColumn'][string][number]) => void
 }) {
   const [collapsed, setCollapsed] = useState(false)
   const color = AVATAR_COLORS[colorIndex % AVATAR_COLORS.length]
@@ -141,6 +143,7 @@ export function AssigneeLane({
                   key={task.id}
                   task={task}
                   isDoneColumn={column.name === 'Done'}
+                  onClick={() => onTaskClick(task)}
                 />
               ))}
             </Box>

@@ -1,5 +1,12 @@
 import type { KanbanBoard, KanbanColumn } from '../../models/kanbanBoard'
 import type { TaskItem } from '../../models/task'
+import {
+  SEEDED_BOARDS,
+  SEEDED_COLUMNS,
+  SEEDED_TASKS,
+  KANBAN_SEED_VERSION,
+} from '../../mockData/kanban.seed'
+import { loadSeededData } from '../../services/localStorageSeed'
 
 const BOARDS_KEY = 'taskflow.boards'
 const COLUMNS_KEY = 'taskflow.columns'
@@ -7,168 +14,20 @@ const TASKS_KEY = 'taskflow.tasks'
 
 const DEFAULT_COLUMN_NAMES = ['To Do', 'In Progress', 'Done']
 
-const SEEDED_BOARDS: KanbanBoard[] = [
-  {
-    id: 'board-project-1',
-    projectId: 'project-1',
-    name: 'Task Management App Board',
-  },
-]
+function loadBoards(): KanbanBoard[] {
+  return loadSeededData(BOARDS_KEY, KANBAN_SEED_VERSION, SEEDED_BOARDS)
+}
 
-const SEEDED_COLUMNS: KanbanColumn[] = [
-  { id: 'col-todo', boardId: 'board-project-1', name: 'To Do', order: 0 },
-  {
-    id: 'col-in-progress',
-    boardId: 'board-project-1',
-    name: 'In Progress',
-    order: 1,
-  },
-  { id: 'col-done', boardId: 'board-project-1', name: 'Done', order: 2 },
-]
+function loadColumns(): KanbanColumn[] {
+  return loadSeededData(COLUMNS_KEY, KANBAN_SEED_VERSION, SEEDED_COLUMNS)
+}
 
-const SEEDED_TASKS: TaskItem[] = [
-  // John Smith (seed-2)
-  {
-    id: 'task-1',
-    columnId: 'col-todo',
-    title: 'Design homepage mockup',
-    description: 'Create the initial homepage layout in Figma.',
-    priority: 'Medium',
-    dueDate: '2026-09-23T00:00:00.000Z',
-    assigneeId: 'seed-2',
-    isFavorite: false,
-    order: 0,
-    createdAt: '2026-09-10T00:00:00.000Z',
-    updatedAt: '2026-09-10T00:00:00.000Z',
-  },
-  {
-    id: 'task-2',
-    columnId: 'col-in-progress',
-    title: 'Fix login validation bug',
-    description: 'Password field accepts empty input.',
-    priority: 'High',
-    dueDate: '2026-09-10T00:00:00.000Z',
-    assigneeId: 'seed-2',
-    isFavorite: true,
-    order: 0,
-    createdAt: '2026-09-05T00:00:00.000Z',
-    updatedAt: '2026-09-05T00:00:00.000Z',
-  },
-  {
-    id: 'task-3',
-    columnId: 'col-done',
-    title: 'Project charter approved',
-    description: 'Signed off by stakeholders.',
-    priority: 'Medium',
-    dueDate: null,
-    assigneeId: 'seed-2',
-    isFavorite: false,
-    order: 0,
-    createdAt: '2026-09-01T00:00:00.000Z',
-    updatedAt: '2026-09-05T00:00:00.000Z',
-  },
-  // Jane Doe (seed-1)
-  {
-    id: 'task-4',
-    columnId: 'col-todo',
-    title: 'Update user personas',
-    description: 'Refresh personas with latest research.',
-    priority: 'Medium',
-    dueDate: '2026-10-05T00:00:00.000Z',
-    assigneeId: 'seed-1',
-    isFavorite: false,
-    order: 1,
-    createdAt: '2026-09-08T00:00:00.000Z',
-    updatedAt: '2026-09-08T00:00:00.000Z',
-  },
-  {
-    id: 'task-5',
-    columnId: 'col-in-progress',
-    title: 'Review pull request #42',
-    description: 'Code review for the auth refactor.',
-    priority: 'High',
-    dueDate: '2026-09-24T00:00:00.000Z',
-    assigneeId: 'seed-1',
-    isFavorite: true,
-    order: 1,
-    createdAt: '2026-09-15T00:00:00.000Z',
-    updatedAt: '2026-09-15T00:00:00.000Z',
-  },
-  {
-    id: 'task-6',
-    columnId: 'col-done',
-    title: 'Wireframe settings page',
-    description: 'Low-fidelity wireframe for settings.',
-    priority: 'Low',
-    dueDate: null,
-    assigneeId: 'seed-1',
-    isFavorite: false,
-    order: 1,
-    createdAt: '2026-08-28T00:00:00.000Z',
-    updatedAt: '2026-09-03T00:00:00.000Z',
-  },
-  // Ha Tran (seed-3)
-  {
-    id: 'task-7',
-    columnId: 'col-todo',
-    title: 'Research competitor pricing',
-    description: 'Compare pricing tiers of 3 competitors.',
-    priority: 'High',
-    dueDate: '2026-10-10T00:00:00.000Z',
-    assigneeId: 'seed-3',
-    isFavorite: false,
-    order: 2,
-    createdAt: '2026-09-12T00:00:00.000Z',
-    updatedAt: '2026-09-12T00:00:00.000Z',
-  },
-  {
-    id: 'task-8',
-    columnId: 'col-todo',
-    title: 'Draft onboarding emails',
-    description: 'Write the 3-part onboarding email sequence.',
-    priority: 'Low',
-    dueDate: '2026-10-08T00:00:00.000Z',
-    assigneeId: 'seed-3',
-    isFavorite: false,
-    order: 3,
-    createdAt: '2026-09-12T00:00:00.000Z',
-    updatedAt: '2026-09-12T00:00:00.000Z',
-  },
-  {
-    id: 'task-9',
-    columnId: 'col-in-progress',
-    title: 'Write API documentation',
-    description: 'Document the tasks and boards endpoints.',
-    priority: 'Medium',
-    dueDate: '2026-10-15T00:00:00.000Z',
-    assigneeId: 'seed-3',
-    isFavorite: false,
-    order: 2,
-    createdAt: '2026-09-14T00:00:00.000Z',
-    updatedAt: '2026-09-14T00:00:00.000Z',
-  },
-  {
-    id: 'task-10',
-    columnId: 'col-done',
-    title: 'Set up repo & branching',
-    description: 'Initialize repo with branch protection rules.',
-    priority: 'Low',
-    dueDate: null,
-    assigneeId: 'seed-3',
-    isFavorite: false,
-    order: 2,
-    createdAt: '2026-08-20T00:00:00.000Z',
-    updatedAt: '2026-09-06T00:00:00.000Z',
-  },
-]
+function loadTasks(): TaskItem[] {
+  return loadSeededData(TASKS_KEY, KANBAN_SEED_VERSION, SEEDED_TASKS)
+}
 
-function loadJson<T>(key: string, seed: T): T {
-  const raw = localStorage.getItem(key)
-  if (!raw) {
-    localStorage.setItem(key, JSON.stringify(seed))
-    return seed
-  }
-  return JSON.parse(raw) as T
+function saveTasks(tasks: TaskItem[]): void {
+  localStorage.setItem(TASKS_KEY, JSON.stringify(tasks))
 }
 
 function defaultBoardFor(projectId: string): {
@@ -187,14 +46,25 @@ function defaultBoardFor(projectId: string): {
   }
 }
 
+type TaskInput = Pick<
+  TaskItem,
+  | 'columnId'
+  | 'title'
+  | 'description'
+  | 'priority'
+  | 'dueDate'
+  | 'assigneeId'
+  | 'isFavorite'
+>
+
 function getBoardForProject(projectId: string): {
   board: KanbanBoard
   columns: KanbanColumn[]
   tasks: TaskItem[]
 } {
-  const boards = loadJson(BOARDS_KEY, SEEDED_BOARDS)
-  const allColumns = loadJson(COLUMNS_KEY, SEEDED_COLUMNS)
-  const allTasks = loadJson(TASKS_KEY, SEEDED_TASKS)
+  const boards = loadBoards()
+  const allColumns = loadColumns()
+  const allTasks = loadTasks()
 
   const board = boards.find((b) => b.projectId === projectId)
   if (!board) {
@@ -209,6 +79,45 @@ function getBoardForProject(projectId: string): {
   return { board, columns, tasks }
 }
 
+function createTask(input: TaskInput): TaskItem {
+  const allTasks = loadTasks()
+  const now = new Date().toISOString()
+  const order = allTasks.filter((t) => t.columnId === input.columnId).length
+  const task: TaskItem = {
+    id: crypto.randomUUID(),
+    ...input,
+    order,
+    createdAt: now,
+    updatedAt: now,
+  }
+  saveTasks([...allTasks, task])
+  return task
+}
+
+function updateTask(taskId: string, input: TaskInput): TaskItem {
+  const allTasks = loadTasks()
+  const now = new Date().toISOString()
+  let updated: TaskItem | undefined
+  const nextTasks = allTasks.map((t) => {
+    if (t.id !== taskId) return t
+    updated = { ...t, ...input, updatedAt: now }
+    return updated
+  })
+  if (!updated) {
+    throw new Error('Task not found.')
+  }
+  saveTasks(nextTasks)
+  return updated
+}
+
+function deleteTask(taskId: string): void {
+  const allTasks = loadTasks()
+  saveTasks(allTasks.filter((t) => t.id !== taskId))
+}
+
 export const kanbanService = {
   getBoardForProject,
+  createTask,
+  updateTask,
+  deleteTask,
 }
