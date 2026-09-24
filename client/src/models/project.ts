@@ -1,4 +1,4 @@
-export type ProjectStatus = 'Active' | 'On Hold'
+export type ProjectStatus = 'Active' | 'Closed'
 export type ProjectPaletteColor = 'error' | 'primary' | 'success' | 'warning'
 
 export interface Project {

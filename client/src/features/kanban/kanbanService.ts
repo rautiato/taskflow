@@ -191,6 +191,10 @@ function createColumn(boardId: string, name: string): KanbanColumn {
   return column
 }
 
+function getColumnsForProject(projectId: string): KanbanColumn[] {
+  return getBoardForProject(projectId).columns.filter((c) => c.isVisible)
+}
+
 export const kanbanService = {
   getBoardForProject,
   createTask,
@@ -201,4 +205,5 @@ export const kanbanService = {
   showColumn,
   deleteColumn,
   createColumn,
+  getColumnsForProject,
 }

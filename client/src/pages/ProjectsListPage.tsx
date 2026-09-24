@@ -11,21 +11,19 @@ import { AppLayout } from '../features/layout/components/AppLayout'
 import { authService } from '../features/auth/authService'
 import { useProjects } from '../features/projects/useProjects'
 import { ProjectListRow } from '../features/projects/components/ProjectListRow'
+import { NewProjectDialog } from '../features/projects/components/NewProjectDialog'
 import type { ProjectStatus } from '../models/project'
 import { Navigate, useNavigate } from 'react-router-dom'
 
-const STATUS_FILTERS: Array<'All' | ProjectStatus> = [
-  'All',
-  'Active',
-  'On Hold',
-]
+const STATUS_FILTERS: Array<'All' | ProjectStatus> = ['All', 'Active', 'Closed']
 
 export function ProjectsListPage() {
   const user = authService.getSession()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<'All' | ProjectStatus>('All')
   const navigate = useNavigate()
-  const { projects } = useProjects()
+  const { projects, createProject, updateProjectStatus } = useProjects()
+  const [isNewProjectOpen, setIsNewProjectOpen] = useState(false)
 
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
@@ -55,7 +53,11 @@ export function ProjectsListPage() {
           <Typography sx={{ fontSize: 24, fontWeight: 700 }}>
             Projects
           </Typography>
-          <Button variant="contained" startIcon={<AddIcon />} disabled>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setIsNewProjectOpen(true)}
+          >
             New Project
           </Button>
         </Box>
@@ -111,6 +113,12 @@ export function ProjectsListPage() {
               key={project.id}
               project={project}
               onClick={() => navigate(`/projects/${project.id}/board`)}
+              onToggleStatus={() =>
+                updateProjectStatus(
+                  project.id,
+                  project.status === 'Active' ? 'Closed' : 'Active',
+                )
+              }
             />
           ))}
           {filteredProjects.length === 0 && (
@@ -123,6 +131,16 @@ export function ProjectsListPage() {
           )}
         </Box>
       </Box>
+
+      <NewProjectDialog
+        open={isNewProjectOpen}
+        onClose={() => setIsNewProjectOpen(false)}
+        onCreate={async (name) => {
+          const project = await createProject(name)
+          setIsNewProjectOpen(false)
+          navigate(`/projects/${project.id}/board`)
+        }}
+      />
     </AppLayout>
   )
 }

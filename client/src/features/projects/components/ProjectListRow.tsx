@@ -1,6 +1,11 @@
+import { useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
 import type { SxProps, Theme } from '@mui/material/styles'
 import type { Project } from '../../../models/project'
 import { formatProjectDate } from '../projectService'
@@ -47,28 +52,29 @@ const styles = {
   },
 } satisfies Record<string, SxProps<Theme>>
 
-const STATUS_COLOR = {
-  Active: 'success',
-  'On Hold': 'warning',
-} as const
-
 export function ProjectListRow({
   project,
   onClick,
+  onToggleStatus,
 }: {
   project: Project
   onClick?: () => void
+  onToggleStatus?: () => void
 }) {
-  const statusColor = STATUS_COLOR[project.status]
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null)
+  const isClosed = project.status === 'Closed'
 
   return (
     <Box
-      onClick={onClick}
-      sx={[
-        styles.root,
-        { cursor: 'pointer' },
-        project.status === 'On Hold' && { opacity: 0.75 },
-      ]}
+      onClick={() => {
+        // A backdrop click closing the menu still bubbles here (portals
+        // bubble through the React tree, not the DOM tree) — this closure
+        // still sees the pre-close anchor since setMenuAnchor(null) hasn't
+        // flushed yet within the same event dispatch, so skip navigating.
+        if (menuAnchor) return
+        onClick?.()
+      }}
+      sx={[styles.root, { cursor: 'pointer' }, isClosed && { opacity: 0.75 }]}
     >
       <ProjectBadge
         initials={project.initials}
@@ -86,11 +92,36 @@ export function ProjectListRow({
       <Box
         sx={[
           styles.statusPill,
-          { bgcolor: `${statusColor}.light`, color: `${statusColor}.main` },
+          isClosed
+            ? { bgcolor: 'action.selected', color: 'text.secondary' }
+            : { bgcolor: 'success.light', color: 'success.main' },
         ]}
       >
         {project.status}
       </Box>
+      <IconButton
+        size="small"
+        onClick={(event) => {
+          event.stopPropagation()
+          setMenuAnchor(event.currentTarget)
+        }}
+      >
+        <MoreVertIcon fontSize="small" />
+      </IconButton>
+      <Menu
+        anchorEl={menuAnchor}
+        open={!!menuAnchor}
+        onClose={() => setMenuAnchor(null)}
+      >
+        <MenuItem
+          onClick={() => {
+            onToggleStatus?.()
+            setMenuAnchor(null)
+          }}
+        >
+          {isClosed ? 'Mark as Active' : 'Mark as Closed'}
+        </MenuItem>
+      </Menu>
       <ChevronRightIcon sx={styles.chevron} />
     </Box>
   )
