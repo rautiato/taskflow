@@ -283,10 +283,12 @@ export function KanbanBoardPage() {
         open={!!formState}
         task={formState?.task}
         columns={visibleColumns}
+        projects={projects}
         users={users}
         defaultColumnId={
           formState?.defaultColumnId ?? visibleColumns[0]?.id ?? ''
         }
+        currentProjectId={projectId}
         onClose={() => setFormState(null)}
         onSave={(input, taskId) => {
           if (formState?.task) {

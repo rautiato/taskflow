@@ -19,7 +19,10 @@ export function useKanbanBoard(projectId: string) {
   })
 
   function invalidate() {
-    return queryClient.invalidateQueries({ queryKey })
+    // Prefix match, not the exact key — a task move can change a
+    // different project's board too, so every cached board is marked
+    // stale, not just the one currently open.
+    return queryClient.invalidateQueries({ queryKey: ['kanbanBoard'] })
   }
 
   const createTaskMutation = useMutation({
@@ -111,23 +114,21 @@ export function useKanbanBoard(projectId: string) {
   })
 
   const deleteColumnMutation = useMutation({
-    mutationFn: async (columnId: string) => kanbanService.deleteColumn(columnId),
+    mutationFn: async (columnId: string) =>
+      kanbanService.deleteColumn(columnId),
     onSuccess: invalidate,
     onError: (error) => {
       window.alert(
-        error instanceof Error ? error.message : 'Could not delete this column.',
+        error instanceof Error
+          ? error.message
+          : 'Could not delete this column.',
       )
     },
   })
 
   const createColumnMutation = useMutation({
-    mutationFn: async ({
-      boardId,
-      name,
-    }: {
-      boardId: string
-      name: string
-    }) => kanbanService.createColumn(boardId, name),
+    mutationFn: async ({ boardId, name }: { boardId: string; name: string }) =>
+      kanbanService.createColumn(boardId, name),
     onSuccess: invalidate,
   })
 

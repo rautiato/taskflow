@@ -40,7 +40,7 @@ export const SEEDED_PROJECTS: Project[] = [
     paletteColor: 'warning',
     taskCount: 8,
     updatedAt: '2026-09-10T00:00:00.000Z',
-    status: 'On Hold',
+    status: 'Closed',
     progress: 20,
   },
 ]

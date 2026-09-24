@@ -40,6 +40,17 @@ export function DashboardPage() {
 
   const firstName = user.name.split(' ')[0]
 
+  // "My Projects" is a recency shortcut, not the full roster (that's what
+  // Projects List is for) — active projects only, most recently updated
+  // first, same convention as Asana/Trello's project shortcuts.
+  const topProjects = projects
+    .filter((project) => project.status === 'Active')
+    .sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    )
+    .slice(0, 3)
+
   return (
     <AppLayout user={user}>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -64,7 +75,7 @@ export function DashboardPage() {
             My Projects
           </Typography>
           <Box sx={{ display: 'flex', gap: 2.25 }}>
-            {projects.slice(0, 3).map((project) => (
+            {topProjects.map((project) => (
               <ProjectCard
                 key={project.id}
                 name={project.name}
@@ -80,8 +91,9 @@ export function DashboardPage() {
         </Box>
 
         <Typography variant="caption" color="text.secondary">
-          Placeholder data — this will be wired to real projects and tasks once
-          those features land.
+          Stat tiles above show placeholder numbers — computing them for real
+          means summing tasks assigned to you across every project, not just one
+          board, which isn't wired up yet.
         </Typography>
       </Box>
     </AppLayout>
