@@ -1,7 +1,10 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
 import StarIcon from '@mui/icons-material/Star'
 import StarBorderIcon from '@mui/icons-material/StarBorder'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
 import { PRIORITY_STYLES, getDueChip } from '../../tasks/taskDisplay'
 import type { TaskItem } from '../../../models/task'
 
@@ -9,10 +12,14 @@ export function TaskCard({
   task,
   isDoneColumn,
   onClick,
+  onEdit,
+  onDelete,
 }: {
   task: TaskItem
   isDoneColumn: boolean
   onClick?: () => void
+  onEdit?: () => void
+  onDelete?: () => void
 }) {
   const dueChip = getDueChip(task, isDoneColumn)
   const priorityStyle = PRIORITY_STYLES[task.priority]
@@ -38,6 +45,7 @@ export function TaskCard({
             borderLeft: 3,
             borderLeftColor: priorityStyle.color,
           }),
+        '&:hover .task-card-actions': { opacity: 1 },
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.875 }}>
@@ -89,6 +97,43 @@ export function TaskCard({
             }}
           >
             {dueChip.label}
+          </Box>
+        )}
+        {(onEdit || onDelete) && (
+          <Box
+            className="task-card-actions"
+            sx={{
+              display: 'flex',
+              gap: 0.25,
+              ml: 'auto',
+              opacity: 0,
+              transition: 'opacity 0.15s ease',
+            }}
+          >
+            {onEdit && (
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onEdit()
+                }}
+                sx={{ p: 0.75 }}
+              >
+                <EditIcon sx={{ fontSize: 18, color: 'primary.main' }} />
+              </IconButton>
+            )}
+            {onDelete && (
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onDelete()
+                }}
+                sx={{ p: 0.75 }}
+              >
+                <DeleteIcon sx={{ fontSize: 18, color: 'error.main' }} />
+              </IconButton>
+            )}
           </Box>
         )}
       </Box>

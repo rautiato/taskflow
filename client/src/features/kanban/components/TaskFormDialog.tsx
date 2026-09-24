@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useForm, useWatch, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -83,7 +83,16 @@ export function TaskFormDialog({
   onClose: () => void
   onSave: (input: TaskInput, taskId: string) => void
 }) {
-  const isEditing = !!task
+  // Freeze the title during the Dialog's close transition — the parent
+  // clears `task` in the same render that flips `open` to false, but the
+  // Dialog stays mounted and visible for its exit animation. Adjusting
+  // state during render (React's documented pattern for this, not a ref
+  // mutation) so it updates synchronously, before paint.
+  const [isEditingSnapshot, setIsEditingSnapshot] = useState(!!task)
+  if (open && isEditingSnapshot !== !!task) {
+    setIsEditingSnapshot(!!task)
+  }
+  const isEditing = isEditingSnapshot
   const { control, handleSubmit, getValues, setValue } =
     useForm<TaskFormValues>({
       resolver: zodResolver(taskFormSchema),
@@ -426,9 +435,16 @@ export function TaskFormDialog({
           />
         </Stack>
       </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2 }}>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button type="submit" form="task-form" variant="contained">
+      <DialogActions sx={{ px: 3, py: 2, justifyContent: 'space-between' }}>
+        <Button onClick={onClose} variant="outlined" sx={{ minWidth: 120 }}>
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          form="task-form"
+          variant="contained"
+          sx={{ minWidth: 120 }}
+        >
           Save Task
         </Button>
       </DialogActions>

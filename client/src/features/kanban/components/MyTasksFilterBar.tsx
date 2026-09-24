@@ -3,28 +3,29 @@ import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
 import InputAdornment from '@mui/material/InputAdornment'
 import SearchIcon from '@mui/icons-material/Search'
-import type { KanbanColumn } from '../../../models/kanbanBoard'
 import type { TaskPriority } from '../../../models/task'
+import type { Project } from '../../../models/project'
 import type { UserDto } from '../../../models/user'
 import {
   ALL,
-  UNASSIGNED,
   UNKNOWN_CREATOR,
-  type TaskFilters,
-} from '../../tasks/filterTasks'
+  type MyTasksFilters,
+} from '../../tasks/filterMyTasks'
 
 const PRIORITIES: TaskPriority[] = ['High', 'Medium', 'Low']
 
-export function FilterBar({
+export function MyTasksFilterBar({
   filters,
   onChange,
-  columns,
-  users,
+  projects,
+  statusOptions,
+  creators,
 }: {
-  filters: TaskFilters
-  onChange: (filters: TaskFilters) => void
-  columns: KanbanColumn[]
-  users: UserDto[]
+  filters: MyTasksFilters
+  onChange: (filters: MyTasksFilters) => void
+  projects: Project[]
+  statusOptions: string[]
+  creators: UserDto[]
 }) {
   return (
     <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
@@ -49,17 +50,36 @@ export function FilterBar({
       <TextField
         size="small"
         select
-        label="Status"
-        value={filters.columnId}
+        label="Project"
+        value={filters.projectId}
         onChange={(event) =>
-          onChange({ ...filters, columnId: event.target.value })
+          // Changing project invalidates any status already picked from the
+          // previous project's (or the cross-project) status list.
+          onChange({ ...filters, projectId: event.target.value, statusName: ALL })
         }
-        sx={{ minWidth: 140 }}
+        sx={{ minWidth: 180 }}
+      >
+        <MenuItem value={ALL}>All Projects</MenuItem>
+        {projects.map((project) => (
+          <MenuItem key={project.id} value={project.id}>
+            {project.name}
+          </MenuItem>
+        ))}
+      </TextField>
+      <TextField
+        size="small"
+        select
+        label="Status"
+        value={filters.statusName}
+        onChange={(event) =>
+          onChange({ ...filters, statusName: event.target.value })
+        }
+        sx={{ minWidth: 160 }}
       >
         <MenuItem value={ALL}>All</MenuItem>
-        {columns.map((column) => (
-          <MenuItem key={column.id} value={column.id}>
-            {column.name}
+        {statusOptions.map((name) => (
+          <MenuItem key={name} value={name}>
+            {name}
           </MenuItem>
         ))}
       </TextField>
@@ -71,7 +91,7 @@ export function FilterBar({
         onChange={(event) =>
           onChange({
             ...filters,
-            priority: event.target.value as TaskFilters['priority'],
+            priority: event.target.value as MyTasksFilters['priority'],
           })
         }
         sx={{ minWidth: 140 }}
@@ -86,40 +106,19 @@ export function FilterBar({
       <TextField
         size="small"
         select
-        label="Assignee"
-        value={filters.assigneeId}
-        onChange={(event) =>
-          onChange({
-            ...filters,
-            assigneeId: event.target.value as TaskFilters['assigneeId'],
-          })
-        }
-        sx={{ minWidth: 160 }}
-      >
-        <MenuItem value={ALL}>All</MenuItem>
-        <MenuItem value={UNASSIGNED}>Unassigned</MenuItem>
-        {users.map((user) => (
-          <MenuItem key={user.id} value={user.id}>
-            {user.name}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TextField
-        size="small"
-        select
         label="Created By"
         value={filters.createdById}
         onChange={(event) =>
           onChange({
             ...filters,
-            createdById: event.target.value as TaskFilters['createdById'],
+            createdById: event.target.value as MyTasksFilters['createdById'],
           })
         }
         sx={{ minWidth: 160 }}
       >
         <MenuItem value={ALL}>All</MenuItem>
         <MenuItem value={UNKNOWN_CREATOR}>Unknown</MenuItem>
-        {users.map((user) => (
+        {creators.map((user) => (
           <MenuItem key={user.id} value={user.id}>
             {user.name}
           </MenuItem>

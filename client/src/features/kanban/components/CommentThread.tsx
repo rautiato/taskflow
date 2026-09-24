@@ -3,7 +3,11 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
 import { UserAvatar } from '../../../components/UserAvatar'
+import { ConfirmDialog } from '../../../components/ConfirmDialog'
 import { useComments } from '../useComments'
 import type { UserDto } from '../../../models/user'
 
@@ -34,8 +38,12 @@ export function CommentThread({
   users: UserDto[]
   currentUser: UserDto
 }) {
-  const { comments, createComment, isPosting } = useComments(taskId)
+  const { comments, createComment, isPosting, updateComment, deleteComment } =
+    useComments(taskId)
   const [draft, setDraft] = useState('')
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editDraft, setEditDraft] = useState('')
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
 
   const trimmedLength = draft.trim().length
   const isTooLong = draft.length > MAX_COMMENT_LENGTH
@@ -55,6 +63,42 @@ export function CommentThread({
     }
   }
 
+  function startEdit(commentId: string, content: string) {
+    setEditingId(commentId)
+    setEditDraft(content)
+  }
+
+  function cancelEdit() {
+    setEditingId(null)
+    setEditDraft('')
+  }
+
+  function submitEdit(commentId: string) {
+    const content = editDraft.trim()
+    if (!content || content.length > MAX_COMMENT_LENGTH) return
+    updateComment({ id: commentId, content })
+    cancelEdit()
+  }
+
+  function handleEditKeyDown(
+    event: KeyboardEvent<HTMLDivElement>,
+    commentId: string,
+  ) {
+    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault()
+      submitEdit(commentId)
+    } else if (event.key === 'Escape') {
+      event.preventDefault()
+      cancelEdit()
+    }
+  }
+
+  function handleConfirmDelete() {
+    if (!deleteTargetId) return
+    deleteComment(deleteTargetId)
+    setDeleteTargetId(null)
+  }
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
       <Typography
@@ -70,23 +114,112 @@ export function CommentThread({
 
       {comments.map((comment) => {
         const author = users.find((u) => u.id === comment.userId)
+        const isOwnComment = comment.userId === currentUser.id
+        const isEditing = editingId === comment.id
+
         return (
-          <Box key={comment.id} sx={{ display: 'flex', gap: 1.25 }}>
+          <Box
+            key={comment.id}
+            sx={{
+              display: 'flex',
+              gap: 1.25,
+              '&:hover .comment-actions': { opacity: 1 },
+            }}
+          >
             <UserAvatar name={author?.name ?? null} size="xs" />
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 0.25,
+                flexGrow: 1,
+                minWidth: 0,
+              }}
+            >
               <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75 }}>
                 <Typography sx={{ fontSize: 13, fontWeight: 700 }}>
                   {author?.name ?? 'Unknown user'}
                 </Typography>
                 <Typography sx={{ fontSize: 11, color: 'text.secondary' }}>
-                  {formatTimestamp(comment.createdAt)}
+                  {formatTimestamp(comment.updatedAt ?? comment.createdAt)}
                 </Typography>
+                {comment.updatedAt && (
+                  <Typography
+                    sx={{
+                      fontSize: 11,
+                      color: 'text.disabled',
+                      fontStyle: 'italic',
+                    }}
+                  >
+                    (edited)
+                  </Typography>
+                )}
+                {isOwnComment && !isEditing && (
+                  <Box
+                    className="comment-actions"
+                    sx={{
+                      display: 'flex',
+                      gap: 0.25,
+                      ml: 'auto',
+                      opacity: 0,
+                      transition: 'opacity 0.15s ease',
+                    }}
+                  >
+                    <IconButton
+                      size="small"
+                      onClick={() => startEdit(comment.id, comment.content)}
+                      sx={{ p: 0.5 }}
+                    >
+                      <EditIcon sx={{ fontSize: 18, color: 'primary.main' }} />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      onClick={() => setDeleteTargetId(comment.id)}
+                      sx={{ p: 0.5 }}
+                    >
+                      <DeleteIcon sx={{ fontSize: 18, color: 'error.main' }} />
+                    </IconButton>
+                  </Box>
+                )}
               </Box>
-              <Typography
-                sx={{ fontSize: 13, lineHeight: 1.5, whiteSpace: 'pre-wrap' }}
-              >
-                {comment.content}
-              </Typography>
+              {isEditing ? (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+                  <TextField
+                    value={editDraft}
+                    onChange={(e) => setEditDraft(e.target.value)}
+                    onKeyDown={(e) => handleEditKeyDown(e, comment.id)}
+                    size="small"
+                    fullWidth
+                    multiline
+                    minRows={1}
+                    maxRows={10}
+                    autoFocus
+                    error={editDraft.length > MAX_COMMENT_LENGTH}
+                  />
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      onClick={() => submitEdit(comment.id)}
+                      disabled={
+                        !editDraft.trim() ||
+                        editDraft.length > MAX_COMMENT_LENGTH
+                      }
+                    >
+                      Save
+                    </Button>
+                    <Button size="small" variant="outlined" onClick={cancelEdit}>
+                      Cancel
+                    </Button>
+                  </Box>
+                </Box>
+              ) : (
+                <Typography
+                  sx={{ fontSize: 13, lineHeight: 1.5, whiteSpace: 'pre-wrap' }}
+                >
+                  {comment.content}
+                </Typography>
+              )}
             </Box>
           </Box>
         )
@@ -126,6 +259,16 @@ export function CommentThread({
           </Typography>
         )}
       </Box>
+
+      <ConfirmDialog
+        open={deleteTargetId !== null}
+        title="Delete this comment?"
+        description="This action can't be undone."
+        confirmLabel="Delete"
+        destructive
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTargetId(null)}
+      />
     </Box>
   )
 }

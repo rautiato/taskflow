@@ -10,7 +10,7 @@ import type { UserDto } from '../../../models/user'
 const NAV_ITEMS = [
   { label: 'Dashboard', path: '/dashboard' },
   { label: 'Projects', path: '/projects' },
-  { label: 'My Tasks', path: undefined },
+  { label: 'My Tasks', path: '/my-tasks' },
 ] as const
 
 const styles = {

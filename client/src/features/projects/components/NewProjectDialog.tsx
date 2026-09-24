@@ -61,9 +61,16 @@ export function NewProjectDialog({
           }}
         />
       </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2 }}>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleCreate} variant="contained" disabled={!trimmed}>
+      <DialogActions sx={{ px: 3, py: 2, justifyContent: 'space-between' }}>
+        <Button onClick={handleClose} variant="outlined" sx={{ minWidth: 120 }}>
+          Cancel
+        </Button>
+        <Button
+          onClick={handleCreate}
+          variant="contained"
+          disabled={!trimmed}
+          sx={{ minWidth: 120 }}
+        >
           Create Project
         </Button>
       </DialogActions>

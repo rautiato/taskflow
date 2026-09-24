@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import Drawer from '@mui/material/Drawer'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -21,11 +21,50 @@ import type { UserDto } from '../../../models/user'
 import { CommentThread } from './CommentThread'
 import { ImagePreviewDialog } from './ImagePreviewDialog'
 
+function MetaRow({
+  label,
+  children,
+}: {
+  label: string
+  children: ReactNode
+}) {
+  return (
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: '120px 1fr',
+        alignItems: 'center',
+        gap: 1,
+        px: 2,
+        py: 1.25,
+        borderBottom: 1,
+        borderColor: 'divider',
+        '&:last-of-type': { borderBottom: 0 },
+      }}
+    >
+      <Typography
+        sx={{
+          fontSize: 12,
+          fontWeight: 700,
+          color: 'text.secondary',
+          textTransform: 'uppercase',
+        }}
+      >
+        {label}
+      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        {children}
+      </Box>
+    </Box>
+  )
+}
+
 export function TaskDetailDrawer({
   open,
   task,
   column,
   assignee,
+  creator,
   users,
   currentUser,
   onClose,
@@ -38,6 +77,7 @@ export function TaskDetailDrawer({
   users: UserDto[]
   currentUser: UserDto
   assignee: UserDto | undefined
+  creator: UserDto | undefined
   onClose: () => void
   onEdit: () => void
   onDelete: () => void
@@ -53,7 +93,7 @@ export function TaskDetailDrawer({
     <Drawer anchor="right" open={open} onClose={onClose}>
       <Box
         sx={{
-          width: 400,
+          width: { xs: '100vw', sm: 640 },
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
@@ -61,38 +101,52 @@ export function TaskDetailDrawer({
       >
         <Box
           sx={{
-            flexGrow: 1,
-            overflowY: 'auto',
-            px: 3,
-            py: 2.5,
+            position: 'relative',
+            px: 4,
+            pt: 3,
+            pb: 2.5,
+            borderBottom: 1,
+            borderColor: 'divider',
             display: 'flex',
             flexDirection: 'column',
             gap: 2,
           }}
         >
+          <IconButton
+            onClick={onClose}
+            size="small"
+            sx={{ position: 'absolute', top: 12, right: 16 }}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.25, pr: 5 }}>
+            {task.isFavorite ? (
+              <StarIcon sx={{ color: 'warning.main', fontSize: 24, mt: 0.25 }} />
+            ) : (
+              <StarBorderIcon
+                sx={{ color: 'text.disabled', fontSize: 24, mt: 0.25 }}
+              />
+            )}
+            <Typography sx={{ fontSize: 24, fontWeight: 700, lineHeight: 1.3 }}>
+              {task.title}
+            </Typography>
+          </Box>
+
           <Box
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 1,
+              border: 1,
+              borderColor: 'divider',
+              borderRadius: 1.5,
+              overflow: 'hidden',
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Box
-                sx={{
-                  bgcolor: 'background.default',
-                  border: 1,
-                  borderColor: 'divider',
-                  borderRadius: 999,
-                  px: 1.25,
-                  py: 0.25,
-                  fontSize: 11,
-                  fontWeight: 700,
-                }}
-              >
+            <MetaRow label="Status">
+              <Typography sx={{ fontSize: 13, fontWeight: 600 }}>
                 {column?.name ?? 'Unknown'}
-              </Box>
+              </Typography>
+            </MetaRow>
+            <MetaRow label="Priority">
               <Box
                 sx={{
                   ...priorityStyle,
@@ -105,54 +159,55 @@ export function TaskDetailDrawer({
               >
                 {task.priority}
               </Box>
-            </Box>
-            <IconButton onClick={onClose} size="small">
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          </Box>
-
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            {task.isFavorite ? (
-              <StarIcon sx={{ color: 'warning.main', fontSize: 22 }} />
-            ) : (
-              <StarBorderIcon sx={{ color: 'text.disabled', fontSize: 22 }} />
-            )}
-            <Typography sx={{ fontSize: 20, fontWeight: 700 }}>
-              {task.title}
-            </Typography>
-          </Box>
-
-          {dueChip && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <CalendarTodayOutlinedIcon
-                sx={{ fontSize: 15, color: dueChip.sx.color }}
-              />
-              <Typography
-                sx={{ fontSize: 13, fontWeight: 600, color: dueChip.sx.color }}
-              >
-                {dueChip.label}
+            </MetaRow>
+            <MetaRow label="Assignee">
+              <UserAvatar name={assignee?.name ?? null} size="xs" />
+              <Typography sx={{ fontSize: 13, fontWeight: 600 }}>
+                {assignee?.name ?? 'Unassigned'}
               </Typography>
-            </Box>
-          )}
-
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <UserAvatar name={assignee?.name ?? null} size="xs" />
-            <Typography sx={{ fontSize: 13 }}>
-              {assignee ? (
+            </MetaRow>
+            <MetaRow label="Created By">
+              <UserAvatar name={creator?.name ?? null} size="xs" />
+              <Typography sx={{ fontSize: 13, fontWeight: 600 }}>
+                {creator?.name ?? 'Unknown'}
+              </Typography>
+            </MetaRow>
+            <MetaRow label="Due Date">
+              {dueChip ? (
                 <>
-                  Assigned to{' '}
-                  <Box component="span" sx={{ fontWeight: 700 }}>
-                    {assignee.name}
-                  </Box>
+                  <CalendarTodayOutlinedIcon
+                    sx={{ fontSize: 15, color: dueChip.sx.color }}
+                  />
+                  <Typography
+                    sx={{
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: dueChip.sx.color,
+                    }}
+                  >
+                    {dueChip.label}
+                  </Typography>
                 </>
               ) : (
-                'Unassigned'
+                <Typography sx={{ fontSize: 13, color: 'text.disabled' }}>
+                  No due date
+                </Typography>
               )}
-            </Typography>
+            </MetaRow>
           </Box>
+        </Box>
 
-          <Divider />
-
+        <Box
+          sx={{
+            flexGrow: 1,
+            overflowY: 'auto',
+            px: 4,
+            py: 2.5,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2.5,
+          }}
+        >
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Typography
               sx={{
@@ -164,9 +219,22 @@ export function TaskDetailDrawer({
             >
               Description
             </Typography>
-            <Typography sx={{ fontSize: 14, lineHeight: 1.6 }}>
-              {task.description}
-            </Typography>
+            <Box
+              sx={{
+                bgcolor: 'background.default',
+                border: 1,
+                borderColor: 'divider',
+                borderRadius: 1.5,
+                px: 2,
+                py: 1.5,
+              }}
+            >
+              <Typography
+                sx={{ fontSize: 14, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}
+              >
+                {task.description || 'No description provided.'}
+              </Typography>
+            </Box>
           </Box>
 
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -196,7 +264,7 @@ export function TaskDetailDrawer({
                 </Typography>
               </Box>
             ) : (
-              <Box sx={{ display: 'flex', gap: 1 }}>
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                 {attachments.map((a, index) => (
                   <Box
                     key={a.id}
@@ -205,8 +273,8 @@ export function TaskDetailDrawer({
                     alt={a.fileName}
                     onClick={() => setPreviewIndex(index)}
                     sx={{
-                      width: 100,
-                      height: 76,
+                      width: 120,
+                      height: 90,
                       borderRadius: 1,
                       objectFit: 'cover',
                       bgcolor: 'background.default',
@@ -230,27 +298,20 @@ export function TaskDetailDrawer({
         <Box
           sx={{
             display: 'flex',
+            justifyContent: 'space-between',
             gap: 1.5,
-            px: 3,
+            px: 4,
             py: 2.5,
             borderTop: 1,
             borderColor: 'divider',
           }}
         >
           <Button
-            onClick={onEdit}
-            variant="outlined"
-            startIcon={<EditIcon />}
-            fullWidth
-          >
-            Edit
-          </Button>
-          <Button
             onClick={onDelete}
             variant="contained"
             startIcon={<DeleteIcon />}
-            fullWidth
             sx={{
+              minWidth: 140,
               bgcolor: 'error.light',
               color: 'error.main',
               boxShadow: 'none',
@@ -258,6 +319,14 @@ export function TaskDetailDrawer({
             }}
           >
             Delete
+          </Button>
+          <Button
+            onClick={onEdit}
+            variant="outlined"
+            startIcon={<EditIcon />}
+            sx={{ minWidth: 140 }}
+          >
+            Edit
           </Button>
         </Box>
       </Box>

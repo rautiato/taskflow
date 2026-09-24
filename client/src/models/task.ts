@@ -8,6 +8,7 @@ export interface TaskItem {
   priority: TaskPriority
   dueDate: string | null
   assigneeId: string | null
+  createdById: string | null
   isFavorite: boolean
   order: number
   createdAt: string

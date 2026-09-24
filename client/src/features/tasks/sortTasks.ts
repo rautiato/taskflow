@@ -1,6 +1,6 @@
 import type { TaskItem, TaskPriority } from '../../models/task'
 
-const PRIORITY_RANK: Record<TaskPriority, number> = {
+export const PRIORITY_RANK: Record<TaskPriority, number> = {
   High: 0,
   Medium: 1,
   Low: 2,
