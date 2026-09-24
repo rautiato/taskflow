@@ -288,11 +288,11 @@ export function KanbanBoardPage() {
           formState?.defaultColumnId ?? visibleColumns[0]?.id ?? ''
         }
         onClose={() => setFormState(null)}
-        onSave={(input) => {
+        onSave={(input, taskId) => {
           if (formState?.task) {
             updateTask(formState.task.id, input)
           } else {
-            createTask(input)
+            createTask(input, taskId)
           }
           setFormState(null)
         }}
@@ -303,6 +303,8 @@ export function KanbanBoardPage() {
         task={detailTask}
         column={columns.find((c) => c.id === detailTask?.columnId)}
         assignee={users.find((u) => u.id === detailTask?.assigneeId)}
+        users={users}
+        currentUser={user}
         onClose={() => setDetailTask(null)}
         onEdit={handleEditFromDetail}
         onDelete={handleDeleteFromDetail}

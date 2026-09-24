@@ -1,3 +1,4 @@
+import { useMemo, useRef } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -9,6 +10,7 @@ import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
 import Button from '@mui/material/Button'
@@ -18,6 +20,13 @@ import type { KanbanColumn } from '../../../models/kanbanBoard'
 import type { TaskItem, TaskPriority } from '../../../models/task'
 import type { UserDto } from '../../../models/user'
 import type { TaskInput } from '../useKanbanBoard'
+import { PRIORITY_STYLES } from '../../tasks/taskDisplay'
+import { UserAvatar } from '../../../components/UserAvatar'
+import { useAttachments } from '../useAttachments'
+import {
+  AttachmentPicker,
+  type AttachmentPickerHandle,
+} from './AttachmentPicker'
 
 const UNASSIGNED = ''
 
@@ -63,7 +72,7 @@ export function TaskFormDialog({
   users: UserDto[]
   defaultColumnId: string
   onClose: () => void
-  onSave: (input: TaskInput) => void
+  onSave: (input: TaskInput, taskId: string) => void
 }) {
   const isEditing = !!task
   const { control, handleSubmit } = useForm<TaskFormValues>({
@@ -71,16 +80,30 @@ export function TaskFormDialog({
     values: toFormValues(task, defaultColumnId),
   })
 
-  function onSubmit(values: TaskFormValues) {
-    onSave({
-      title: values.title,
-      description: values.description,
-      columnId: values.columnId,
-      assigneeId: values.assigneeId || null,
-      priority: values.priority as TaskPriority,
-      dueDate: values.dueDate ? new Date(values.dueDate).toISOString() : null,
-      isFavorite: values.isFavorite,
-    })
+  // Pre-generated so a brand-new task and its attachments share one id
+  // before the task itself is ever saved. Reusing this id across two
+  // abandoned "Add Task" sessions is harmless — nothing is persisted
+  // under it until Save is clicked.
+  const taskId = useMemo(() => task?.id ?? crypto.randomUUID(), [task])
+  const { attachments: existingAttachments } = useAttachments(taskId)
+  const attachmentPickerRef = useRef<AttachmentPickerHandle>(null)
+
+  async function onSubmit(values: TaskFormValues) {
+    onSave(
+      {
+        title: values.title,
+        description: values.description,
+        columnId: values.columnId,
+        assigneeId: values.assigneeId || null,
+        priority: values.priority as TaskPriority,
+        dueDate: values.dueDate
+          ? new Date(values.dueDate).toISOString()
+          : null,
+        isFavorite: values.isFavorite,
+      },
+      taskId,
+    )
+    await attachmentPickerRef.current?.commit()
   }
 
   return (
@@ -103,7 +126,9 @@ export function TaskFormDialog({
           component="form"
           id="task-form"
           noValidate
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={(event) => {
+            void handleSubmit(onSubmit)(event)
+          }}
           sx={{ pt: 0.5 }}
         >
           <Controller
@@ -146,10 +171,48 @@ export function TaskFormDialog({
               name="priority"
               control={control}
               render={({ field }) => (
-                <TextField {...field} select label="Priority" fullWidth>
-                  <MenuItem value="Low">Low</MenuItem>
-                  <MenuItem value="Medium">Medium</MenuItem>
-                  <MenuItem value="High">High</MenuItem>
+                <TextField
+                  {...field}
+                  select
+                  label="Priority"
+                  fullWidth
+                  slotProps={{
+                    select: {
+                      renderValue: (value) => (
+                        <Box
+                          component="span"
+                          sx={{
+                            ...PRIORITY_STYLES[value as TaskPriority],
+                            fontSize: 12,
+                            fontWeight: 700,
+                            px: 1,
+                            py: 0.25,
+                            borderRadius: 999,
+                          }}
+                        >
+                          {value as string}
+                        </Box>
+                      ),
+                    },
+                  }}
+                >
+                  {(['Low', 'Medium', 'High'] as const).map((priority) => (
+                    <MenuItem key={priority} value={priority}>
+                      <Box
+                        component="span"
+                        sx={{
+                          ...PRIORITY_STYLES[priority],
+                          fontSize: 12,
+                          fontWeight: 700,
+                          px: 1,
+                          py: 0.25,
+                          borderRadius: 999,
+                        }}
+                      >
+                        {priority}
+                      </Box>
+                    </MenuItem>
+                  ))}
                 </TextField>
               )}
             />
@@ -160,11 +223,39 @@ export function TaskFormDialog({
               name="assigneeId"
               control={control}
               render={({ field }) => (
-                <TextField {...field} select label="Assignee" fullWidth>
-                  <MenuItem value={UNASSIGNED}>Unassigned</MenuItem>
+                <TextField
+                  {...field}
+                  select
+                  label="Assignee"
+                  fullWidth
+                  slotProps={{
+                    select: {
+                      renderValue: (value) => {
+                        const selected = users.find((u) => u.id === value)
+                        return (
+                          <Box
+                            sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                          >
+                            <UserAvatar name={selected?.name ?? null} size="xs" />
+                            {selected?.name ?? 'Unassigned'}
+                          </Box>
+                        )
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value={UNASSIGNED}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <UserAvatar name={null} size="xs" />
+                      Unassigned
+                    </Box>
+                  </MenuItem>
                   {users.map((user) => (
                     <MenuItem key={user.id} value={user.id}>
-                      {user.name}
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <UserAvatar name={user.name} size="xs" />
+                        {user.name}
+                      </Box>
                     </MenuItem>
                   ))}
                 </TextField>
@@ -196,17 +287,37 @@ export function TaskFormDialog({
             )}
           />
 
-          <Controller
-            name="isFavorite"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Switch checked={field.value} onChange={field.onChange} />
-                }
-                label="Pin to top"
-              />
-            )}
+          <Box>
+            <Typography
+              sx={{
+                fontSize: 12,
+                fontWeight: 700,
+                color: 'text.secondary',
+                textTransform: 'uppercase',
+                mb: 0.5,
+              }}
+            >
+              Favorite
+            </Typography>
+            <Controller
+              name="isFavorite"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Switch checked={field.value} onChange={field.onChange} />
+                  }
+                  label="Pin to top"
+                />
+              )}
+            />
+          </Box>
+
+          <AttachmentPicker
+            key={taskId}
+            ref={attachmentPickerRef}
+            taskId={taskId}
+            initialAttachments={existingAttachments}
           />
         </Stack>
       </DialogContent>
