@@ -23,7 +23,8 @@ export function useKanbanBoard(projectId: string) {
   }
 
   const createTaskMutation = useMutation({
-    mutationFn: async (input: TaskInput) => kanbanService.createTask(input),
+    mutationFn: async ({ input, id }: { input: TaskInput; id?: string }) =>
+      kanbanService.createTask(input, id),
     onSuccess: invalidate,
   })
 
@@ -135,7 +136,8 @@ export function useKanbanBoard(projectId: string) {
     board: data?.board,
     columns: data?.columns ?? [],
     tasks: data?.tasks ?? [],
-    createTask: createTaskMutation.mutate,
+    createTask: (input: TaskInput, id?: string) =>
+      createTaskMutation.mutate({ input, id }),
     updateTask: (taskId: string, input: TaskInput) =>
       updateTaskMutation.mutate({ taskId, input }),
     deleteTask: deleteTaskMutation.mutate,

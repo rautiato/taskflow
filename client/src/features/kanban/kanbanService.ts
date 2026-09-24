@@ -91,12 +91,12 @@ function getBoardForProject(projectId: string): {
   return { board, columns, tasks }
 }
 
-function createTask(input: TaskInput): TaskItem {
+function createTask(input: TaskInput, id?: string): TaskItem {
   const allTasks = loadTasks()
   const now = new Date().toISOString()
   const order = allTasks.filter((t) => t.columnId === input.columnId).length
   const task: TaskItem = {
-    id: crypto.randomUUID(),
+    id: id ?? crypto.randomUUID(),
     ...input,
     order,
     createdAt: now,

@@ -15,6 +15,7 @@ function saveUsers(users: User[]): void {
 
 function toUserDto(user: User): UserDto {
   const { password: _password, ...userDto } = user
+  void _password
   return userDto
 }
 
