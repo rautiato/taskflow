@@ -2,14 +2,15 @@ import { useState, type KeyboardEvent } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { Droppable, Draggable } from '@hello-pangea/dnd'
 import type { SxProps, Theme } from '@mui/material/styles'
 import type { KanbanColumn } from '../../../models/kanbanBoard'
 
 import { TaskCard } from './TaskCard'
 import { COLUMN_WIDTH } from './ColumnHeaderRow'
+import { TASK_DND_TYPE, taskCellId } from '../taskCellId'
+import { UserAvatar } from '../../../components/UserAvatar'
 import type { AssigneeLaneData } from '../../tasks/groupTasksByAssignee'
-
-const AVATAR_COLORS = ['primary', 'success', 'warning', 'error'] as const
 
 const styles = {
   root: {
@@ -23,6 +24,9 @@ const styles = {
     gap: 1,
   },
   header: {
+    position: 'sticky',
+    left: 0,
+    zIndex: 1,
     bgcolor: '#F0F1F4',
     borderRadius: 1,
     px: 1.5,
@@ -31,16 +35,6 @@ const styles = {
     alignItems: 'center',
     gap: 1.125,
     cursor: 'pointer',
-  },
-  avatar: {
-    width: 24,
-    height: 24,
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: 10,
-    fontWeight: 700,
   },
   name: {
     fontSize: 13,
@@ -68,31 +62,28 @@ const styles = {
   },
   columnCell: {
     width: COLUMN_WIDTH,
+    flexShrink: 0,
+  },
+  columnDroppable: {
     display: 'flex',
     flexDirection: 'column',
     gap: 0.75,
+    minHeight: 12,
+    borderRadius: 1.5,
+    transition: 'background-color 0.15s ease, outline-color 0.15s ease',
   },
 } satisfies Record<string, SxProps<Theme>>
 
 export function AssigneeLane({
   lane,
   columns,
-  colorIndex,
   onTaskClick,
 }: {
   lane: AssigneeLaneData
   columns: KanbanColumn[]
-  colorIndex: number
   onTaskClick: (task: AssigneeLaneData['tasksByColumn'][string][number]) => void
 }) {
   const [collapsed, setCollapsed] = useState(false)
-  const color = AVATAR_COLORS[colorIndex % AVATAR_COLORS.length]
-  const initials = lane.assigneeName
-    .split(' ')
-    .map((part) => part[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
 
   const toggleCollapsed = () => setCollapsed((c) => !c)
 
@@ -114,17 +105,10 @@ export function AssigneeLane({
         onKeyDown={handleKeyDown}
         sx={styles.header}
       >
-        <Box
-          sx={[
-            styles.avatar,
-            {
-              bgcolor: lane.assigneeId ? `${color}.light` : '#EEF0F2',
-              color: lane.assigneeId ? `${color}.main` : 'text.secondary',
-            },
-          ]}
-        >
-          {initials}
-        </Box>
+        <UserAvatar
+          name={lane.assigneeId ? lane.assigneeName : null}
+          size="xs"
+        />
         <Typography sx={styles.name}>{lane.assigneeName}</Typography>
         <Box sx={styles.countChip}>{lane.taskCount} tasks</Box>
         <ExpandMoreIcon
@@ -138,14 +122,54 @@ export function AssigneeLane({
         <Box sx={styles.columnsRow}>
           {columns.map((column) => (
             <Box key={column.id} sx={styles.columnCell}>
-              {(lane.tasksByColumn[column.id] ?? []).map((task) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  isDoneColumn={column.name === 'Done'}
-                  onClick={() => onTaskClick(task)}
-                />
-              ))}
+              <Droppable
+                droppableId={taskCellId(lane.assigneeId, column.id)}
+                type={TASK_DND_TYPE}
+              >
+                {(dropProvided, dropSnapshot) => (
+                  <Box
+                    ref={dropProvided.innerRef}
+                    {...dropProvided.droppableProps}
+                    sx={[
+                      styles.columnDroppable,
+                      dropSnapshot.isDraggingOver && {
+                        bgcolor: 'action.hover',
+                        outline: '2px dashed',
+                        outlineColor: 'primary.main',
+                        outlineOffset: -2,
+                      },
+                    ]}
+                  >
+                    {(lane.tasksByColumn[column.id] ?? []).map(
+                      (task, index) => (
+                        <Draggable
+                          key={task.id}
+                          draggableId={task.id}
+                          index={index}
+                        >
+                          {(dragProvided, dragSnapshot) => (
+                            <Box
+                              ref={dragProvided.innerRef}
+                              {...dragProvided.draggableProps}
+                              {...dragProvided.dragHandleProps}
+                              sx={{
+                                opacity: dragSnapshot.isDragging ? 0.85 : 1,
+                              }}
+                            >
+                              <TaskCard
+                                task={task}
+                                isDoneColumn={column.isDone}
+                                onClick={() => onTaskClick(task)}
+                              />
+                            </Box>
+                          )}
+                        </Draggable>
+                      ),
+                    )}
+                    {dropProvided.placeholder}
+                  </Box>
+                )}
+              </Droppable>
             </Box>
           ))}
         </Box>

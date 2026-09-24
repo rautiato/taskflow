@@ -9,4 +9,6 @@ export interface KanbanColumn {
   boardId: string
   name: string // a task's status is the name of the column
   order: number
+  isVisible: boolean
+  isDone: boolean
 }

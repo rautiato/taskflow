@@ -12,14 +12,46 @@ export const SEEDED_BOARDS: KanbanBoard[] = [
 ]
 
 export const SEEDED_COLUMNS: KanbanColumn[] = [
-  { id: 'col-todo', boardId: 'board-project-1', name: 'To Do', order: 0 },
+  {
+    id: 'col-todo',
+    boardId: 'board-project-1',
+    name: 'To Do',
+    order: 0,
+    isVisible: true,
+    isDone: false,
+  },
   {
     id: 'col-in-progress',
     boardId: 'board-project-1',
     name: 'In Progress',
     order: 1,
+    isVisible: true,
+    isDone: false,
   },
-  { id: 'col-done', boardId: 'board-project-1', name: 'Done', order: 2 },
+  {
+    id: 'col-done',
+    boardId: 'board-project-1',
+    name: 'Done',
+    order: 2,
+    isVisible: true,
+    isDone: true,
+  },
+  {
+    id: 'col-backlog',
+    boardId: 'board-project-1',
+    name: 'Backlog',
+    order: 3,
+    isVisible: false,
+    isDone: false,
+  },
+  {
+    id: 'col-in-review',
+    boardId: 'board-project-1',
+    name: 'In Review',
+    order: 4,
+    isVisible: false,
+    isDone: false,
+  },
 ]
 
 export const SEEDED_TASKS: TaskItem[] = [
@@ -142,19 +174,6 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 2,
     createdAt: '2026-09-14T00:00:00.000Z',
     updatedAt: '2026-09-14T00:00:00.000Z',
-  },
-  {
-    id: 'task-10',
-    columnId: 'col-done',
-    title: 'Set up repo & branching',
-    description: 'Initialize repo with branch protection rules.',
-    priority: 'Low',
-    dueDate: null,
-    assigneeId: 'seed-3',
-    isFavorite: false,
-    order: 2,
-    createdAt: '2026-08-20T00:00:00.000Z',
-    updatedAt: '2026-09-06T00:00:00.000Z',
   },
   {
     id: 'task-10',

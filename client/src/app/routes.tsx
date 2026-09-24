@@ -18,10 +18,13 @@ export function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/projects" element={<ProjectsListPage />} />
+        <Route
+          path="/projects/:projectId/board"
+          element={<KanbanBoardPage />}
+        />
       </Route>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
-      <Route path="/projects/:projectId/board" element={<KanbanBoardPage />} />
     </Routes>
   )
 }
