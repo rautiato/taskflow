@@ -7,6 +7,8 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import ToggleButton from '@mui/material/ToggleButton'
 import GridViewIcon from '@mui/icons-material/GridView'
 import ViewListIcon from '@mui/icons-material/ViewList'
+import AddIcon from '@mui/icons-material/Add'
+import Button from '@mui/material/Button'
 import { AppLayout } from '../features/layout/components/AppLayout'
 import { authService } from '../features/auth/authService'
 import { useUsers } from '../features/auth/useUsers'
@@ -98,15 +100,13 @@ export function KanbanBoardPage() {
   )
   const listViewTasks = sortTasks(filterTasks(tasks, filters))
 
-  function handleEditFromDetail() {
-    if (!detailTask) return
-    setFormState({ task: detailTask, defaultColumnId: detailTask.columnId })
+  function handleEditTask(task: TaskItem) {
+    setFormState({ task, defaultColumnId: task.columnId })
     setDetailTask(null)
   }
 
-  function handleDeleteFromDetail() {
-    if (!detailTask) return
-    setDeleteTarget(detailTask)
+  function handleDeleteTask(task: TaskItem) {
+    setDeleteTarget(task)
     setDetailTask(null)
   }
 
@@ -249,6 +249,8 @@ export function KanbanBoardPage() {
                       lane={lane}
                       columns={visibleColumns}
                       onTaskClick={setDetailTask}
+                      onTaskEdit={handleEditTask}
+                      onTaskDelete={handleDeleteTask}
                     />
                   ))
                 )}
@@ -257,12 +259,26 @@ export function KanbanBoardPage() {
           </DragDropContext>
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-            <FilterBar
-              filters={filters}
-              onChange={setFilters}
-              columns={visibleColumns}
-              users={users}
-            />
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+              <Box sx={{ flexGrow: 1 }}>
+                <FilterBar
+                  filters={filters}
+                  onChange={setFilters}
+                  columns={visibleColumns}
+                  users={users}
+                />
+              </Box>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() =>
+                  setFormState({ defaultColumnId: visibleColumns[0]?.id ?? '' })
+                }
+                sx={{ flexShrink: 0 }}
+              >
+                New Task
+              </Button>
+            </Box>
             {hasActiveFilters(filters) && (
               <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
                 {listViewTasks.length} task
@@ -274,6 +290,8 @@ export function KanbanBoardPage() {
               columns={columns}
               users={users}
               onTaskClick={setDetailTask}
+              onTaskEdit={handleEditTask}
+              onTaskDelete={handleDeleteTask}
             />
           </Box>
         )}
@@ -294,7 +312,7 @@ export function KanbanBoardPage() {
           if (formState?.task) {
             updateTask(formState.task.id, input)
           } else {
-            createTask(input, taskId)
+            createTask(input, user.id, taskId)
           }
           setFormState(null)
         }}
@@ -305,11 +323,12 @@ export function KanbanBoardPage() {
         task={detailTask}
         column={columns.find((c) => c.id === detailTask?.columnId)}
         assignee={users.find((u) => u.id === detailTask?.assigneeId)}
+        creator={users.find((u) => u.id === detailTask?.createdById)}
         users={users}
         currentUser={user}
         onClose={() => setDetailTask(null)}
-        onEdit={handleEditFromDetail}
-        onDelete={handleDeleteFromDetail}
+        onEdit={() => detailTask && handleEditTask(detailTask)}
+        onDelete={() => detailTask && handleDeleteTask(detailTask)}
       />
 
       {deleteTarget && (

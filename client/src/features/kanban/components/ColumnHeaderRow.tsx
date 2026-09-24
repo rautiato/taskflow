@@ -100,11 +100,11 @@ export function ColumnHeaderRow({
                       {taskCountByColumn[column.id] ?? 0}
                     </Box>
                     <Box sx={{ flexGrow: 1 }} />
-                    <Tooltip title="Add Task">
+                    <Tooltip title="New Task">
                       <IconButton
                         size="small"
                         onClick={() => onAddTask(column.id)}
-                        aria-label="Add Task"
+                        aria-label="New Task"
                         sx={{ color: 'text.secondary' }}
                       >
                         <AddIcon sx={{ fontSize: 16 }} />

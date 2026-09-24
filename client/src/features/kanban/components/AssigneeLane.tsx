@@ -78,10 +78,14 @@ export function AssigneeLane({
   lane,
   columns,
   onTaskClick,
+  onTaskEdit,
+  onTaskDelete,
 }: {
   lane: AssigneeLaneData
   columns: KanbanColumn[]
   onTaskClick: (task: AssigneeLaneData['tasksByColumn'][string][number]) => void
+  onTaskEdit: (task: AssigneeLaneData['tasksByColumn'][string][number]) => void
+  onTaskDelete: (task: AssigneeLaneData['tasksByColumn'][string][number]) => void
 }) {
   const [collapsed, setCollapsed] = useState(false)
 
@@ -160,6 +164,8 @@ export function AssigneeLane({
                                 task={task}
                                 isDoneColumn={column.isDone}
                                 onClick={() => onTaskClick(task)}
+                                onEdit={() => onTaskEdit(task)}
+                                onDelete={() => onTaskDelete(task)}
                               />
                             </Box>
                           )}

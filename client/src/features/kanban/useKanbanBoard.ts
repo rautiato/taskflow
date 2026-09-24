@@ -21,13 +21,25 @@ export function useKanbanBoard(projectId: string) {
   function invalidate() {
     // Prefix match, not the exact key — a task move can change a
     // different project's board too, so every cached board is marked
-    // stale, not just the one currently open.
-    return queryClient.invalidateQueries({ queryKey: ['kanbanBoard'] })
+    // stale, not just the one currently open. Also invalidates the
+    // cross-project My Tasks query, since a task mutation here can affect
+    // what that page shows too.
+    return Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['kanbanBoard'] }),
+      queryClient.invalidateQueries({ queryKey: ['myTasks'] }),
+    ])
   }
 
   const createTaskMutation = useMutation({
-    mutationFn: async ({ input, id }: { input: TaskInput; id?: string }) =>
-      kanbanService.createTask(input, id),
+    mutationFn: async ({
+      input,
+      createdById,
+      id,
+    }: {
+      input: TaskInput
+      createdById: string
+      id?: string
+    }) => kanbanService.createTask(input, createdById, id),
     onSuccess: invalidate,
   })
 
@@ -137,8 +149,8 @@ export function useKanbanBoard(projectId: string) {
     board: data?.board,
     columns: data?.columns ?? [],
     tasks: data?.tasks ?? [],
-    createTask: (input: TaskInput, id?: string) =>
-      createTaskMutation.mutate({ input, id }),
+    createTask: (input: TaskInput, createdById: string, id?: string) =>
+      createTaskMutation.mutate({ input, createdById, id }),
     updateTask: (taskId: string, input: TaskInput) =>
       updateTaskMutation.mutate({ taskId, input }),
     deleteTask: deleteTaskMutation.mutate,

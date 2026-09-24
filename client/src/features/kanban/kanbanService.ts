@@ -91,13 +91,18 @@ function getBoardForProject(projectId: string): {
   return { board, columns, tasks }
 }
 
-function createTask(input: TaskInput, id?: string): TaskItem {
+function createTask(
+  input: TaskInput,
+  createdById: string,
+  id?: string,
+): TaskItem {
   const allTasks = loadTasks()
   const now = new Date().toISOString()
   const order = allTasks.filter((t) => t.columnId === input.columnId).length
   const task: TaskItem = {
     id: id ?? crypto.randomUUID(),
     ...input,
+    createdById,
     order,
     createdAt: now,
     updatedAt: now,
@@ -195,8 +200,20 @@ function getColumnsForProject(projectId: string): KanbanColumn[] {
   return getBoardForProject(projectId).columns.filter((c) => c.isVisible)
 }
 
+function getMyTasksData(assigneeId: string): {
+  tasks: TaskItem[]
+  columns: KanbanColumn[]
+  boards: KanbanBoard[]
+} {
+  const boards = loadBoards()
+  const columns = loadColumns()
+  const tasks = loadTasks().filter((t) => t.assigneeId === assigneeId)
+  return { tasks, columns, boards }
+}
+
 export const kanbanService = {
   getBoardForProject,
+  getMyTasksData,
   createTask,
   updateTask,
   deleteTask,

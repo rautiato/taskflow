@@ -1,55 +1,55 @@
 import type { TaskItem, TaskPriority } from '../../models/task'
 
 export const ALL = 'all' as const
-export const UNASSIGNED = 'unassigned' as const
 export const UNKNOWN_CREATOR = 'unknown-creator' as const
 
-export interface TaskFilters {
+export interface MyTasksFilters {
   search: string
-  columnId: string | typeof ALL
+  projectId: string | typeof ALL
+  statusName: string | typeof ALL
   priority: TaskPriority | typeof ALL
-  assigneeId: string | typeof ALL | typeof UNASSIGNED
   createdById: string | typeof ALL | typeof UNKNOWN_CREATOR
 }
 
-export const DEFAULT_TASK_FILTERS: TaskFilters = {
+export const DEFAULT_MY_TASKS_FILTERS: MyTasksFilters = {
   search: '',
-  columnId: ALL,
+  projectId: ALL,
+  statusName: ALL,
   priority: ALL,
-  assigneeId: ALL,
   createdById: ALL,
 }
 
-export function hasActiveFilters(filters: TaskFilters): boolean {
+export function hasActiveMyTasksFilters(filters: MyTasksFilters): boolean {
   return (
     filters.search.trim() !== '' ||
-    filters.columnId !== ALL ||
+    filters.projectId !== ALL ||
+    filters.statusName !== ALL ||
     filters.priority !== ALL ||
-    filters.assigneeId !== ALL ||
     filters.createdById !== ALL
   )
 }
 
-export function filterTasks(
+export function filterMyTasks(
   tasks: TaskItem[],
-  filters: TaskFilters,
+  filters: MyTasksFilters,
+  projectIdByColumnId: Record<string, string>,
+  statusNameByColumnId: Record<string, string>,
 ): TaskItem[] {
   const search = filters.search.trim().toLowerCase()
   return tasks.filter((task) => {
-    if (filters.columnId !== ALL && task.columnId !== filters.columnId) {
-      return false
-    }
-    if (filters.priority !== ALL && task.priority !== filters.priority) {
-      return false
-    }
-    if (filters.assigneeId === UNASSIGNED && task.assigneeId !== null) {
+    if (
+      filters.projectId !== ALL &&
+      projectIdByColumnId[task.columnId] !== filters.projectId
+    ) {
       return false
     }
     if (
-      filters.assigneeId !== ALL &&
-      filters.assigneeId !== UNASSIGNED &&
-      task.assigneeId !== filters.assigneeId
+      filters.statusName !== ALL &&
+      statusNameByColumnId[task.columnId] !== filters.statusName
     ) {
+      return false
+    }
+    if (filters.priority !== ALL && task.priority !== filters.priority) {
       return false
     }
     if (filters.createdById === UNKNOWN_CREATOR && task.createdById) {

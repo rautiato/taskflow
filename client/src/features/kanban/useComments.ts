@@ -2,6 +2,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { commentService } from './commentService'
 
 export type CommentInput = Parameters<typeof commentService.createComment>[0]
+export type CommentUpdateInput = Parameters<
+  typeof commentService.updateComment
+>[0]
 
 function commentsQueryKey(taskId: string) {
   return ['comments', taskId] as const
@@ -23,10 +26,25 @@ export function useComments(taskId: string) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey }),
   })
 
+  const updateCommentMutation = useMutation({
+    mutationFn: async (input: CommentUpdateInput) =>
+      commentService.updateComment(input),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+  })
+
+  const deleteCommentMutation = useMutation({
+    mutationFn: async (id: string) => commentService.deleteComment(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+  })
+
   return {
     isLoading,
     comments: data ?? [],
     createComment: createCommentMutation.mutate,
     isPosting: createCommentMutation.isPending,
+    updateComment: updateCommentMutation.mutate,
+    isUpdating: updateCommentMutation.isPending,
+    deleteComment: deleteCommentMutation.mutate,
+    isDeleting: deleteCommentMutation.isPending,
   }
 }

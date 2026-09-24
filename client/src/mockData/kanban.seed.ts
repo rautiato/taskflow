@@ -1,7 +1,7 @@
 import type { KanbanBoard, KanbanColumn } from '../models/kanbanBoard'
 import type { TaskItem } from '../models/task'
 
-export const KANBAN_SEED_VERSION = '2'
+export const KANBAN_SEED_VERSION = '4'
 
 export const SEEDED_BOARDS: KanbanBoard[] = [
   {
@@ -64,6 +64,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     priority: 'Medium',
     dueDate: '2026-09-23T00:00:00.000Z',
     assigneeId: 'seed-2',
+    createdById: 'seed-3',
     isFavorite: false,
     order: 0,
     createdAt: '2026-09-10T00:00:00.000Z',
@@ -77,6 +78,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     priority: 'High',
     dueDate: '2026-09-10T00:00:00.000Z',
     assigneeId: 'seed-2',
+    createdById: 'seed-2',
     isFavorite: true,
     order: 0,
     createdAt: '2026-09-05T00:00:00.000Z',
@@ -90,6 +92,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     priority: 'Medium',
     dueDate: null,
     assigneeId: 'seed-2',
+    createdById: 'seed-1',
     isFavorite: false,
     order: 0,
     createdAt: '2026-09-01T00:00:00.000Z',
@@ -104,6 +107,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     priority: 'Medium',
     dueDate: '2026-10-05T00:00:00.000Z',
     assigneeId: 'seed-1',
+    createdById: 'seed-1',
     isFavorite: false,
     order: 1,
     createdAt: '2026-09-08T00:00:00.000Z',
@@ -117,6 +121,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     priority: 'High',
     dueDate: '2026-09-24T00:00:00.000Z',
     assigneeId: 'seed-1',
+    createdById: 'seed-3',
     isFavorite: true,
     order: 1,
     createdAt: '2026-09-15T00:00:00.000Z',
@@ -130,6 +135,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     priority: 'Low',
     dueDate: null,
     assigneeId: 'seed-1',
+    createdById: 'seed-1',
     isFavorite: false,
     order: 1,
     createdAt: '2026-08-28T00:00:00.000Z',
@@ -144,6 +150,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     priority: 'High',
     dueDate: '2026-10-10T00:00:00.000Z',
     assigneeId: 'seed-3',
+    createdById: 'seed-3',
     isFavorite: false,
     order: 2,
     createdAt: '2026-09-12T00:00:00.000Z',
@@ -157,6 +164,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     priority: 'Low',
     dueDate: '2026-10-08T00:00:00.000Z',
     assigneeId: 'seed-3',
+    createdById: 'seed-3',
     isFavorite: false,
     order: 3,
     createdAt: '2026-09-12T00:00:00.000Z',
@@ -170,6 +178,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     priority: 'Medium',
     dueDate: '2026-10-15T00:00:00.000Z',
     assigneeId: 'seed-3',
+    createdById: 'seed-2',
     isFavorite: false,
     order: 2,
     createdAt: '2026-09-14T00:00:00.000Z',
@@ -183,6 +192,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     priority: 'Low',
     dueDate: null,
     assigneeId: 'seed-3',
+    createdById: 'seed-3',
     isFavorite: false,
     order: 2,
     createdAt: '2026-08-20T00:00:00.000Z',
@@ -197,6 +207,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     priority: 'Medium',
     dueDate: '2026-10-12T00:00:00.000Z',
     assigneeId: null,
+    createdById: 'seed-3',
     isFavorite: false,
     order: 4,
     createdAt: '2026-09-16T00:00:00.000Z',
@@ -210,6 +221,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     priority: 'Low',
     dueDate: null,
     assigneeId: null,
+    createdById: 'seed-1',
     isFavorite: false,
     order: 3,
     createdAt: '2026-09-17T00:00:00.000Z',
