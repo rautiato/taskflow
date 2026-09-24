@@ -14,7 +14,7 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import { authService } from '../../auth/authService'
 
 import type { UserDto } from '../../../models/user'
-import { UserAvatar } from './UserAvatar'
+import { UserAvatar } from '../../../components/UserAvatar'
 
 type AccountMenuItem = {
   id: 'profile' | 'settings' | 'logout'

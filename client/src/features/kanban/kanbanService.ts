@@ -30,6 +30,14 @@ function saveTasks(tasks: TaskItem[]): void {
   localStorage.setItem(TASKS_KEY, JSON.stringify(tasks))
 }
 
+function saveColumns(columns: KanbanColumn[]): void {
+  localStorage.setItem(COLUMNS_KEY, JSON.stringify(columns))
+}
+
+function saveBoards(boards: KanbanBoard[]): void {
+  localStorage.setItem(BOARDS_KEY, JSON.stringify(boards))
+}
+
 function defaultBoardFor(projectId: string): {
   board: KanbanBoard
   columns: KanbanColumn[]
@@ -42,6 +50,8 @@ function defaultBoardFor(projectId: string): {
       boardId,
       name,
       order: index,
+      isVisible: true,
+      isDone: name === 'Done',
     })),
   }
 }
@@ -63,15 +73,17 @@ function getBoardForProject(projectId: string): {
   tasks: TaskItem[]
 } {
   const boards = loadBoards()
-  const allColumns = loadColumns()
-  const allTasks = loadTasks()
+  let board = boards.find((b) => b.projectId === projectId)
 
-  const board = boards.find((b) => b.projectId === projectId)
   if (!board) {
-    const fallback = defaultBoardFor(projectId)
-    return { ...fallback, tasks: [] }
+    const created = defaultBoardFor(projectId)
+    board = created.board
+    saveBoards([...boards, board])
+    saveColumns([...loadColumns(), ...created.columns])
   }
 
+  const allColumns = loadColumns()
+  const allTasks = loadTasks()
   const columns = allColumns
     .filter((c) => c.boardId === board.id)
     .sort((a, b) => a.order - b.order)
@@ -115,9 +127,78 @@ function deleteTask(taskId: string): void {
   saveTasks(allTasks.filter((t) => t.id !== taskId))
 }
 
+function reorderColumns(
+  boardId: string,
+  orderedColumnIds: string[],
+): KanbanColumn[] {
+  const allColumns = loadColumns()
+  const indexById = new Map(orderedColumnIds.map((id, index) => [id, index]))
+  const nextColumns = allColumns.map((column) =>
+    column.boardId === boardId && indexById.has(column.id)
+      ? { ...column, order: indexById.get(column.id)! }
+      : column,
+  )
+  saveColumns(nextColumns)
+  return nextColumns
+    .filter((c) => c.boardId === boardId)
+    .sort((a, b) => a.order - b.order)
+}
+
+function hideColumn(columnId: string): void {
+  const allColumns = loadColumns()
+  const allTasks = loadTasks()
+  const hasTasks = allTasks.some((t) => t.columnId === columnId)
+  if (hasTasks) {
+    throw new Error('Cannot hide a column that still has tasks.')
+  }
+  saveColumns(
+    allColumns.map((c) => (c.id === columnId ? { ...c, isVisible: false } : c)),
+  )
+}
+
+function showColumn(columnId: string): void {
+  const allColumns = loadColumns()
+  saveColumns(
+    allColumns.map((c) => (c.id === columnId ? { ...c, isVisible: true } : c)),
+  )
+}
+
+function deleteColumn(columnId: string): void {
+  const allColumns = loadColumns()
+  const allTasks = loadTasks()
+  const hasTasks = allTasks.some((t) => t.columnId === columnId)
+  if (hasTasks) {
+    throw new Error('Cannot delete a column that still has tasks.')
+  }
+  saveColumns(allColumns.filter((c) => c.id !== columnId))
+}
+
+function createColumn(boardId: string, name: string): KanbanColumn {
+  const allColumns = loadColumns()
+  const boardColumns = allColumns.filter((c) => c.boardId === boardId)
+  const order = boardColumns.length
+    ? Math.max(...boardColumns.map((c) => c.order)) + 1
+    : 0
+  const column: KanbanColumn = {
+    id: crypto.randomUUID(),
+    boardId,
+    name,
+    order,
+    isVisible: true,
+    isDone: false,
+  }
+  saveColumns([...allColumns, column])
+  return column
+}
+
 export const kanbanService = {
   getBoardForProject,
   createTask,
   updateTask,
   deleteTask,
+  reorderColumns,
+  hideColumn,
+  showColumn,
+  deleteColumn,
+  createColumn,
 }
