@@ -5,6 +5,7 @@ import { sortTasks } from './sortTasks'
 export interface AssigneeLaneData {
   assigneeId: string | null
   assigneeName: string
+  assigneeAvatarUrl: string | null
   tasksByColumn: Record<string, TaskItem[]>
   taskCount: number
 }
@@ -23,8 +24,9 @@ export function groupTasksByAssignee(
 
   const lanes: AssigneeLaneData[] = []
   for (const [assigneeId, laneTasks] of byAssignee) {
-    const assigneeName =
-      users.find((u) => u.id === assigneeId)?.name ?? 'Unassigned'
+    const assignee = users.find((u) => u.id === assigneeId)
+    const assigneeName = assignee?.name ?? 'Unassigned'
+    const assigneeAvatarUrl = assignee?.avatarUrl ?? null
     const tasksByColumn: Record<string, TaskItem[]> = {}
     for (const task of laneTasks) {
       tasksByColumn[task.columnId] = sortTasks([
@@ -35,6 +37,7 @@ export function groupTasksByAssignee(
     lanes.push({
       assigneeId,
       assigneeName,
+      assigneeAvatarUrl,
       tasksByColumn,
       taskCount: laneTasks.length,
     })

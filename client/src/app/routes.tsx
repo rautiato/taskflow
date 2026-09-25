@@ -7,6 +7,8 @@ import { DashboardPage } from '../pages/DashboardPage'
 import { ProjectsListPage } from '../pages/ProjectsListPage'
 import { KanbanBoardPage } from '../pages/KanbanBoardPage'
 import { MyTasksPage } from '../pages/MyTasksPage'
+import { ProfilePage } from '../pages/ProfilePage'
+import { SettingsPage } from '../pages/SettingsPage'
 import { ProtectedRoute } from './ProtectedRoute'
 
 export function AppRoutes() {
@@ -24,6 +26,8 @@ export function AppRoutes() {
           element={<KanbanBoardPage />}
         />
         <Route path="/my-tasks" element={<MyTasksPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Route>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/login" replace />} />

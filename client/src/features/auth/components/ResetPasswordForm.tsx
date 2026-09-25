@@ -8,10 +8,11 @@ import { BackToSignInLink } from './BackToSignInLink'
 import { PasswordField } from './PasswordField'
 import { PhaseOneNote } from './PhaseOneNote'
 import { Logo } from '../../../components/Logo'
+import { passwordSchema } from '../validation'
 
 const resetPasswordSchema = z
   .object({
-    newPassword: z.string().min(8, 'Password must be at least 8 characters.'),
+    newPassword: passwordSchema,
     confirmPassword: z.string().min(1, 'Confirm your new password.'),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
