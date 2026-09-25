@@ -10,7 +10,12 @@ import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Alert from '@mui/material/Alert'
 import { Link as RouterLink } from 'react-router-dom'
-import { emailSchema, nameSchema, passwordSchema } from '../validation'
+import {
+  emailSchema,
+  nameSchema,
+  passwordSchema,
+  PASSWORD_HINT,
+} from '../validation'
 import { AuthHeading } from './AuthHeading'
 import { PasswordField } from './PasswordField'
 import { PhaseOneNote } from './PhaseOneNote'
@@ -96,7 +101,11 @@ export function SignUpForm() {
         )}
       />
 
-      <PasswordField<SignUpFormValues> name="password" control={control} />
+      <PasswordField<SignUpFormValues>
+        name="password"
+        control={control}
+        hint={PASSWORD_HINT}
+      />
       <PasswordField<SignUpFormValues>
         name="confirmPassword"
         control={control}

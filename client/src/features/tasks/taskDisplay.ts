@@ -1,4 +1,5 @@
 import type { TaskItem, TaskPriority } from '../../models/task'
+import type { KanbanColumn } from '../../models/kanbanBoard'
 
 export const PRIORITY_STYLES: Record<
   TaskPriority,
@@ -21,6 +22,21 @@ export function formatShortDate(iso: string) {
   })
 }
 
+// Whole days from today until the task's due date: negative = overdue,
+// 0 = due today. Shared by the due chips and the dashboard's stats so both
+// agree on what "overdue" means.
+export function daysUntilDue(dueDate: string, now = new Date()): number {
+  return Math.ceil(
+    (new Date(dueDate).getTime() - startOfDay(now).getTime()) / 86_400_000,
+  )
+}
+
+export const DUE_SOON_DAYS = 7
+
+export function getDoneColumnIds(columns: KanbanColumn[]): Set<string> {
+  return new Set(columns.filter((c) => c.isDone).map((c) => c.id))
+}
+
 export function getDueChip(task: TaskItem, isDone: boolean) {
   if (isDone) {
     return {
@@ -29,10 +45,7 @@ export function getDueChip(task: TaskItem, isDone: boolean) {
     }
   }
   if (!task.dueDate) return null
-  const diffDays = Math.ceil(
-    (new Date(task.dueDate).getTime() - startOfDay(new Date()).getTime()) /
-      86_400_000,
-  )
+  const diffDays = daysUntilDue(task.dueDate)
   if (diffDays < 0) {
     return {
       label: `Overdue · ${formatShortDate(task.dueDate)}`,

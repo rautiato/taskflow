@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
-import { passwordSchema } from '../validation'
+import { passwordSchema, PASSWORD_HINT } from '../validation'
 import { PasswordField } from './PasswordField'
 import { authService } from '../authService'
 
@@ -72,6 +72,7 @@ export function ChangePasswordForm({ userId }: { userId: string }) {
         name="newPassword"
         control={control}
         label="New password"
+        hint={PASSWORD_HINT}
       />
       <PasswordField<ChangePasswordFormValues>
         name="confirmPassword"

@@ -9,6 +9,7 @@ import { KanbanBoardPage } from '../pages/KanbanBoardPage'
 import { MyTasksPage } from '../pages/MyTasksPage'
 import { ProfilePage } from '../pages/ProfilePage'
 import { SettingsPage } from '../pages/SettingsPage'
+import { TaskRedirectPage } from '../pages/TaskRedirectPage'
 import { ProtectedRoute } from './ProtectedRoute'
 
 export function AppRoutes() {
@@ -26,6 +27,7 @@ export function AppRoutes() {
           element={<KanbanBoardPage />}
         />
         <Route path="/my-tasks" element={<MyTasksPage />} />
+        <Route path="/tasks/:taskId" element={<TaskRedirectPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/settings" element={<SettingsPage />} />
       </Route>

@@ -1,12 +1,11 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
-import StarIcon from '@mui/icons-material/Star'
-import StarBorderIcon from '@mui/icons-material/StarBorder'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { PRIORITY_STYLES, getDueChip } from '../../tasks/taskDisplay'
 import type { TaskItem } from '../../../models/task'
+import { FavoriteToggle } from './FavoriteToggle'
 
 export function TaskCard({
   task,
@@ -14,12 +13,14 @@ export function TaskCard({
   onClick,
   onEdit,
   onDelete,
+  onToggleFavorite,
 }: {
   task: TaskItem
   isDoneColumn: boolean
   onClick?: () => void
   onEdit?: () => void
   onDelete?: () => void
+  onToggleFavorite: () => void
 }) {
   const dueChip = getDueChip(task, isDoneColumn)
   const priorityStyle = PRIORITY_STYLES[task.priority]
@@ -49,15 +50,10 @@ export function TaskCard({
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.875 }}>
-        {task.isFavorite ? (
-          <StarIcon
-            sx={{ fontSize: 16, color: 'warning.main', flexShrink: 0 }}
-          />
-        ) : (
-          <StarBorderIcon
-            sx={{ fontSize: 16, color: '#C6CACF', flexShrink: 0 }}
-          />
-        )}
+        <FavoriteToggle
+          isFavorite={task.isFavorite}
+          onToggle={onToggleFavorite}
+        />
         <Typography
           sx={{
             fontSize: 13,

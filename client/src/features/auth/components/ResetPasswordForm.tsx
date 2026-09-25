@@ -8,7 +8,7 @@ import { BackToSignInLink } from './BackToSignInLink'
 import { PasswordField } from './PasswordField'
 import { PhaseOneNote } from './PhaseOneNote'
 import { Logo } from '../../../components/Logo'
-import { passwordSchema } from '../validation'
+import { passwordSchema, PASSWORD_HINT } from '../validation'
 
 const resetPasswordSchema = z
   .object({
@@ -54,6 +54,7 @@ export function ResetPasswordForm() {
         name="newPassword"
         control={control}
         label="New password"
+        hint={PASSWORD_HINT}
       />
       <PasswordField<ResetPasswordFormValues>
         name="confirmPassword"

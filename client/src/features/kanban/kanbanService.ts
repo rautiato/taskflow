@@ -7,6 +7,8 @@ import {
   KANBAN_SEED_VERSION,
 } from '../../mockData/kanban.seed'
 import { loadSeededData } from '../../services/localStorageSeed'
+import type { ProjectStats } from '../../models/project'
+import { matchesDueFilter } from '../tasks/filterMyTasks'
 
 const BOARDS_KEY = 'taskflow.boards'
 const COLUMNS_KEY = 'taskflow.columns'
@@ -211,8 +213,54 @@ function getMyTasksData(assigneeId: string): {
   return { tasks, columns, boards }
 }
 
+function getProjectStats(
+  projectId: string,
+): ProjectStats & { lastTaskUpdatedAt: string | null } {
+  const board = loadBoards().find((b) => b.projectId === projectId)
+  if (!board) {
+    return {
+      taskCount: 0,
+      progress: 0,
+      completedCount: 0,
+      overdueCount: 0,
+      unassignedCount: 0,
+      lastTaskUpdatedAt: null,
+    }
+  }
+  const columns = loadColumns().filter((c) => c.boardId === board.id)
+  const columnIds = new Set(columns.map((c) => c.id))
+  const doneIds = new Set(columns.filter((c) => c.isDone).map((c) => c.id))
+  const tasks = loadTasks().filter((t) => columnIds.has(t.columnId))
+  const done = tasks.filter((t) => doneIds.has(t.columnId)).length
+  const openTasks = tasks.filter((t) => !doneIds.has(t.columnId))
+  const lastTaskUpdatedAt = tasks.reduce<string | null>(
+    (latest, t) => (!latest || t.updatedAt > latest ? t.updatedAt : latest),
+    null,
+  )
+  return {
+    taskCount: tasks.length,
+    progress: tasks.length ? Math.round((done / tasks.length) * 100) : 0,
+    completedCount: done,
+    overdueCount: openTasks.filter((t) =>
+      matchesDueFilter(t.dueDate, 'overdue'),
+    ).length,
+    unassignedCount: openTasks.filter((t) => !t.assigneeId).length,
+    lastTaskUpdatedAt,
+  }
+}
+
+// Read-only lookup backing the /tasks/:taskId short link.
+function getProjectIdForTask(taskId: string): string | null {
+  const task = loadTasks().find((t) => t.id === taskId)
+  const column = task && loadColumns().find((c) => c.id === task.columnId)
+  const board = column && loadBoards().find((b) => b.id === column.boardId)
+  return board?.projectId ?? null
+}
+
 export const kanbanService = {
   getBoardForProject,
+  getProjectStats,
+  getProjectIdForTask,
   getMyTasksData,
   createTask,
   updateTask,

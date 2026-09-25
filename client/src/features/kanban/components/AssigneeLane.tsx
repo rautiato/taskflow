@@ -80,12 +80,22 @@ export function AssigneeLane({
   onTaskClick,
   onTaskEdit,
   onTaskDelete,
+  onToggleFavorite,
+  dragSourceCellId,
 }: {
   lane: AssigneeLaneData
   columns: KanbanColumn[]
   onTaskClick: (task: AssigneeLaneData['tasksByColumn'][string][number]) => void
   onTaskEdit: (task: AssigneeLaneData['tasksByColumn'][string][number]) => void
-  onTaskDelete: (task: AssigneeLaneData['tasksByColumn'][string][number]) => void
+  onTaskDelete: (
+    task: AssigneeLaneData['tasksByColumn'][string][number],
+  ) => void
+  onToggleFavorite: (
+    task: AssigneeLaneData['tasksByColumn'][string][number],
+  ) => void
+  // The cell a task is being dragged out of: it stops accepting drops, since
+  // order within a cell is computed (pinned → priority → title), not manual.
+  dragSourceCellId: string | null
 }) {
   const [collapsed, setCollapsed] = useState(false)
 
@@ -131,6 +141,9 @@ export function AssigneeLane({
               <Droppable
                 droppableId={taskCellId(lane.assigneeId, column.id)}
                 type={TASK_DND_TYPE}
+                isDropDisabled={
+                  taskCellId(lane.assigneeId, column.id) === dragSourceCellId
+                }
               >
                 {(dropProvided, dropSnapshot) => (
                   <Box
@@ -168,6 +181,7 @@ export function AssigneeLane({
                                 onClick={() => onTaskClick(task)}
                                 onEdit={() => onTaskEdit(task)}
                                 onDelete={() => onTaskDelete(task)}
+                                onToggleFavorite={() => onToggleFavorite(task)}
                               />
                             </Box>
                           )}

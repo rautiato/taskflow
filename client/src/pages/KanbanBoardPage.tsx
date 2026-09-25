@@ -1,6 +1,10 @@
 import { useState } from 'react'
-import { Navigate, useParams } from 'react-router-dom'
-import { DragDropContext, type DropResult } from '@hello-pangea/dnd'
+import { Navigate, useParams, useSearchParams } from 'react-router-dom'
+import {
+  DragDropContext,
+  type DragStart,
+  type DropResult,
+} from '@hello-pangea/dnd'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
@@ -13,7 +17,7 @@ import { AppLayout } from '../features/layout/components/AppLayout'
 import { authService } from '../features/auth/authService'
 import { useUsers } from '../features/auth/useUsers'
 import { useProjects } from '../features/projects/useProjects'
-import { useKanbanBoard } from '../features/kanban/useKanbanBoard'
+import { taskToInput, useKanbanBoard } from '../features/kanban/useKanbanBoard'
 import { groupTasksByAssignee } from '../features/tasks/groupTasksByAssignee'
 import { sortTasks } from '../features/tasks/sortTasks'
 import {
@@ -48,8 +52,12 @@ export function KanbanBoardPage() {
   const [view, setView] = useState<BoardView>('kanban')
   const [filters, setFilters] = useState<TaskFilters>(DEFAULT_TASK_FILTERS)
   const [formState, setFormState] = useState<FormState | null>(null)
-  const [detailTask, setDetailTask] = useState<TaskItem | null>(null)
+  // The open task lives in the URL (?task=<id>) so a task can be linked to
+  // directly (e.g. from the dashboard's "Up next") and Back closes the drawer.
+  const [searchParams, setSearchParams] = useSearchParams()
+  const detailTaskId = searchParams.get('task')
   const [deleteTarget, setDeleteTarget] = useState<TaskItem | null>(null)
+  const [dragSourceCellId, setDragSourceCellId] = useState<string | null>(null)
 
   const { projects, isLoading: projectsLoading } = useProjects()
   const users = useUsers()
@@ -60,6 +68,7 @@ export function KanbanBoardPage() {
     isLoading: boardLoading,
     createTask,
     updateTask,
+    toggleFavorite,
     deleteTask,
     reorderColumns,
     hideColumn,
@@ -99,15 +108,24 @@ export function KanbanBoardPage() {
     {},
   )
   const listViewTasks = sortTasks(filterTasks(tasks, filters))
+  const detailTask = tasks.find((t) => t.id === detailTaskId) ?? null
+
+  function openTask(task: TaskItem) {
+    setSearchParams({ task: task.id })
+  }
+
+  function closeTask() {
+    setSearchParams({}, { replace: true })
+  }
 
   function handleEditTask(task: TaskItem) {
     setFormState({ task, defaultColumnId: task.columnId })
-    setDetailTask(null)
+    closeTask()
   }
 
   function handleDeleteTask(task: TaskItem) {
     setDeleteTarget(task)
-    setDetailTask(null)
+    closeTask()
   }
 
   function handleConfirmDelete() {
@@ -116,7 +134,14 @@ export function KanbanBoardPage() {
     setDeleteTarget(null)
   }
 
+  function handleDragStart(start: DragStart) {
+    if (start.type === TASK_DND_TYPE) {
+      setDragSourceCellId(start.source.droppableId)
+    }
+  }
+
   function handleDragEnd(result: DropResult) {
+    setDragSourceCellId(null)
     if (!result.destination) return
 
     if (result.type === COLUMN_DND_TYPE) {
@@ -138,15 +163,7 @@ export function KanbanBoardPage() {
       const { assigneeId, columnId } = parseTaskCellId(
         result.destination.droppableId,
       )
-      updateTask(task.id, {
-        title: task.title,
-        description: task.description,
-        priority: task.priority,
-        dueDate: task.dueDate,
-        isFavorite: task.isFavorite,
-        columnId,
-        assigneeId,
-      })
+      updateTask(task.id, { ...taskToInput(task), columnId, assigneeId })
     }
   }
 
@@ -210,7 +227,10 @@ export function KanbanBoardPage() {
         </Box>
 
         {view === 'kanban' ? (
-          <DragDropContext onDragEnd={handleDragEnd}>
+          <DragDropContext
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
             <Box sx={{ overflowX: 'auto', pb: 1 }}>
               <Box
                 sx={{
@@ -248,9 +268,11 @@ export function KanbanBoardPage() {
                       key={lane.assigneeId ?? 'unassigned'}
                       lane={lane}
                       columns={visibleColumns}
-                      onTaskClick={setDetailTask}
+                      onTaskClick={openTask}
                       onTaskEdit={handleEditTask}
                       onTaskDelete={handleDeleteTask}
+                      onToggleFavorite={toggleFavorite}
+                      dragSourceCellId={dragSourceCellId}
                     />
                   ))
                 )}
@@ -289,9 +311,10 @@ export function KanbanBoardPage() {
               tasks={listViewTasks}
               columns={columns}
               users={users}
-              onTaskClick={setDetailTask}
+              onTaskClick={openTask}
               onTaskEdit={handleEditTask}
               onTaskDelete={handleDeleteTask}
+              onToggleFavorite={toggleFavorite}
             />
           </Box>
         )}
@@ -326,9 +349,10 @@ export function KanbanBoardPage() {
         creator={users.find((u) => u.id === detailTask?.createdById)}
         users={users}
         currentUser={user}
-        onClose={() => setDetailTask(null)}
+        onClose={closeTask}
         onEdit={() => detailTask && handleEditTask(detailTask)}
         onDelete={() => detailTask && handleDeleteTask(detailTask)}
+        onToggleFavorite={() => detailTask && toggleFavorite(detailTask)}
       />
 
       {deleteTarget && (

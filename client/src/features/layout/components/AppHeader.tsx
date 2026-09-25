@@ -32,6 +32,8 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: 1.25,
+    color: 'inherit',
+    textDecoration: 'none',
   },
   brandText: {
     fontSize: 19,
@@ -75,7 +77,12 @@ export function AppHeader({ user }: { user: UserDto }) {
   return (
     <Box sx={styles.root}>
       <Box sx={styles.brandGroup}>
-        <Box sx={styles.brandRow}>
+        <Box
+          component={RouterLink}
+          to="/dashboard"
+          aria-label="TaskFlow home"
+          sx={styles.brandRow}
+        >
           <Logo />
           <Typography sx={styles.brandText}>TaskFlow</Typography>
         </Box>
