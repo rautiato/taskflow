@@ -151,7 +151,10 @@ export function myTasksHref(
   filters: Partial<MyTasksFilters>,
   sort: SortState = null,
 ): string {
-  const params = filtersToSearchParams({ ...EMPTY_MY_TASKS_FILTERS, ...filters })
+  const params = filtersToSearchParams({
+    ...EMPTY_MY_TASKS_FILTERS,
+    ...filters,
+  })
   writeSortToSearchParams(params, sort)
   const query = params.toString()
   return query ? `/my-tasks?${query}` : '/my-tasks'

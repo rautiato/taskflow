@@ -21,9 +21,7 @@ export function AvatarCropDialog({
 }) {
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(
-    null,
-  )
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
   const [isSaving, setIsSaving] = useState(false)
 
   const handleCropComplete = useCallback((_: Area, areaPixels: Area) => {

@@ -44,8 +44,8 @@ export function ForgotPasswordForm() {
 
       {submittedEmail ? (
         <Alert severity="info">
-          This is a demo app, so no email was actually sent to{' '}
-          {submittedEmail}. In a real deployment:
+          This is a demo app, so no email was actually sent to {submittedEmail}.
+          In a real deployment:
           <Box component="ol" sx={{ m: 0, pl: 2.5 }}>
             <li>Verify the address</li>
             <li>Email a one-time reset link</li>
@@ -81,8 +81,8 @@ export function ForgotPasswordForm() {
           </Button>
 
           <PhaseOneNote>
-            Phase 1 note: this flow is UI-only against the mocked local
-            session (see Login) — no email is actually sent until Phase 3.
+            Phase 1 note: this flow is UI-only against the mocked local session
+            (see Login) — no email is actually sent until Phase 3.
           </PhaseOneNote>
         </Stack>
       )}
