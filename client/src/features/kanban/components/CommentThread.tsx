@@ -126,7 +126,12 @@ export function CommentThread({
               '&:hover .comment-actions': { opacity: 1 },
             }}
           >
-            <UserAvatar name={author?.name ?? null} size="xs" />
+            <UserAvatar
+              id={author?.id}
+              name={author?.name ?? null}
+              avatarUrl={author?.avatarUrl}
+              size="xs"
+            />
             <Box
               sx={{
                 display: 'flex',

@@ -230,13 +230,23 @@ export function TaskListView({
                 {column?.name ?? 'Unknown'}
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <UserAvatar name={assignee?.name ?? null} size="xs" />
+                <UserAvatar
+                  id={assignee?.id}
+                  name={assignee?.name ?? null}
+                  avatarUrl={assignee?.avatarUrl}
+                  size="xs"
+                />
                 <Typography sx={{ fontSize: 13 }}>
                   {assignee?.name ?? 'Unassigned'}
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <UserAvatar name={creator?.name ?? null} size="xs" />
+                <UserAvatar
+                  id={creator?.id}
+                  name={creator?.name ?? null}
+                  avatarUrl={creator?.avatarUrl}
+                  size="xs"
+                />
                 <Typography sx={{ fontSize: 13 }}>
                   {creator?.name ?? 'Unknown'}
                 </Typography>

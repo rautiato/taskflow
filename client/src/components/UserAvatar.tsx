@@ -4,6 +4,7 @@ const SIZES = {
   xs: { box: 24, font: 10 },
   sm: { box: 36, font: 13 },
   md: { box: 38, font: 14 },
+  lg: { box: 72, font: 24 },
 } as const
 
 const PALETTE = [
@@ -26,31 +27,40 @@ function getInitials(name: string) {
     .toUpperCase()
 }
 
-function colorForName(name: string): string {
+// Hashes a stable identity key (user id) rather than the display name, so a
+// user's color doesn't change if they rename themselves — matching how
+// Slack/Trello key their avatar colors off member id, not display name.
+function colorForKey(key: string): string {
   let hash = 0
-  for (let i = 0; i < name.length; i++) {
-    hash = (hash * 31 + name.charCodeAt(i)) >>> 0
+  for (let i = 0; i < key.length; i++) {
+    hash = (hash * 31 + key.charCodeAt(i)) >>> 0
   }
   return PALETTE[hash % PALETTE.length]
 }
 
 export function UserAvatar({
+  id = null,
   name,
+  avatarUrl = null,
   size = 'md',
 }: {
+  id?: string | null
   name: string | null
-  size?: 'xs' | 'sm' | 'md'
+  avatarUrl?: string | null
+  size?: 'xs' | 'sm' | 'md' | 'lg'
 }) {
   const { box, font } = SIZES[size]
+  const colorKey = id ?? name
 
   return (
     <Avatar
+      src={avatarUrl ?? undefined}
       sx={{
         width: box,
         height: box,
         fontSize: font,
         fontWeight: 700,
-        bgcolor: name ? colorForName(name) : UNASSIGNED_COLOR,
+        bgcolor: colorKey ? colorForKey(colorKey) : UNASSIGNED_COLOR,
         color: '#FFFFFF',
       }}
     >

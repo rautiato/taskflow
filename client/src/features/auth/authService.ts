@@ -54,6 +54,58 @@ function signUp(name: string, email: string, password: string): UserDto {
   return toUserDto(newUser)
 }
 
+function updateProfile(
+  userId: string,
+  updates: { name: string; email: string },
+): UserDto {
+  const users = loadUsers()
+  const user = users.find((candidate) => candidate.id === userId)
+  if (!user) {
+    throw new Error('User not found.')
+  }
+  const emailTaken = users.some(
+    (candidate) =>
+      candidate.id !== userId &&
+      candidate.email.toLowerCase() === updates.email.toLowerCase(),
+  )
+  if (emailTaken) {
+    throw new Error('An account with this email already exists.')
+  }
+
+  user.name = updates.name
+  user.email = updates.email
+  saveUsers(users)
+  return toUserDto(user)
+}
+
+function updateAvatar(userId: string, avatarUrl: string | null): UserDto {
+  const users = loadUsers()
+  const user = users.find((candidate) => candidate.id === userId)
+  if (!user) {
+    throw new Error('User not found.')
+  }
+  user.avatarUrl = avatarUrl
+  saveUsers(users)
+  return toUserDto(user)
+}
+
+function changePassword(
+  userId: string,
+  currentPassword: string,
+  newPassword: string,
+): void {
+  const users = loadUsers()
+  const user = users.find((candidate) => candidate.id === userId)
+  if (!user) {
+    throw new Error('User not found.')
+  }
+  if (user.password !== currentPassword) {
+    throw new Error('Current password is incorrect.')
+  }
+  user.password = newPassword
+  saveUsers(users)
+}
+
 function signOut(): void {
   localStorage.removeItem(SESSION_KEY)
 }
@@ -77,4 +129,7 @@ export const authService = {
   signOut,
   getSession,
   listUsers,
+  updateProfile,
+  updateAvatar,
+  changePassword,
 }

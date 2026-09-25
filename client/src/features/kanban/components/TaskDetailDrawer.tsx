@@ -161,13 +161,23 @@ export function TaskDetailDrawer({
               </Box>
             </MetaRow>
             <MetaRow label="Assignee">
-              <UserAvatar name={assignee?.name ?? null} size="xs" />
+              <UserAvatar
+                id={assignee?.id}
+                name={assignee?.name ?? null}
+                avatarUrl={assignee?.avatarUrl}
+                size="xs"
+              />
               <Typography sx={{ fontSize: 13, fontWeight: 600 }}>
                 {assignee?.name ?? 'Unassigned'}
               </Typography>
             </MetaRow>
             <MetaRow label="Created By">
-              <UserAvatar name={creator?.name ?? null} size="xs" />
+              <UserAvatar
+                id={creator?.id}
+                name={creator?.name ?? null}
+                avatarUrl={creator?.avatarUrl}
+                size="xs"
+              />
               <Typography sx={{ fontSize: 13, fontWeight: 600 }}>
                 {creator?.name ?? 'Unknown'}
               </Typography>

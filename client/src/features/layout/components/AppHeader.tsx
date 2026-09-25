@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import SearchIcon from '@mui/icons-material/Search'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
 import type { SxProps, Theme } from '@mui/material/styles'
 import { Logo } from '../../../components/Logo'
@@ -68,24 +67,6 @@ const styles = {
     alignItems: 'center',
     gap: 2.25,
   },
-  searchBox: {
-    border: 1,
-    borderColor: 'divider',
-    borderRadius: 2,
-    px: 1.5,
-    py: 0.875,
-    width: 220,
-    display: 'flex',
-    alignItems: 'center',
-    gap: 1,
-    color: 'text.secondary',
-  },
-  searchIcon: {
-    fontSize: 15,
-  },
-  searchLabel: {
-    fontSize: 13,
-  },
 } satisfies Record<string, SxProps<Theme>>
 
 export function AppHeader({ user }: { user: UserDto }) {
@@ -101,7 +82,7 @@ export function AppHeader({ user }: { user: UserDto }) {
         <Box sx={styles.navRow}>
           {NAV_ITEMS.map((item) => {
             const active = item.path === location.pathname
-            return item.path ? (
+            return (
               <Box
                 key={item.label}
                 component={RouterLink}
@@ -114,21 +95,11 @@ export function AppHeader({ user }: { user: UserDto }) {
               >
                 {item.label}
               </Box>
-            ) : (
-              <Box key={item.label} sx={styles.navItem}>
-                {item.label}
-              </Box>
             )
           })}
         </Box>
       </Box>
       <Box sx={styles.actionsGroup}>
-        <Box sx={styles.searchBox}>
-          <SearchIcon sx={styles.searchIcon} />
-          <Typography sx={styles.searchLabel}>
-            Search tasks, projects...
-          </Typography>
-        </Box>
         <AccountMenu user={user} />
       </Box>
     </Box>
