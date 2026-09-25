@@ -64,7 +64,12 @@ export function AccountMenu({ user }: { user: UserDto }) {
   return (
     <>
       <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small">
-        <UserAvatar id={user.id} name={user.name} avatarUrl={user.avatarUrl} size="sm" />
+        <UserAvatar
+          id={user.id}
+          name={user.name}
+          avatarUrl={user.avatarUrl}
+          size="sm"
+        />
       </IconButton>
       <Menu
         anchorEl={anchorEl}
@@ -83,7 +88,11 @@ export function AccountMenu({ user }: { user: UserDto }) {
             gap: 1.5,
           }}
         >
-          <UserAvatar id={user.id} name={user.name} avatarUrl={user.avatarUrl} />
+          <UserAvatar
+            id={user.id}
+            name={user.name}
+            avatarUrl={user.avatarUrl}
+          />
           <Box sx={{ minWidth: 0 }}>
             <Typography variant="body2" noWrap sx={{ fontWeight: 700 }}>
               {user.name}

@@ -38,7 +38,10 @@ export function AccountNav() {
           key={item.path}
           component={RouterLink}
           to={item.path}
-          sx={[styles.item, item.path === location.pathname && styles.itemActive]}
+          sx={[
+            styles.item,
+            item.path === location.pathname && styles.itemActive,
+          ]}
         >
           {item.label}
         </Box>

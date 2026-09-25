@@ -46,9 +46,7 @@ export function ProfileForm({
       onUpdated(authService.updateProfile(user.id, values))
       setSuccess(true)
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Unable to update profile.',
-      )
+      setError(err instanceof Error ? err.message : 'Unable to update profile.')
     }
   }
 

@@ -33,8 +33,9 @@ export function computeDashboardStats(
   return {
     open: openTasks.length,
     openByPriority,
-    overdue: openTasks.filter((t) => matchesDueFilter(t.dueDate, 'overdue', now))
-      .length,
+    overdue: openTasks.filter((t) =>
+      matchesDueFilter(t.dueDate, 'overdue', now),
+    ).length,
     dueThisWeek: openTasks.filter((t) =>
       matchesDueFilter(t.dueDate, 'next7', now),
     ).length,

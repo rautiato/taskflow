@@ -40,4 +40,8 @@ function deleteAttachment(id: string): void {
   saveAttachments(loadAttachments().filter((a) => a.id !== id))
 }
 
-export const attachmentService = { listByTask, createAttachment, deleteAttachment }
+export const attachmentService = {
+  listByTask,
+  createAttachment,
+  deleteAttachment,
+}

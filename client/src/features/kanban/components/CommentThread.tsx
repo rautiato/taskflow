@@ -188,7 +188,9 @@ export function CommentThread({
                 )}
               </Box>
               {isEditing ? (
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+                <Box
+                  sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}
+                >
                   <TextField
                     value={editDraft}
                     onChange={(e) => setEditDraft(e.target.value)}
@@ -213,7 +215,11 @@ export function CommentThread({
                     >
                       Save
                     </Button>
-                    <Button size="small" variant="outlined" onClick={cancelEdit}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={cancelEdit}
+                    >
                       Cancel
                     </Button>
                   </Box>

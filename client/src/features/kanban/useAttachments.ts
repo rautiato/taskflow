@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { attachmentService } from './attachmentService'
 
-export type AttachmentInput = Parameters<typeof attachmentService.createAttachment>[0]
+export type AttachmentInput = Parameters<
+  typeof attachmentService.createAttachment
+>[0]
 
 function attachmentsQueryKey(taskId: string) {
   return ['attachments', taskId] as const
