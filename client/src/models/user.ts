@@ -4,6 +4,7 @@ export interface User {
   email: string
   password: string // Phase 1 mock only — plaintext in localStorage, never a real credential store
   role: 'Member'
+  avatarUrl?: string | null
   createdAt: string
 }
 

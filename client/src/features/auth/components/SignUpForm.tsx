@@ -10,7 +10,7 @@ import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Alert from '@mui/material/Alert'
 import { Link as RouterLink } from 'react-router-dom'
-import { emailSchema } from '../validation'
+import { emailSchema, nameSchema, passwordSchema } from '../validation'
 import { AuthHeading } from './AuthHeading'
 import { PasswordField } from './PasswordField'
 import { PhaseOneNote } from './PhaseOneNote'
@@ -18,9 +18,9 @@ import { authService } from '../authService'
 
 const signUpSchema = z
   .object({
-    name: z.string().min(1, 'Name is required.'),
+    name: nameSchema,
     email: emailSchema,
-    password: z.string().min(8, 'Password must be at least 8 characters.'),
+    password: passwordSchema,
     confirmPassword: z.string().min(1, 'Confirm your password.'),
   })
   .refine((data) => data.password === data.confirmPassword, {

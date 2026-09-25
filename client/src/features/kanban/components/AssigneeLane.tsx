@@ -110,7 +110,9 @@ export function AssigneeLane({
         sx={styles.header}
       >
         <UserAvatar
+          id={lane.assigneeId}
           name={lane.assigneeId ? lane.assigneeName : null}
+          avatarUrl={lane.assigneeAvatarUrl}
           size="xs"
         />
         <Typography sx={styles.name}>{lane.assigneeName}</Typography>

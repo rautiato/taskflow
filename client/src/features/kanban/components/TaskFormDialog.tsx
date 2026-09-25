@@ -264,7 +264,9 @@ export function TaskFormDialog({
                             }}
                           >
                             <UserAvatar
+                              id={selected?.id}
                               name={selected?.name ?? null}
+                              avatarUrl={selected?.avatarUrl}
                               size="xs"
                             />
                             {selected?.name ?? 'Unassigned'}
@@ -285,7 +287,12 @@ export function TaskFormDialog({
                       <Box
                         sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
                       >
-                        <UserAvatar name={user.name} size="xs" />
+                        <UserAvatar
+                          id={user.id}
+                          name={user.name}
+                          avatarUrl={user.avatarUrl}
+                          size="xs"
+                        />
                         {user.name}
                       </Box>
                     </MenuItem>
