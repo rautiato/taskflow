@@ -6,6 +6,12 @@ export const emailSchema = z
 
 export const nameSchema = z.string().min(1, 'Name is required.')
 
+export const PASSWORD_MIN_LENGTH = 6
+export const PASSWORD_HINT = `At least ${PASSWORD_MIN_LENGTH} characters.`
+
 export const passwordSchema = z
   .string()
-  .min(8, 'Password must be at least 8 characters.')
+  .min(
+    PASSWORD_MIN_LENGTH,
+    `Password must be at least ${PASSWORD_MIN_LENGTH} characters.`,
+  )

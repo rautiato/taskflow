@@ -3,26 +3,20 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import TableSortLabel from '@mui/material/TableSortLabel'
-import StarIcon from '@mui/icons-material/Star'
-import StarBorderIcon from '@mui/icons-material/StarBorder'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { UserAvatar } from '../../../components/UserAvatar'
 import { PRIORITY_STYLES, getDueChip } from '../../tasks/taskDisplay'
 import { PRIORITY_RANK } from '../../tasks/sortTasks'
+import {
+  nextSort,
+  type SortKey,
+  type SortState,
+} from '../../tasks/taskListSort'
 import type { TaskItem } from '../../../models/task'
 import type { KanbanColumn } from '../../../models/kanbanBoard'
 import type { UserDto } from '../../../models/user'
-
-type SortKey =
-  | 'title'
-  | 'project'
-  | 'priority'
-  | 'status'
-  | 'assignee'
-  | 'createdBy'
-  | 'dueDate'
-type SortState = { key: SortKey; dir: 'asc' | 'desc' } | null
+import { FavoriteToggle } from './FavoriteToggle'
 
 const BASE_COLUMN_TEMPLATE = '32px 2.2fr 0.9fr 0.9fr 0.9fr 0.9fr 1.3fr 84px'
 const PROJECT_COLUMN_TEMPLATE =
@@ -35,7 +29,10 @@ export function TaskListView({
   onTaskClick,
   onTaskEdit,
   onTaskDelete,
+  onToggleFavorite,
   projectNameByColumnId,
+  sort: sortProp,
+  onSortChange,
 }: {
   tasks: TaskItem[]
   columns: KanbanColumn[]
@@ -43,18 +40,21 @@ export function TaskListView({
   onTaskClick: (task: TaskItem) => void
   onTaskEdit: (task: TaskItem) => void
   onTaskDelete: (task: TaskItem) => void
+  onToggleFavorite: (task: TaskItem) => void
   projectNameByColumnId?: Record<string, string>
+  // Pass both to let the page own the sort (e.g. keep it in the URL);
+  // omit them and the list keeps its own sort state.
+  sort?: SortState
+  onSortChange?: (sort: SortState) => void
 }) {
-  const [sort, setSort] = useState<SortState>(null)
+  const [localSort, setLocalSort] = useState<SortState>(null)
+  const sort = sortProp !== undefined ? sortProp : localSort
+  const setSort = onSortChange ?? setLocalSort
   const columnById = new Map(columns.map((c) => [c.id, c]))
   const userById = new Map(users.map((u) => [u.id, u]))
 
   function toggleSort(key: SortKey) {
-    setSort((prev) => {
-      if (prev?.key !== key) return { key, dir: 'asc' }
-      if (prev.dir === 'asc') return { key, dir: 'desc' }
-      return null
-    })
+    setSort(nextSort(sort, key))
   }
 
   function compare(a: TaskItem, b: TaskItem, key: SortKey): number {
@@ -73,13 +73,13 @@ export function TaskListView({
           (columnById.get(b.columnId)?.order ?? 0)
         )
       case 'assignee':
-        return (userById.get(a.assigneeId ?? '')?.name ?? 'Unassigned').localeCompare(
-          userById.get(b.assigneeId ?? '')?.name ?? 'Unassigned',
-        )
+        return (
+          userById.get(a.assigneeId ?? '')?.name ?? 'Unassigned'
+        ).localeCompare(userById.get(b.assigneeId ?? '')?.name ?? 'Unassigned')
       case 'createdBy':
-        return (userById.get(a.createdById ?? '')?.name ?? 'Unknown').localeCompare(
-          userById.get(b.createdById ?? '')?.name ?? 'Unknown',
-        )
+        return (
+          userById.get(a.createdById ?? '')?.name ?? 'Unknown'
+        ).localeCompare(userById.get(b.createdById ?? '')?.name ?? 'Unknown')
       case 'dueDate':
         if (!a.dueDate && !b.dueDate) return 0
         if (!a.dueDate) return 1
@@ -88,10 +88,13 @@ export function TaskListView({
     }
   }
 
+  // Pinned tasks stay on top under any header sort; the chosen sort orders
+  // the pinned and unpinned groups among themselves.
   const displayedTasks = sort
-    ? [...tasks].sort(
-        (a, b) => (sort.dir === 'asc' ? 1 : -1) * compare(a, b, sort.key),
-      )
+    ? [...tasks].sort((a, b) => {
+        if (a.isFavorite !== b.isFavorite) return a.isFavorite ? -1 : 1
+        return (sort.dir === 'asc' ? 1 : -1) * compare(a, b, sort.key)
+      })
     : tasks
 
   const columnTemplate = projectNameByColumnId
@@ -191,11 +194,11 @@ export function TaskListView({
                 '&:hover .row-actions': { opacity: 1 },
               }}
             >
-              {task.isFavorite ? (
-                <StarIcon sx={{ fontSize: 18, color: 'warning.main' }} />
-              ) : (
-                <StarBorderIcon sx={{ fontSize: 18, color: '#C6CACF' }} />
-              )}
+              <FavoriteToggle
+                isFavorite={task.isFavorite}
+                onToggle={() => onToggleFavorite(task)}
+                size={18}
+              />
               <Typography
                 sx={{
                   fontSize: 13,

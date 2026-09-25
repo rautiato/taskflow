@@ -1,13 +1,18 @@
 import type { KanbanBoard, KanbanColumn } from '../models/kanbanBoard'
 import type { TaskItem } from '../models/task'
 
-export const KANBAN_SEED_VERSION = '4'
+export const KANBAN_SEED_VERSION = '1'
 
 export const SEEDED_BOARDS: KanbanBoard[] = [
   {
     id: 'board-project-1',
     projectId: 'project-1',
     name: 'Task Management App Board',
+  },
+  {
+    id: 'board-project-2',
+    projectId: 'project-2',
+    name: 'Mobile App Board',
   },
 ]
 
@@ -51,6 +56,31 @@ export const SEEDED_COLUMNS: KanbanColumn[] = [
     order: 4,
     isVisible: false,
     isDone: false,
+  },
+  // ---- Project 2: Mobile App ----
+  {
+    id: 'col-p2-todo',
+    boardId: 'board-project-2',
+    name: 'To Do',
+    order: 0,
+    isVisible: true,
+    isDone: false,
+  },
+  {
+    id: 'col-p2-in-progress',
+    boardId: 'board-project-2',
+    name: 'In Progress',
+    order: 1,
+    isVisible: true,
+    isDone: false,
+  },
+  {
+    id: 'col-p2-done',
+    boardId: 'board-project-2',
+    name: 'Done',
+    order: 2,
+    isVisible: true,
+    isDone: true,
   },
 ]
 
@@ -141,7 +171,6 @@ export const SEEDED_TASKS: TaskItem[] = [
     createdAt: '2026-08-28T00:00:00.000Z',
     updatedAt: '2026-09-03T00:00:00.000Z',
   },
-  // Ha Tran (seed-3)
   {
     id: 'task-7',
     columnId: 'col-todo',
@@ -226,5 +255,76 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 3,
     createdAt: '2026-09-17T00:00:00.000Z',
     updatedAt: '2026-09-17T00:00:00.000Z',
+  },
+  {
+    id: 'task-13',
+    columnId: 'col-done',
+    title: 'Initialize the Task Management App project',
+    description: 'Initialize the React TypeScript project using Vite',
+    priority: 'High',
+    dueDate: null,
+    assigneeId: 'seed-4',
+    createdById: 'seed-1',
+    isFavorite: false,
+    order: 3,
+    createdAt: '2026-09-18T00:00:00.000Z',
+    updatedAt: '2026-09-18T18:00:00.000Z',
+  },
+  // ---- Project 2: Mobile App ----
+  {
+    id: 'task-14',
+    columnId: 'col-p2-todo',
+    title: 'Set up push notifications',
+    description: 'Integrate push notifications for task reminders.',
+    priority: 'High',
+    dueDate: '2026-10-09T00:00:00.000Z',
+    assigneeId: 'seed-2',
+    createdById: 'seed-3',
+    isFavorite: false,
+    order: 0,
+    createdAt: '2026-09-19T00:00:00.000Z',
+    updatedAt: '2026-09-19T00:00:00.000Z',
+  },
+  {
+    id: 'task-15',
+    columnId: 'col-p2-todo',
+    title: 'Design app icon',
+    description: 'Create the app icon in all required sizes.',
+    priority: 'Low',
+    dueDate: '2026-10-14T00:00:00.000Z',
+    assigneeId: 'seed-1',
+    createdById: 'seed-1',
+    isFavorite: false,
+    order: 1,
+    createdAt: '2026-09-19T00:00:00.000Z',
+    updatedAt: '2026-09-19T00:00:00.000Z',
+  },
+  {
+    id: 'task-16',
+    columnId: 'col-p2-in-progress',
+    title: 'Build offline task sync',
+    description: 'Cache tasks locally and sync when back online.',
+    priority: 'Medium',
+    dueDate: '2026-10-20T00:00:00.000Z',
+    assigneeId: 'seed-3',
+    createdById: 'seed-3',
+    isFavorite: false,
+    order: 0,
+    createdAt: '2026-09-17T00:00:00.000Z',
+    updatedAt: '2026-09-17T00:00:00.000Z',
+  },
+  {
+    id: 'task-17',
+    columnId: 'col-p2-done',
+    title: 'Choose mobile framework',
+    description: 'Evaluate React Native vs. Flutter and pick one.',
+    priority: 'High',
+    dueDate: null,
+    assigneeId: 'seed-1',
+    createdById: 'seed-4',
+    isFavorite: false,
+    order: 0,
+    createdAt: '2026-09-11T00:00:00.000Z',
+    updatedAt: '2026-09-15T00:00:00.000Z',
   },
 ]

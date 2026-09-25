@@ -6,10 +6,12 @@ export function EmptyState({
   title,
   description,
   icon,
+  action,
 }: {
   title: string
   description?: string
   icon?: ReactNode
+  action?: ReactNode
 }) {
   return (
     <Box
@@ -32,6 +34,7 @@ export function EmptyState({
           {description}
         </Typography>
       )}
+      {action && <Box sx={{ mt: 1 }}>{action}</Box>}
     </Box>
   )
 }

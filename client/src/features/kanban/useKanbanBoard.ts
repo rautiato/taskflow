@@ -1,8 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { kanbanService } from './kanbanService'
+import type { TaskItem } from '../../models/task'
 
 export type TaskInput = Parameters<typeof kanbanService.createTask>[0]
 type BoardData = ReturnType<typeof kanbanService.getBoardForProject>
+
+export function taskToInput(task: TaskItem): TaskInput {
+  return {
+    columnId: task.columnId,
+    title: task.title,
+    description: task.description,
+    priority: task.priority,
+    dueDate: task.dueDate,
+    assigneeId: task.assigneeId,
+    isFavorite: task.isFavorite,
+  }
+}
 
 function kanbanBoardQueryKey(projectId: string) {
   return ['kanbanBoard', projectId] as const
@@ -23,10 +36,12 @@ export function useKanbanBoard(projectId: string) {
     // different project's board too, so every cached board is marked
     // stale, not just the one currently open. Also invalidates the
     // cross-project My Tasks query, since a task mutation here can affect
-    // what that page shows too.
+    // what that page shows too, and the projects list, whose task counts and
+    // progress are derived from tasks.
     return Promise.all([
       queryClient.invalidateQueries({ queryKey: ['kanbanBoard'] }),
       queryClient.invalidateQueries({ queryKey: ['myTasks'] }),
+      queryClient.invalidateQueries({ queryKey: ['projects'] }),
     ])
   }
 
@@ -153,6 +168,11 @@ export function useKanbanBoard(projectId: string) {
       createTaskMutation.mutate({ input, createdById, id }),
     updateTask: (taskId: string, input: TaskInput) =>
       updateTaskMutation.mutate({ taskId, input }),
+    toggleFavorite: (task: TaskItem) =>
+      updateTaskMutation.mutate({
+        taskId: task.id,
+        input: { ...taskToInput(task), isFavorite: !task.isFavorite },
+      }),
     deleteTask: deleteTaskMutation.mutate,
     reorderColumns: (boardId: string, orderedColumnIds: string[]) =>
       reorderColumnsMutation.mutate({ boardId, orderedColumnIds }),

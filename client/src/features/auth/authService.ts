@@ -3,7 +3,24 @@ import { SEEDED_USERS, USERS_SEED_VERSION } from '../../mockData/users.seed'
 import { loadSeededData } from '../../services/localStorageSeed'
 
 const USERS_KEY = 'taskflow.users'
-const SESSION_KEY = 'taskflow.session'
+const SESSION_COOKIE = 'taskflow.session'
+const REMEMBER_ME_MAX_AGE_SECONDS = 60 * 60 * 24 * 30 // 30 days
+
+// Phase 1 stand-in for the HttpOnly auth cookie the Phase 3 API will set.
+// "Remember me" makes it persistent (max-age); otherwise it's a session cookie
+// the browser drops on close. Cookies are shared across tabs, like the real one.
+function saveSession(userId: string, remember: boolean): void {
+  const maxAge = remember ? `; max-age=${REMEMBER_ME_MAX_AGE_SECONDS}` : ''
+  document.cookie = `${SESSION_COOKIE}=${encodeURIComponent(userId)}; path=/; SameSite=Lax${maxAge}`
+}
+
+function readSession(): string | null {
+  const prefix = `${SESSION_COOKIE}=`
+  const cookie = document.cookie
+    .split('; ')
+    .find((entry) => entry.startsWith(prefix))
+  return cookie ? decodeURIComponent(cookie.slice(prefix.length)) : null
+}
 
 function loadUsers(): User[] {
   return loadSeededData(USERS_KEY, USERS_SEED_VERSION, SEEDED_USERS)
@@ -19,7 +36,7 @@ function toUserDto(user: User): UserDto {
   return userDto
 }
 
-function signIn(email: string, password: string): UserDto {
+function signIn(email: string, password: string, remember = false): UserDto {
   const user = loadUsers().find(
     (candidate) =>
       candidate.email.toLowerCase() === email.toLowerCase() &&
@@ -28,7 +45,7 @@ function signIn(email: string, password: string): UserDto {
   if (!user) {
     throw new Error('Incorrect email or password.')
   }
-  localStorage.setItem(SESSION_KEY, user.id)
+  saveSession(user.id, remember)
   return toUserDto(user)
 }
 
@@ -50,7 +67,7 @@ function signUp(name: string, email: string, password: string): UserDto {
     createdAt: new Date().toISOString(),
   }
   saveUsers([...users, newUser])
-  localStorage.setItem(SESSION_KEY, newUser.id)
+  saveSession(newUser.id, true)
   return toUserDto(newUser)
 }
 
@@ -107,11 +124,11 @@ function changePassword(
 }
 
 function signOut(): void {
-  localStorage.removeItem(SESSION_KEY)
+  document.cookie = `${SESSION_COOKIE}=; path=/; max-age=0`
 }
 
 function getSession(): UserDto | null {
-  const userId = localStorage.getItem(SESSION_KEY)
+  const userId = readSession()
   if (!userId) {
     return null
   }

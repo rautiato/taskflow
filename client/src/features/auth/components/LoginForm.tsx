@@ -38,7 +38,7 @@ export function LoginForm() {
   function onSubmit(values: LoginFormValues) {
     setAuthError(null)
     try {
-      authService.signIn(values.email, values.password)
+      authService.signIn(values.email, values.password, values.rememberMe)
       navigate('/dashboard')
     } catch (error) {
       setAuthError(

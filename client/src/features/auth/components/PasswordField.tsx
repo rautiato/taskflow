@@ -15,10 +15,12 @@ export function PasswordField<T extends FieldValues>({
   name,
   control,
   label = 'Password',
+  hint,
 }: {
   name: Path<T>
   control: Control<T>
   label?: string
+  hint?: string
 }) {
   const [showPassword, setShowPassword] = useState(false)
 
@@ -34,7 +36,7 @@ export function PasswordField<T extends FieldValues>({
           required
           fullWidth
           error={!!fieldState.error}
-          helperText={fieldState.error?.message}
+          helperText={fieldState.error?.message ?? hint}
           slotProps={{
             input: {
               endAdornment: (

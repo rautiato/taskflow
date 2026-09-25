@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useSearchParams } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import Link from '@mui/material/Link'
 import { AppLayout } from '../features/layout/components/AppLayout'
 import { authService } from '../features/auth/authService'
 import { useUsers } from '../features/auth/useUsers'
@@ -10,12 +11,18 @@ import { useMyTasks } from '../features/kanban/useMyTasks'
 import { useKanbanBoard } from '../features/kanban/useKanbanBoard'
 import { sortTasks } from '../features/tasks/sortTasks'
 import {
-  ALL,
-  DEFAULT_MY_TASKS_FILTERS,
+  EMPTY_MY_TASKS_FILTERS,
   hasActiveMyTasksFilters,
   filterMyTasks,
+  filtersFromSearchParams,
+  filtersToSearchParams,
   type MyTasksFilters,
 } from '../features/tasks/filterMyTasks'
+import {
+  sortFromSearchParams,
+  writeSortToSearchParams,
+  type SortState,
+} from '../features/tasks/taskListSort'
 import { MyTasksFilterBar } from '../features/kanban/components/MyTasksFilterBar'
 import { TaskListView } from '../features/kanban/components/TaskListView'
 import { TaskFormDialog } from '../features/kanban/components/TaskFormDialog'
@@ -30,11 +37,44 @@ type FormState = { task: TaskItem; projectId: string }
 
 export function MyTasksPage() {
   const user = authService.getSession()
-  const [filters, setFilters] = useState<MyTasksFilters>(
-    DEFAULT_MY_TASKS_FILTERS,
-  )
+  // Filters, sort and the open task all live in the URL, so any view is
+  // linkable — the dashboard tiles link straight to one.
+  const [searchParams, setSearchParams] = useSearchParams()
+  const filters = filtersFromSearchParams(searchParams)
+  const sort = sortFromSearchParams(searchParams)
+  const openTaskId = searchParams.get('task')
+
+  function updateParams(
+    change: (params: URLSearchParams) => void,
+    replace = true,
+  ) {
+    const next = new URLSearchParams(searchParams)
+    change(next)
+    setSearchParams(next, { replace })
+  }
+
+  function handleFiltersChange(next: MyTasksFilters) {
+    // Filters are rewritten; sort and the open task are kept.
+    const params = filtersToSearchParams(next)
+    writeSortToSearchParams(params, sort)
+    if (openTaskId) params.set('task', openTaskId)
+    setSearchParams(params, { replace: true })
+  }
+
+  function handleSortChange(next: SortState) {
+    updateParams((params) => writeSortToSearchParams(params, next))
+  }
+
+  function openTask(task: TaskItem) {
+    // Push, not replace, so Back closes the drawer.
+    updateParams((params) => params.set('task', task.id), false)
+  }
+
+  function closeTask() {
+    updateParams((params) => params.delete('task'))
+  }
+
   const [formState, setFormState] = useState<FormState | null>(null)
-  const [detailTask, setDetailTask] = useState<TaskItem | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<TaskItem | null>(null)
 
   const { projects } = useProjects()
@@ -42,7 +82,7 @@ export function MyTasksPage() {
   const { tasks, columns, boards, isLoading } = useMyTasks(user?.id ?? '')
   // Mutations only — read query stays disabled (empty projectId); see
   // PLAN.md §3's "My Tasks page" decision for why this is safe to reuse.
-  const { updateTask, deleteTask } = useKanbanBoard('')
+  const { updateTask, toggleFavorite, deleteTask } = useKanbanBoard('')
 
   if (!user) {
     return <Navigate to="/login" replace />
@@ -75,14 +115,14 @@ export function MyTasksPage() {
   )
 
   // With no project selected, statuses collapse to their name across every
-  // project (one "To Do", not one per project) — with a project selected,
-  // it narrows to just that project's own columns, in board order.
+  // project (one "To Do", not one per project) — with projects selected,
+  // it narrows to just those projects' own columns, in board order.
   const statusOptions = (() => {
     const relevant =
-      filters.projectId === ALL
+      filters.projectIds.length === 0
         ? columns
-        : columns.filter(
-            (c) => projectIdByColumnId[c.id] === filters.projectId,
+        : columns.filter((c) =>
+            filters.projectIds.includes(projectIdByColumnId[c.id]),
           )
     const seen = new Set<string>()
     const names: string[] = []
@@ -106,13 +146,15 @@ export function MyTasksPage() {
 
   function handleEditTask(task: TaskItem) {
     setFormState({ task, projectId: projectIdForTask(task) })
-    setDetailTask(null)
+    closeTask()
   }
 
   function handleDeleteTask(task: TaskItem) {
     setDeleteTarget(task)
-    setDetailTask(null)
+    closeTask()
   }
+
+  const detailTask = tasks.find((t) => t.id === openTaskId) ?? null
 
   const statusNameByColumnId: Record<string, string> = {}
   for (const column of columns) {
@@ -126,9 +168,7 @@ export function MyTasksPage() {
   return (
     <AppLayout user={user}>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Typography sx={{ fontSize: 25, fontWeight: 700 }}>
-          My Tasks
-        </Typography>
+        <Typography sx={{ fontSize: 25, fontWeight: 700 }}>My Tasks</Typography>
 
         {isLoading ? (
           <Typography color="text.secondary">Loading…</Typography>
@@ -142,25 +182,38 @@ export function MyTasksPage() {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
             <MyTasksFilterBar
               filters={filters}
-              onChange={setFilters}
+              onChange={handleFiltersChange}
               projects={projectsWithMyTasks}
               statusOptions={statusOptions}
               creators={creatorsWithMyTasks}
             />
             {hasActiveMyTasksFilters(filters) && (
-              <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
-                {visibleTasks.length} task
-                {visibleTasks.length === 1 ? '' : 's'} found
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
+                  {visibleTasks.length} task
+                  {visibleTasks.length === 1 ? '' : 's'} found
+                </Typography>
+                <Link
+                  component="button"
+                  underline="hover"
+                  onClick={() => handleFiltersChange(EMPTY_MY_TASKS_FILTERS)}
+                  sx={{ fontSize: 13, fontWeight: 600 }}
+                >
+                  Clear filters
+                </Link>
+              </Box>
             )}
             <TaskListView
               tasks={visibleTasks}
               columns={columns}
               users={users}
               projectNameByColumnId={projectNameByColumnId}
-              onTaskClick={setDetailTask}
+              onTaskClick={openTask}
+              sort={sort}
+              onSortChange={handleSortChange}
               onTaskEdit={handleEditTask}
               onTaskDelete={handleDeleteTask}
+              onToggleFavorite={toggleFavorite}
             />
           </Box>
         )}
@@ -189,9 +242,10 @@ export function MyTasksPage() {
         creator={users.find((u) => u.id === detailTask?.createdById)}
         users={users}
         currentUser={user}
-        onClose={() => setDetailTask(null)}
+        onClose={closeTask}
         onEdit={() => detailTask && handleEditTask(detailTask)}
         onDelete={() => detailTask && handleDeleteTask(detailTask)}
+        onToggleFavorite={() => detailTask && toggleFavorite(detailTask)}
       />
 
       {deleteTarget && (

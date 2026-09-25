@@ -5,9 +5,9 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
+import Tooltip from '@mui/material/Tooltip'
 import CloseIcon from '@mui/icons-material/Close'
-import StarIcon from '@mui/icons-material/Star'
-import StarBorderIcon from '@mui/icons-material/StarBorder'
+import LinkIcon from '@mui/icons-material/Link'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined'
@@ -20,14 +20,9 @@ import type { KanbanColumn } from '../../../models/kanbanBoard'
 import type { UserDto } from '../../../models/user'
 import { CommentThread } from './CommentThread'
 import { ImagePreviewDialog } from './ImagePreviewDialog'
+import { FavoriteToggle } from './FavoriteToggle'
 
-function MetaRow({
-  label,
-  children,
-}: {
-  label: string
-  children: ReactNode
-}) {
+function MetaRow({ label, children }: { label: string; children: ReactNode }) {
   return (
     <Box
       sx={{
@@ -70,6 +65,7 @@ export function TaskDetailDrawer({
   onClose,
   onEdit,
   onDelete,
+  onToggleFavorite,
 }: {
   open: boolean
   task: TaskItem | null
@@ -81,9 +77,12 @@ export function TaskDetailDrawer({
   onClose: () => void
   onEdit: () => void
   onDelete: () => void
+  onToggleFavorite: () => void
 }) {
   const { attachments } = useAttachments(task?.id ?? '')
   const [previewIndex, setPreviewIndex] = useState<number | null>(null)
+  // Keyed by task id, so "Link copied" resets when another task opens.
+  const [copiedTaskId, setCopiedTaskId] = useState<string | null>(null)
 
   if (!task) return null
   const priorityStyle = PRIORITY_STYLES[task.priority]
@@ -119,15 +118,33 @@ export function TaskDetailDrawer({
           >
             <CloseIcon fontSize="small" />
           </IconButton>
+          <Tooltip
+            title={copiedTaskId === task.id ? 'Link copied' : 'Copy link'}
+          >
+            <IconButton
+              onClick={() => {
+                // Short link — survives the task moving to another project.
+                navigator.clipboard.writeText(
+                  `${window.location.origin}/tasks/${task.id}`,
+                )
+                setCopiedTaskId(task.id)
+              }}
+              size="small"
+              aria-label="Copy link to task"
+              sx={{ position: 'absolute', top: 12, right: 52 }}
+            >
+              <LinkIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
 
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.25, pr: 5 }}>
-            {task.isFavorite ? (
-              <StarIcon sx={{ color: 'warning.main', fontSize: 24, mt: 0.25 }} />
-            ) : (
-              <StarBorderIcon
-                sx={{ color: 'text.disabled', fontSize: 24, mt: 0.25 }}
-              />
-            )}
+          <Box
+            sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.25, pr: 9 }}
+          >
+            <FavoriteToggle
+              isFavorite={task.isFavorite}
+              onToggle={onToggleFavorite}
+              size={24}
+            />
             <Typography sx={{ fontSize: 24, fontWeight: 700, lineHeight: 1.3 }}>
               {task.title}
             </Typography>

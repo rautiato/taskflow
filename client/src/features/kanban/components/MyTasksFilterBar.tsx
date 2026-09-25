@@ -1,18 +1,23 @@
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
-import MenuItem from '@mui/material/MenuItem'
 import InputAdornment from '@mui/material/InputAdornment'
 import SearchIcon from '@mui/icons-material/Search'
-import type { TaskPriority } from '../../../models/task'
 import type { Project } from '../../../models/project'
 import type { UserDto } from '../../../models/user'
 import {
-  ALL,
+  PRIORITIES,
   UNKNOWN_CREATOR,
+  type DueFilter,
   type MyTasksFilters,
 } from '../../tasks/filterMyTasks'
+import { MultiSelectFilter } from './MultiSelectFilter'
 
-const PRIORITIES: TaskPriority[] = ['High', 'Medium', 'Low']
+const DUE_OPTIONS: { value: DueFilter; label: string }[] = [
+  { value: 'overdue', label: 'Overdue' },
+  { value: 'today', label: 'Due today' },
+  { value: 'next7', label: 'Next 7 days' },
+  { value: 'none', label: 'No due date' },
+]
 
 export function MyTasksFilterBar({
   filters,
@@ -47,83 +52,44 @@ export function MyTasksFilterBar({
           },
         }}
       />
-      <TextField
-        size="small"
-        select
+      <MultiSelectFilter
         label="Project"
-        value={filters.projectId}
-        onChange={(event) =>
-          // Changing project invalidates any status already picked from the
-          // previous project's (or the cross-project) status list.
-          onChange({ ...filters, projectId: event.target.value, statusName: ALL })
+        value={filters.projectIds}
+        options={projects.map((p) => ({ value: p.id, label: p.name }))}
+        // Changing projects invalidates statuses picked from the previous set.
+        onChange={(projectIds) =>
+          onChange({ ...filters, projectIds, statusNames: [] })
         }
-        sx={{ minWidth: 180 }}
-      >
-        <MenuItem value={ALL}>All Projects</MenuItem>
-        {projects.map((project) => (
-          <MenuItem key={project.id} value={project.id}>
-            {project.name}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TextField
-        size="small"
-        select
+        minWidth={180}
+      />
+      <MultiSelectFilter
         label="Status"
-        value={filters.statusName}
-        onChange={(event) =>
-          onChange({ ...filters, statusName: event.target.value })
-        }
-        sx={{ minWidth: 160 }}
-      >
-        <MenuItem value={ALL}>All</MenuItem>
-        {statusOptions.map((name) => (
-          <MenuItem key={name} value={name}>
-            {name}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TextField
-        size="small"
-        select
+        value={filters.statusNames}
+        options={statusOptions.map((name) => ({ value: name, label: name }))}
+        onChange={(statusNames) => onChange({ ...filters, statusNames })}
+      />
+      <MultiSelectFilter
         label="Priority"
-        value={filters.priority}
-        onChange={(event) =>
-          onChange({
-            ...filters,
-            priority: event.target.value as MyTasksFilters['priority'],
-          })
-        }
-        sx={{ minWidth: 140 }}
-      >
-        <MenuItem value={ALL}>All</MenuItem>
-        {PRIORITIES.map((priority) => (
-          <MenuItem key={priority} value={priority}>
-            {priority}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TextField
-        size="small"
-        select
+        value={filters.priorities}
+        options={PRIORITIES.map((p) => ({ value: p, label: p }))}
+        onChange={(priorities) => onChange({ ...filters, priorities })}
+        minWidth={140}
+      />
+      <MultiSelectFilter
+        label="Due date"
+        value={filters.due}
+        options={DUE_OPTIONS}
+        onChange={(due) => onChange({ ...filters, due })}
+      />
+      <MultiSelectFilter
         label="Created By"
-        value={filters.createdById}
-        onChange={(event) =>
-          onChange({
-            ...filters,
-            createdById: event.target.value as MyTasksFilters['createdById'],
-          })
-        }
-        sx={{ minWidth: 160 }}
-      >
-        <MenuItem value={ALL}>All</MenuItem>
-        <MenuItem value={UNKNOWN_CREATOR}>Unknown</MenuItem>
-        {creators.map((user) => (
-          <MenuItem key={user.id} value={user.id}>
-            {user.name}
-          </MenuItem>
-        ))}
-      </TextField>
+        value={filters.createdByIds}
+        options={[
+          { value: UNKNOWN_CREATOR, label: 'Unknown' },
+          ...creators.map((u) => ({ value: u.id, label: u.name })),
+        ]}
+        onChange={(createdByIds) => onChange({ ...filters, createdByIds })}
+      />
     </Box>
   )
 }
