@@ -25,6 +25,7 @@ import { PRIORITY_STYLES } from '../../tasks/taskDisplay'
 import { UserAvatar } from '../../../components/UserAvatar'
 import { useAttachments } from '../useAttachments'
 import { useProjectColumns } from '../useProjectColumns'
+import { notifyError } from '../../../services/notifications'
 import {
   AttachmentPicker,
   type AttachmentPickerHandle,
@@ -155,7 +156,17 @@ export function TaskFormDialog({
       },
       taskId,
     )
-    await attachmentPickerRef.current?.commit()
+    try {
+      await attachmentPickerRef.current?.commit()
+    } catch (error) {
+      // The dialog has already closed, so say plainly what was and wasn't
+      // saved. This replaces the global handler's generic message.
+      notifyError(
+        `Task saved, but its attachments weren't. ${
+          error instanceof Error ? error.message : ''
+        }`.trim(),
+      )
+    }
   }
 
   return (

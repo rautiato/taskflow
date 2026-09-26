@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import type { ReactNode } from 'react'
 
-export function PhaseOneNote({ children }: { children: ReactNode }) {
+export function InfoNote({ children }: { children: ReactNode }) {
   return (
     <Box
       sx={{

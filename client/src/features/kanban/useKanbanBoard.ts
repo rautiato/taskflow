@@ -144,13 +144,6 @@ export function useKanbanBoard(projectId: string) {
     mutationFn: async (columnId: string) =>
       kanbanService.deleteColumn(columnId),
     onSuccess: invalidate,
-    onError: (error) => {
-      window.alert(
-        error instanceof Error
-          ? error.message
-          : 'Could not delete this column.',
-      )
-    },
   })
 
   const createColumnMutation = useMutation({

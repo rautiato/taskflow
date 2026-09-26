@@ -18,7 +18,7 @@ import {
 } from '../validation'
 import { AuthHeading } from './AuthHeading'
 import { PasswordField } from './PasswordField'
-import { PhaseOneNote } from './PhaseOneNote'
+import { InfoNote } from './InfoNote'
 import { authService } from '../authService'
 
 const signUpSchema = z
@@ -132,10 +132,11 @@ export function SignUpForm() {
         </Link>
       </Typography>
 
-      <PhaseOneNote>
-        Phase 1 note: sign-up creates a local mock account (seeded users in this
-        browser only) — real account creation arrives with the Phase 3 backend.
-      </PhaseOneNote>
+      {/* NO-BACKEND: remove this note once real accounts exist. */}
+      <InfoNote>
+        Note: your account is saved only in this browser. Real account creation
+        will be added once a backend is in place.
+      </InfoNote>
     </Stack>
   )
 }

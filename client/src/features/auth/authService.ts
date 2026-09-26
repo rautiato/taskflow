@@ -1,6 +1,7 @@
 import type { UserDto, User } from '../../models/user'
 import { SEEDED_USERS, USERS_SEED_VERSION } from '../../mockData/users.seed'
 import { loadSeededData } from '../../services/localStorageSeed'
+import { writeJson } from '../../services/storage'
 
 const USERS_KEY = 'taskflow.users'
 const SESSION_COOKIE = 'taskflow.session'
@@ -27,7 +28,7 @@ function loadUsers(): User[] {
 }
 
 function saveUsers(users: User[]): void {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users))
+  writeJson(USERS_KEY, users)
 }
 
 function toUserDto(user: User): UserDto {

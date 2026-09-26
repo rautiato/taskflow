@@ -9,6 +9,11 @@ import {
   fileToDataUrl,
   MAX_ATTACHMENT_BYTES,
 } from '../../../utils/fileToDataUrl'
+import {
+  formatSize,
+  getStorageFreeChars,
+  getStorageUsedChars,
+} from '../../../services/storage'
 import { useAttachments } from '../useAttachments'
 import { ImagePreviewDialog } from './ImagePreviewDialog'
 import type { Attachment } from '../../../models/attachment'
@@ -42,6 +47,32 @@ export function AttachmentPicker({
   const [error, setError] = useState<string | null>(null)
   const [isDragOver, setIsDragOver] = useState(false)
   const [previewIndex, setPreviewIndex] = useState<number | null>(null)
+  // NO-BACKEND: localStorage quota tracking (usedChars, spaceLeftForNew and
+  // the check in handleFiles). Remove once attachments upload to a server,
+  // which enforces its own limits.
+  // Measured once when the dialog opens; changes staged in this dialog are
+  // accounted for in spaceLeftForNew() instead.
+  const [usedChars] = useState(getStorageUsedChars)
+
+  function removedExisting(): Attachment[] {
+    return initialAttachments.filter(
+      (existing) =>
+        !attachments.some((a) => a.kind === 'existing' && a.id === existing.id),
+    )
+  }
+
+  // Free space, plus what removing existing attachments will free up, minus
+  // what's already staged in this dialog.
+  function spaceLeftForNew(): number {
+    const freed = removedExisting().reduce(
+      (total, a) => total + a.blobUrl.length,
+      0,
+    )
+    const staged = attachments
+      .filter((a) => a.kind === 'new')
+      .reduce((total, a) => total + a.blobUrl.length, 0)
+    return getStorageFreeChars() + freed - staged
+  }
 
   useImperativeHandle(ref, () => ({
     async commit() {
@@ -49,25 +80,18 @@ export function AttachmentPicker({
         (a): a is Extract<StagedAttachment, { kind: 'new' }> =>
           a.kind === 'new',
       )
-      const removedIds = initialAttachments
-        .filter(
-          (existing) =>
-            !attachments.some(
-              (a) => a.kind === 'existing' && a.id === existing.id,
-            ),
-        )
-        .map((a) => a.id)
-
-      await Promise.all([
-        ...toCreate.map((a) =>
+      // Deletes first, so replacing an attachment frees its space before the
+      // new one is written.
+      await Promise.all(removedExisting().map((a) => deleteAttachment(a.id)))
+      await Promise.all(
+        toCreate.map((a) =>
           createAttachment({
             taskId,
             fileName: a.fileName,
             blobUrl: a.blobUrl,
           }),
         ),
-        ...removedIds.map((id) => deleteAttachment(id)),
-      ])
+      )
     },
   }))
 
@@ -88,10 +112,23 @@ export function AttachmentPicker({
         blobUrl: await fileToDataUrl(file),
       })),
     )
+    const needed = added.reduce((total, a) => total + a.blobUrl.length, 0)
+    const available = spaceLeftForNew()
+    if (needed > available) {
+      setError(
+        `Not enough storage: this needs ${formatSize(needed)} and ` +
+          `${formatSize(available)} is left. Remove an attachment from this ` +
+          `or another task to free up space.`,
+      )
+      return
+    }
     setAttachments((prev) => [...prev, ...added])
   }
 
   function handleRemove(target: StagedAttachment) {
+    // Removing is what the "not enough storage" message asks for, so the
+    // message shouldn't linger once the user has done it.
+    setError(null)
     setAttachments((prev) =>
       prev.filter((a) => {
         if (a.kind === 'existing' && target.kind === 'existing') {
@@ -198,9 +235,15 @@ export function AttachmentPicker({
             }}
           />
         </Button>
-        {error && (
+        {error ? (
           <Typography sx={{ fontSize: 12, color: 'error.main' }}>
             {error}
+          </Typography>
+        ) : (
+          <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
+            Images up to 2 MB each
+            {/* NO-BACKEND: storage usage hint; keep only the size limit. */}
+            {` · Storage: ${formatSize(usedChars)} of about 5 MB used`}
           </Typography>
         )}
       </Box>

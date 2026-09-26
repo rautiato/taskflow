@@ -7,8 +7,11 @@ import {
   KANBAN_SEED_VERSION,
 } from '../../mockData/kanban.seed'
 import { loadSeededData } from '../../services/localStorageSeed'
+import { writeJson } from '../../services/storage'
 import type { ProjectStats } from '../../models/project'
 import { matchesDueFilter } from '../tasks/filterMyTasks'
+import { attachmentService } from './attachmentService'
+import { commentService } from './commentService'
 
 const BOARDS_KEY = 'taskflow.boards'
 const COLUMNS_KEY = 'taskflow.columns'
@@ -29,15 +32,15 @@ function loadTasks(): TaskItem[] {
 }
 
 function saveTasks(tasks: TaskItem[]): void {
-  localStorage.setItem(TASKS_KEY, JSON.stringify(tasks))
+  writeJson(TASKS_KEY, tasks)
 }
 
 function saveColumns(columns: KanbanColumn[]): void {
-  localStorage.setItem(COLUMNS_KEY, JSON.stringify(columns))
+  writeJson(COLUMNS_KEY, columns)
 }
 
 function saveBoards(boards: KanbanBoard[]): void {
-  localStorage.setItem(BOARDS_KEY, JSON.stringify(boards))
+  writeJson(BOARDS_KEY, boards)
 }
 
 function defaultBoardFor(projectId: string): {
@@ -129,7 +132,11 @@ function updateTask(taskId: string, input: TaskInput): TaskItem {
   return updated
 }
 
+// A task owns its comments and attachments, so they go with it, the same
+// way a database's cascade delete would remove them.
 function deleteTask(taskId: string): void {
+  commentService.deleteByTask(taskId)
+  attachmentService.deleteByTask(taskId)
   const allTasks = loadTasks()
   saveTasks(allTasks.filter((t) => t.id !== taskId))
 }
