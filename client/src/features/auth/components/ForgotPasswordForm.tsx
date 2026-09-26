@@ -10,7 +10,7 @@ import Box from '@mui/material/Box'
 import { emailSchema } from '../validation'
 import { AuthHeading } from './AuthHeading'
 import { BackToSignInLink } from './BackToSignInLink'
-import { PhaseOneNote } from './PhaseOneNote'
+import { InfoNote } from './InfoNote'
 import { Logo } from '../../../components/Logo'
 
 const forgotPasswordSchema = z.object({
@@ -80,10 +80,11 @@ export function ForgotPasswordForm() {
             Send reset link
           </Button>
 
-          <PhaseOneNote>
-            Phase 1 note: this flow is UI-only against the mocked local session
-            (see Login) — no email is actually sent until Phase 3.
-          </PhaseOneNote>
+          {/* NO-BACKEND: remove this note once reset emails are sent. */}
+          <InfoNote>
+            Note: no email is sent yet. Password-reset emails will be added once
+            a backend is in place.
+          </InfoNote>
         </Stack>
       )}
     </Stack>

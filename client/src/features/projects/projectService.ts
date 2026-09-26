@@ -4,6 +4,7 @@ import {
   PROJECTS_SEED_VERSION,
 } from '../../mockData/projects.seed'
 import { loadSeededData } from '../../services/localStorageSeed'
+import { writeJson } from '../../services/storage'
 import { kanbanService } from '../kanban/kanbanService'
 
 const PROJECTS_KEY = 'taskflow.projects'
@@ -31,7 +32,7 @@ function listProjects(): Project[] {
 }
 
 function saveProjects(projects: StoredProject[]): void {
-  localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects))
+  writeJson(PROJECTS_KEY, projects)
 }
 
 // Cycles through the same four theme colors the seed data uses, so a

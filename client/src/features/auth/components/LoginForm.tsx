@@ -16,7 +16,7 @@ import { Link as RouterLink } from 'react-router-dom'
 import { emailSchema } from '../validation'
 import { AuthHeading } from './AuthHeading'
 import { PasswordField } from './PasswordField'
-import { PhaseOneNote } from './PhaseOneNote'
+import { InfoNote } from './InfoNote'
 import { authService } from '../authService'
 
 const loginSchema = z.object({
@@ -130,10 +130,11 @@ export function LoginForm() {
         </Link>
       </Typography>
 
-      <PhaseOneNote>
-        Phase 1 note: sign-in is a local mock (seeded users in this browser
-        only) — real authenticated accounts arrive with the Phase 3 backend.
-      </PhaseOneNote>
+      {/* NO-BACKEND: remove this note once real accounts exist. */}
+      <InfoNote>
+        Note: sign-in uses sample accounts stored in this browser. Real accounts
+        will be added once a backend is in place.
+      </InfoNote>
     </Stack>
   )
 }

@@ -4,6 +4,7 @@ import {
   COMMENTS_SEED_VERSION,
 } from '../../mockData/comments.seed'
 import { loadSeededData } from '../../services/localStorageSeed'
+import { writeJson } from '../../services/storage'
 
 const COMMENTS_KEY = 'taskflow.comments'
 
@@ -12,7 +13,7 @@ function loadComments(): Comment[] {
 }
 
 function saveComments(comments: Comment[]): void {
-  localStorage.setItem(COMMENTS_KEY, JSON.stringify(comments))
+  writeJson(COMMENTS_KEY, comments)
 }
 
 function listByTask(taskId: string): Comment[] {
@@ -63,9 +64,14 @@ function deleteComment(id: string): void {
   saveComments(allComments.filter((c) => c.id !== id))
 }
 
+function deleteByTask(taskId: string): void {
+  saveComments(loadComments().filter((c) => c.taskId !== taskId))
+}
+
 export const commentService = {
   listByTask,
   createComment,
   updateComment,
   deleteComment,
+  deleteByTask,
 }

@@ -6,7 +6,7 @@ import Button from '@mui/material/Button'
 import { AuthHeading } from './AuthHeading'
 import { BackToSignInLink } from './BackToSignInLink'
 import { PasswordField } from './PasswordField'
-import { PhaseOneNote } from './PhaseOneNote'
+import { InfoNote } from './InfoNote'
 import { Logo } from '../../../components/Logo'
 import { passwordSchema, PASSWORD_HINT } from '../validation'
 
@@ -66,11 +66,11 @@ export function ResetPasswordForm() {
         Reset password
       </Button>
 
-      <PhaseOneNote>
-        Phase 1 note: this page is UI-only — there's no real reset token to
-        verify until Phase 3, so Forgot Password doesn't yet link here
-        automatically.
-      </PhaseOneNote>
+      {/* NO-BACKEND: remove this note once reset links are verified. */}
+      <InfoNote>
+        Note: reset links need a backend to create and check them, so Forgot
+        Password doesn't link here yet.
+      </InfoNote>
     </Stack>
   )
 }

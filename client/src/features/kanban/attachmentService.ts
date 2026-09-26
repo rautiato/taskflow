@@ -4,6 +4,7 @@ import {
   ATTACHMENTS_SEED_VERSION,
 } from '../../mockData/attachments.seed'
 import { loadSeededData } from '../../services/localStorageSeed'
+import { writeJson } from '../../services/storage'
 
 const ATTACHMENTS_KEY = 'taskflow.attachments'
 
@@ -16,7 +17,7 @@ function loadAttachments(): Attachment[] {
 }
 
 function saveAttachments(attachments: Attachment[]): void {
-  localStorage.setItem(ATTACHMENTS_KEY, JSON.stringify(attachments))
+  writeJson(ATTACHMENTS_KEY, attachments)
 }
 
 function listByTask(taskId: string): Attachment[] {
@@ -40,8 +41,13 @@ function deleteAttachment(id: string): void {
   saveAttachments(loadAttachments().filter((a) => a.id !== id))
 }
 
+function deleteByTask(taskId: string): void {
+  saveAttachments(loadAttachments().filter((a) => a.taskId !== taskId))
+}
+
 export const attachmentService = {
   listByTask,
   createAttachment,
   deleteAttachment,
+  deleteByTask,
 }
