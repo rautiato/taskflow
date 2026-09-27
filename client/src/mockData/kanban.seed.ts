@@ -3,6 +3,17 @@ import type { TaskItem } from '../models/task'
 
 export const KANBAN_SEED_VERSION = '1'
 
+// Due dates for the Administrator's tasks are relative to the first load, so
+// the dashboard's Overdue / Due this week tiles stay populated whenever the
+// app is opened. Stored the same way the task form stores a picked date.
+function daysFromToday(days: number): string {
+  const date = new Date()
+  date.setDate(date.getDate() + days)
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return new Date(`${date.getFullYear()}-${month}-${day}`).toISOString()
+}
+
 export const SEEDED_BOARDS: KanbanBoard[] = [
   {
     id: 'board-project-1',
@@ -326,5 +337,79 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 0,
     createdAt: '2026-09-11T00:00:00.000Z',
     updatedAt: '2026-09-15T00:00:00.000Z',
+  },
+  // ---- Administrator (seed-4) ----
+  {
+    id: 'task-18',
+    columnId: 'col-in-progress',
+    title: 'Set up CI workflow',
+    description: 'Run lint, type-check and tests on every pull request.',
+    priority: 'High',
+    dueDate: daysFromToday(-3),
+    assigneeId: 'seed-4',
+    createdById: 'seed-3',
+    isFavorite: true,
+    order: 4,
+    createdAt: '2026-09-15T00:00:00.000Z',
+    updatedAt: '2026-09-20T00:00:00.000Z',
+  },
+  {
+    id: 'task-19',
+    columnId: 'col-todo',
+    title: 'Plan next sprint scope',
+    description:
+      'Pick stories from the backlog and estimate them with the team.',
+    priority: 'Medium',
+    dueDate: daysFromToday(0),
+    assigneeId: 'seed-4',
+    createdById: 'seed-4',
+    isFavorite: false,
+    order: 5,
+    createdAt: '2026-09-20T00:00:00.000Z',
+    updatedAt: '2026-09-20T00:00:00.000Z',
+  },
+  {
+    id: 'task-20',
+    columnId: 'col-todo',
+    title: 'Audit accessibility on auth pages',
+    description:
+      'Check keyboard navigation, labels and contrast on sign-in and sign-up.',
+    priority: 'Low',
+    dueDate: daysFromToday(5),
+    assigneeId: 'seed-4',
+    createdById: 'seed-1',
+    isFavorite: false,
+    order: 6,
+    createdAt: '2026-09-21T00:00:00.000Z',
+    updatedAt: '2026-09-21T00:00:00.000Z',
+  },
+  {
+    id: 'task-21',
+    columnId: 'col-p2-in-progress',
+    title: 'Prepare app store listing',
+    description:
+      'Write the description and collect screenshots for both stores.',
+    priority: 'Medium',
+    dueDate: daysFromToday(12),
+    assigneeId: 'seed-4',
+    createdById: 'seed-3',
+    isFavorite: false,
+    order: 1,
+    createdAt: '2026-09-18T00:00:00.000Z',
+    updatedAt: '2026-09-18T00:00:00.000Z',
+  },
+  {
+    id: 'task-22',
+    columnId: 'col-p2-todo',
+    title: 'Define beta tester group',
+    description: 'Shortlist internal users for the first TestFlight build.',
+    priority: 'Low',
+    dueDate: null,
+    assigneeId: 'seed-4',
+    createdById: null,
+    isFavorite: false,
+    order: 2,
+    createdAt: '2026-09-19T00:00:00.000Z',
+    updatedAt: '2026-09-19T00:00:00.000Z',
   },
 ]
