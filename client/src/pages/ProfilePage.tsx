@@ -43,7 +43,7 @@ export function ProfilePage() {
             border: 1,
             borderColor: 'divider',
             borderRadius: 2,
-            p: 3,
+            p: { xs: 2, sm: 3 },
           }}
         >
           <ProfileForm user={user} onUpdated={setUser} />

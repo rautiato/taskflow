@@ -23,6 +23,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: 2,
     px: 2.25,
     py: 1.75,
     bgcolor: '#F5F6F8',
@@ -37,10 +38,12 @@ const styles = {
     fontSize: 12,
     color: 'text.secondary',
   },
+  // Phones: title above the chips. Wider screens: one row.
   row: {
     display: 'flex',
-    alignItems: 'center',
-    gap: 1.5,
+    flexDirection: { xs: 'column', sm: 'row' },
+    alignItems: { xs: 'stretch', sm: 'center' },
+    gap: { xs: 0.75, sm: 1.5 },
     px: 2.25,
     py: 1.25,
     color: 'inherit',
@@ -55,6 +58,11 @@ const styles = {
   project: {
     fontSize: 12,
     color: 'text.secondary',
+  },
+  chips: {
+    display: 'flex',
+    gap: 1.5,
+    flexShrink: 0,
   },
   chip: {
     fontSize: 11,
@@ -110,10 +118,12 @@ export function NextTasksList({
                   </Typography>
                   <Typography sx={styles.project}>{projectName}</Typography>
                 </Box>
-                <Box sx={[styles.chip, PRIORITY_STYLES[task.priority]]}>
-                  {task.priority}
+                <Box sx={styles.chips}>
+                  <Box sx={[styles.chip, PRIORITY_STYLES[task.priority]]}>
+                    {task.priority}
+                  </Box>
+                  {due && <Box sx={[styles.chip, due.sx]}>{due.label}</Box>}
                 </Box>
-                {due && <Box sx={[styles.chip, due.sx]}>{due.label}</Box>}
               </Box>
             )
           })}

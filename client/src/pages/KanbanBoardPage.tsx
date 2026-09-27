@@ -32,6 +32,7 @@ import {
 } from '../features/kanban/components/ColumnHeaderRow'
 import { TASK_DND_TYPE, parseTaskCellId } from '../features/kanban/taskCellId'
 import { AssigneeLane } from '../features/kanban/components/AssigneeLane'
+import { ManageColumnsButton } from '../features/kanban/components/ManageColumnsButton'
 import { FilterBar } from '../features/kanban/components/FilterBar'
 import { TaskListView } from '../features/kanban/components/TaskListView'
 import { TaskFormDialog } from '../features/kanban/components/TaskFormDialog'
@@ -170,25 +171,36 @@ export function KanbanBoardPage() {
   return (
     <AppLayout user={user}>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {/* Phones: title on its own row, controls on the next. */}
         <Box
           sx={{
             display: 'flex',
-            alignItems: 'flex-end',
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: { xs: 'stretch', sm: 'flex-end' },
             justifyContent: 'space-between',
+            gap: 1.5,
           }}
         >
-          <Box>
+          <Box sx={{ minWidth: 0 }}>
             <Breadcrumbs
               items={[
                 { label: 'Projects', to: '/projects' },
                 { label: project.name },
               ]}
             />
-            <Typography sx={{ fontSize: 25, fontWeight: 700 }}>
+            <Typography sx={{ fontSize: { xs: 20, sm: 25 }, fontWeight: 700 }}>
               {project.name}
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: { xs: 1, sm: 2 },
+              flexShrink: 0,
+            }}
+          >
             <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
               {tasks.length} tasks
             </Typography>
@@ -214,15 +226,50 @@ export function KanbanBoardPage() {
                 },
               }}
             >
-              <ToggleButton value="kanban">
-                <GridViewIcon sx={{ fontSize: 16, mr: 0.75 }} />
-                Kanban
+              {/* Icon-only on phones; aria-label keeps the name. */}
+              <ToggleButton value="kanban" aria-label="Kanban">
+                <GridViewIcon sx={{ fontSize: 16, mr: { xs: 0, sm: 0.75 } }} />
+                <Box
+                  component="span"
+                  sx={{ display: { xs: 'none', sm: 'inline' } }}
+                >
+                  Kanban
+                </Box>
               </ToggleButton>
-              <ToggleButton value="list">
-                <ViewListIcon sx={{ fontSize: 16, mr: 0.75 }} />
-                List
+              <ToggleButton value="list" aria-label="List">
+                <ViewListIcon sx={{ fontSize: 16, mr: { xs: 0, sm: 0.75 } }} />
+                <Box
+                  component="span"
+                  sx={{ display: { xs: 'none', sm: 'inline' } }}
+                >
+                  List
+                </Box>
               </ToggleButton>
             </ToggleButtonGroup>
+            {view === 'kanban' && (
+              <ManageColumnsButton
+                columns={columns}
+                taskCountByColumn={taskCountByColumn}
+                onHideColumn={hideColumn}
+                onShowColumn={showColumn}
+                onDeleteColumn={deleteColumn}
+                onCreateColumn={(name) => {
+                  if (board) createColumn(board.id, name)
+                }}
+              />
+            )}
+            {/* In the header, not the list toolbar, so it's in the same
+                place in both views. */}
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() =>
+                setFormState({ defaultColumnId: visibleColumns[0]?.id ?? '' })
+              }
+              sx={{ ml: { xs: 'auto', sm: 0 } }}
+            >
+              New Task
+            </Button>
           </Box>
         </Box>
 
@@ -243,17 +290,10 @@ export function KanbanBoardPage() {
               >
                 <ColumnHeaderRow
                   columns={visibleColumns}
-                  allColumns={columns}
                   taskCountByColumn={taskCountByColumn}
                   onAddTask={(columnId) =>
                     setFormState({ defaultColumnId: columnId })
                   }
-                  onHideColumn={hideColumn}
-                  onShowColumn={showColumn}
-                  onDeleteColumn={deleteColumn}
-                  onCreateColumn={(name) => {
-                    if (board) createColumn(board.id, name)
-                  }}
                 />
                 <Box sx={{ borderTop: 1, borderColor: 'divider' }} />
                 {assigneeLanes.length === 0 ? (
@@ -281,26 +321,12 @@ export function KanbanBoardPage() {
           </DragDropContext>
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-            <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
-              <Box sx={{ flexGrow: 1 }}>
-                <FilterBar
-                  filters={filters}
-                  onChange={setFilters}
-                  columns={visibleColumns}
-                  users={users}
-                />
-              </Box>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={() =>
-                  setFormState({ defaultColumnId: visibleColumns[0]?.id ?? '' })
-                }
-                sx={{ flexShrink: 0 }}
-              >
-                New Task
-              </Button>
-            </Box>
+            <FilterBar
+              filters={filters}
+              onChange={setFilters}
+              columns={visibleColumns}
+              users={users}
+            />
             {hasActiveFilters(filters) && (
               <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
                 {listViewTasks.length} task

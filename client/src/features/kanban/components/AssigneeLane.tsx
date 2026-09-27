@@ -7,7 +7,7 @@ import type { SxProps, Theme } from '@mui/material/styles'
 import type { KanbanColumn } from '../../../models/kanbanBoard'
 
 import { TaskCard } from './TaskCard'
-import { COLUMN_WIDTH } from './ColumnHeaderRow'
+import { COLUMN_WIDTH } from '../boardLayout'
 import { TASK_DND_TYPE, taskCellId } from '../taskCellId'
 import { UserAvatar } from '../../../components/UserAvatar'
 import type { AssigneeLaneData } from '../../tasks/groupTasksByAssignee'
@@ -24,17 +24,23 @@ const styles = {
     gap: 1,
   },
   header: {
-    position: 'sticky',
-    left: 0,
-    zIndex: 1,
     bgcolor: '#F0F1F4',
     borderRadius: 1,
     px: 1.5,
     py: 0.875,
     display: 'flex',
     alignItems: 'center',
-    gap: 1.125,
     cursor: 'pointer',
+  },
+  // The header bar spans every column, so it can't stick itself; its
+  // content sticks instead, keeping who the lane belongs to in view while
+  // the board scrolls sideways.
+  headerContent: {
+    position: 'sticky',
+    left: 12,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1.125,
   },
   name: {
     fontSize: 13,
@@ -53,7 +59,6 @@ const styles = {
   collapseIcon: {
     fontSize: 18,
     color: 'text.secondary',
-    ml: 'auto',
     transition: 'transform 0.15s ease',
   },
   columnsRow: {
@@ -119,20 +124,22 @@ export function AssigneeLane({
         onKeyDown={handleKeyDown}
         sx={styles.header}
       >
-        <UserAvatar
-          id={lane.assigneeId}
-          name={lane.assigneeId ? lane.assigneeName : null}
-          avatarUrl={lane.assigneeAvatarUrl}
-          size="xs"
-        />
-        <Typography sx={styles.name}>{lane.assigneeName}</Typography>
-        <Box sx={styles.countChip}>{lane.taskCount} tasks</Box>
-        <ExpandMoreIcon
-          sx={[
-            styles.collapseIcon,
-            { transform: collapsed ? 'rotate(-90deg)' : 'none' },
-          ]}
-        />
+        <Box sx={styles.headerContent}>
+          <UserAvatar
+            id={lane.assigneeId}
+            name={lane.assigneeId ? lane.assigneeName : null}
+            avatarUrl={lane.assigneeAvatarUrl}
+            size="xs"
+          />
+          <Typography sx={styles.name}>{lane.assigneeName}</Typography>
+          <Box sx={styles.countChip}>{lane.taskCount} tasks</Box>
+          <ExpandMoreIcon
+            sx={[
+              styles.collapseIcon,
+              { transform: collapsed ? 'rotate(-90deg)' : 'none' },
+            ]}
+          />
+        </Box>
       </Box>
       {!collapsed && (
         <Box sx={styles.columnsRow}>

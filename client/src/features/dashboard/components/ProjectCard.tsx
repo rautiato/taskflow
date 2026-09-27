@@ -14,6 +14,7 @@ const SEGMENT_COLORS = {
 const styles = {
   root: {
     flex: 1,
+    minWidth: 0,
     bgcolor: 'background.paper',
     border: 1,
     borderColor: 'divider',

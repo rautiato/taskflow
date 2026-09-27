@@ -33,7 +33,16 @@ export function MyTasksFilterBar({
   creators: UserDto[]
 }) {
   return (
-    <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
+    // Phones: 2-column grid with search spanning both columns.
+    // Wider screens: one wrapping row.
+    <Box
+      sx={{
+        display: { xs: 'grid', sm: 'flex' },
+        gridTemplateColumns: '1fr 1fr',
+        flexWrap: 'wrap',
+        gap: 1.5,
+      }}
+    >
       <TextField
         size="small"
         placeholder="Search tasks..."
@@ -41,7 +50,7 @@ export function MyTasksFilterBar({
         onChange={(event) =>
           onChange({ ...filters, search: event.target.value })
         }
-        sx={{ width: 300 }}
+        sx={{ gridColumn: '1 / -1', width: { sm: 300 } }}
         slotProps={{
           input: {
             startAdornment: (

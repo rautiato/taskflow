@@ -7,7 +7,6 @@ import { AuthHeading } from './AuthHeading'
 import { BackToSignInLink } from './BackToSignInLink'
 import { PasswordField } from './PasswordField'
 import { InfoNote } from './InfoNote'
-import { Logo } from '../../../components/Logo'
 import { passwordSchema, PASSWORD_HINT } from '../validation'
 
 const resetPasswordSchema = z
@@ -29,7 +28,7 @@ export function ResetPasswordForm() {
   })
 
   function onSubmit(values: ResetPasswordFormValues) {
-    // TODO: wire to authService once real reset tokens exist (Phase 3)
+    // NO-BACKEND: wire to authService once real reset tokens exist.
     console.log('reset password', values)
   }
 
@@ -42,13 +41,10 @@ export function ResetPasswordForm() {
     >
       <BackToSignInLink />
 
-      <Stack spacing={0.75}>
-        <Logo />
-        <AuthHeading
-          title="Set a new password"
-          subtitle="Choose a new password for your account."
-        />
-      </Stack>
+      <AuthHeading
+        title="Set a new password"
+        subtitle="Choose a new password for your account."
+      />
 
       <PasswordField<ResetPasswordFormValues>
         name="newPassword"

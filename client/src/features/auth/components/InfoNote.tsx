@@ -8,7 +8,7 @@ export function InfoNote({ children }: { children: ReactNode }) {
         bgcolor: 'background.default',
         borderRadius: 2,
         p: 1.5,
-        fontSize: 11,
+        fontSize: 12,
         color: 'text.secondary',
         lineHeight: 1.5,
       }}

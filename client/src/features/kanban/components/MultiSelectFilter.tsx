@@ -28,7 +28,7 @@ export function MultiSelectFilter<T extends string>({
         const next = event.target.value as unknown as T[] | string
         onChange(typeof next === 'string' ? (next.split(',') as T[]) : next)
       }}
-      sx={{ minWidth }}
+      sx={{ minWidth: { sm: minWidth } }}
       slotProps={{
         inputLabel: { shrink: true },
         select: {

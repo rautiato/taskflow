@@ -20,7 +20,15 @@ export function AppLayout({
       }}
     >
       <AppHeader user={user} />
-      <Box sx={{ flexGrow: 1, px: 4, py: 3.5 }}>{children}</Box>
+      <Box
+        sx={{
+          flexGrow: 1,
+          px: { xs: 2, sm: 3, md: 4 },
+          py: { xs: 2.5, md: 3.5 },
+        }}
+      >
+        {children}
+      </Box>
     </Box>
   )
 }

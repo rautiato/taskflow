@@ -11,7 +11,8 @@ const styles = {
     border: 1,
     borderColor: 'divider',
     borderRadius: 2,
-    p: 2.25,
+    p: { xs: 1.75, sm: 2.25 },
+    minWidth: 0,
     transition: 'border-color 0.15s, box-shadow 0.15s',
     '&:hover': { borderColor: 'primary.main', boxShadow: 1 },
   },
@@ -30,10 +31,11 @@ const styles = {
     fontSize: 30,
     fontWeight: 700,
   },
-  // Same height on every tile, so notes and chips line up across the row.
+  // Same minimum height on every tile, so notes and chips line up across
+  // the row; narrow tiles can still grow when the chips wrap.
   footer: {
     mt: 1,
-    height: 24,
+    minHeight: 24,
     display: 'flex',
     alignItems: 'center',
   },

@@ -54,7 +54,10 @@ export function LoginForm() {
       noValidate
       onSubmit={handleSubmit(onSubmit)}
     >
-      <AuthHeading title="TaskFlow" subtitle="Sign in to continue" />
+      <AuthHeading
+        title="Welcome back"
+        subtitle="Sign in to continue to TaskFlow"
+      />
 
       {authError && <Alert severity="error">{authError}</Alert>}
 
@@ -82,7 +85,12 @@ export function LoginForm() {
             component={RouterLink}
             to="/forgot-password"
             underline="hover"
-            sx={{ fontSize: 12, fontWeight: 600 }}
+            sx={{
+              fontSize: 13,
+              fontWeight: 600,
+              display: 'inline-block',
+              py: 0.5,
+            }}
           >
             Forgot password?
           </Link>

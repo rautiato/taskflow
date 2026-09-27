@@ -39,7 +39,7 @@ export function SettingsPage() {
             border: 1,
             borderColor: 'divider',
             borderRadius: 2,
-            p: 3,
+            p: { xs: 2, sm: 3 },
           }}
         >
           <Typography sx={{ fontSize: 16, fontWeight: 700, mb: 2 }}>
