@@ -10,7 +10,6 @@ export function AuthLayout({
   brandPanel = true,
 }: {
   children: ReactNode
-  // Recovery pages (forgot/reset password) use a single column.
   brandPanel?: boolean
 }) {
   return (
@@ -22,8 +21,6 @@ export function AuthLayout({
         sx={{
           flexGrow: 1,
           display: 'flex',
-          // Top-aligned on phones so the form doesn't float mid-screen or
-          // jump when the on-screen keyboard opens.
           alignItems: { xs: 'flex-start', md: 'center' },
           justifyContent: 'center',
           px: 3,
@@ -32,8 +29,6 @@ export function AuthLayout({
         }}
       >
         <Box sx={{ width: '100%', maxWidth: 380 }}>
-          {/* With the brand panel, the logo only shows where the panel is
-              hidden (below md); without it, the logo always shows. */}
           <Stack
             direction="row"
             spacing={1.25}

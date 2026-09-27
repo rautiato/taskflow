@@ -28,6 +28,7 @@ import { UserAvatar } from '../../../components/UserAvatar'
 import { useAttachments } from '../useAttachments'
 import { useProjectColumns } from '../useProjectColumns'
 import { notifyError } from '../../../services/notifications'
+import { errorMessage } from '../../../utils/errorMessage'
 import {
   AttachmentPicker,
   type AttachmentPickerHandle,
@@ -168,9 +169,7 @@ export function TaskFormDialog({
       // The dialog has already closed, so say plainly what was and wasn't
       // saved. This replaces the global handler's generic message.
       notifyError(
-        `Task saved, but its attachments weren't. ${
-          error instanceof Error ? error.message : ''
-        }`.trim(),
+        `Task saved, but its attachments weren't. ${errorMessage(error, '')}`.trim(),
       )
     }
   }

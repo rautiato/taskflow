@@ -6,7 +6,7 @@ import { ErrorBoundary } from '../components/ErrorBoundary'
 import { ErrorSnackbar } from '../components/ErrorSnackbar'
 import { AppRoutes } from './routes'
 
-function App() {
+export function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -19,5 +19,3 @@ function App() {
     </ThemeProvider>
   )
 }
-
-export default App

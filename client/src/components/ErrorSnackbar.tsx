@@ -23,8 +23,6 @@ export function ErrorSnackbar() {
       }}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
     >
-      {/* White card with a red icon and left accent, matching the app's cards
-          (Jira/Linear style), rather than a solid red bar. */}
       <Alert
         severity="error"
         variant="outlined"

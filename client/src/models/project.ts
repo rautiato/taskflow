@@ -1,7 +1,7 @@
 export type ProjectStatus = 'Active' | 'Closed'
 export type ProjectPaletteColor = 'error' | 'primary' | 'success' | 'warning'
 
-// What's persisted.
+/** What's persisted to storage. */
 export interface StoredProject {
   id: string
   name: string
@@ -11,8 +11,9 @@ export interface StoredProject {
   status: ProjectStatus
 }
 
-// Team-wide numbers derived from the project's tasks on every read — never
-// stored (PLAN.md §3's "Seed data & derived project stats" decision).
+/**
+ * Team-wide numbers derived from the project's tasks on every read
+ */
 export interface ProjectStats {
   taskCount: number
   progress: number

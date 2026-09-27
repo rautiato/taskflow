@@ -9,14 +9,10 @@ export function BackToSignInLink() {
     <Link
       component={RouterLink}
       to="/login"
-      underline="none"
+      color="text.secondary"
       sx={{ display: 'inline-flex' }}
     >
-      <Stack
-        direction="row"
-        spacing={1}
-        sx={{ alignItems: 'center', color: 'text.secondary' }}
-      >
+      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <ArrowBackIcon sx={{ fontSize: 15 }} />
         <Typography variant="body2" sx={{ fontWeight: 600 }}>
           Back to sign in

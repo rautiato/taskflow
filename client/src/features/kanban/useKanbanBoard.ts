@@ -21,6 +21,12 @@ function kanbanBoardQueryKey(projectId: string) {
   return ['kanbanBoard', projectId] as const
 }
 
+/**
+ * Loads a project's board (columns and tasks) and exposes its mutations.
+ * Task and column-order updates are applied optimistically and rolled back
+ * on error. Every mutation invalidates all boards, My Tasks and the
+ * projects list, since a task change can affect each of them.
+ */
 export function useKanbanBoard(projectId: string) {
   const queryClient = useQueryClient()
   const queryKey = kanbanBoardQueryKey(projectId)

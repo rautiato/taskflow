@@ -84,11 +84,7 @@ export function AvatarUpload({
         </Box>
         <Box>
           <Box sx={{ display: 'flex', gap: 1.5 }}>
-            <Link
-              component="label"
-              underline="hover"
-              sx={{ fontWeight: 600, cursor: 'pointer' }}
-            >
+            <Link component="label" sx={{ fontWeight: 600, cursor: 'pointer' }}>
               Change photo
               <input
                 type="file"
@@ -104,7 +100,6 @@ export function AvatarUpload({
               <Link
                 component="button"
                 type="button"
-                underline="hover"
                 color="error"
                 sx={{ fontWeight: 600 }}
                 onClick={() => onChange(null)}

@@ -18,7 +18,7 @@ const SORT_KEYS: SortKey[] = [
   'dueDate',
 ]
 
-// Header click cycles asc → desc → off (back to the incoming order).
+/** Header click cycles asc → desc → off (back to the incoming order). */
 export function nextSort(current: SortState, key: SortKey): SortState {
   if (current?.key !== key) return { key, dir: 'asc' }
   if (current.dir === 'asc') return { key, dir: 'desc' }

@@ -37,6 +37,25 @@ export const theme = createTheme({
     borderRadius: 8,
   },
   components: {
+    MuiLink: {
+      defaultProps: {
+        underline: 'none',
+      },
+      styleOverrides: {
+        // With no underline, a darker colour is the hover cue.
+        root: ({ theme, ownerState }) => ({
+          transition: theme.transitions.create('color'),
+          '&:hover': {
+            color:
+              ownerState.color === 'error'
+                ? theme.palette.error.dark
+                : ownerState.color === 'text.secondary'
+                  ? theme.palette.text.primary
+                  : theme.palette.primary.dark,
+          },
+        }),
+      },
+    },
     MuiTextField: {
       defaultProps: {
         slotProps: {

@@ -80,7 +80,7 @@ export function DashboardPage() {
   // "Your projects" is personal, like the rest of the dashboard: active
   // projects where the user has at least one open task, most recently
   // updated first. (Prod apps show "recently viewed" here — the natural
-  // upgrade once a backend can record views; see PLAN.md §3.)
+  // upgrade once a backend can record views.)
   const doneColumnIds = getDoneColumnIds(columns)
   const myOpenCountByProjectId = new Map<string, number>()
   for (const task of tasks) {

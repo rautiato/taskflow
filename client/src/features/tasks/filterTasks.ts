@@ -30,6 +30,11 @@ export function hasActiveFilters(filters: TaskFilters): boolean {
   )
 }
 
+/**
+ * Board filter: each field is a single choice, `ALL` meaning "any".
+ * Search matches task titles only. For the multi-select My Tasks
+ * filters, see `filterMyTasks`.
+ */
 export function filterTasks(
   tasks: TaskItem[],
   filters: TaskFilters,

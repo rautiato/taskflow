@@ -17,6 +17,7 @@ export function clearError() {
   emit()
 }
 
+/** For `useSyncExternalStore`. Returns an unsubscribe function. */
 export function subscribe(listener: () => void) {
   listeners.add(listener)
   return () => {
@@ -24,6 +25,7 @@ export function subscribe(listener: () => void) {
   }
 }
 
+/** For `useSyncExternalStore`. */
 export function getErrorMessage() {
   return message
 }
