@@ -6,6 +6,7 @@ export type CropArea = { x: number; y: number; width: number; height: number }
 // localStorage quota it gets stored under) for no visual benefit.
 const OUTPUT_SIZE = 256
 
+/** Crops `imageSrc` to `crop` and returns a 256×256 JPEG data URL. */
 export function cropImageToDataUrl(
   imageSrc: string,
   crop: CropArea,

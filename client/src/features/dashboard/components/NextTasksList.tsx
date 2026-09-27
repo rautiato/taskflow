@@ -95,7 +95,6 @@ export function NextTasksList({
         <Link
           component={RouterLink}
           to={viewAllHref}
-          underline="hover"
           sx={{ fontSize: 13, fontWeight: 600 }}
         >
           View all

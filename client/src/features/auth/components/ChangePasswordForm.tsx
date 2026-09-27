@@ -9,6 +9,7 @@ import Box from '@mui/material/Box'
 import { passwordSchema, PASSWORD_HINT } from '../validation'
 import { PasswordField } from './PasswordField'
 import { authService } from '../authService'
+import { errorMessage } from '../../../utils/errorMessage'
 
 const changePasswordSchema = z
   .object({
@@ -47,9 +48,7 @@ export function ChangePasswordForm({ userId }: { userId: string }) {
       setSuccess(true)
       reset()
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Unable to update password.',
-      )
+      setError(errorMessage(err, 'Unable to update password.'))
     }
   }
 

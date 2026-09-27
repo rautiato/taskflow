@@ -7,8 +7,11 @@ export const PRIORITIES: TaskPriority[] = ['High', 'Medium', 'Low']
 export const DUE_FILTERS = ['overdue', 'today', 'next7', 'none'] as const
 export type DueFilter = (typeof DUE_FILTERS)[number]
 
-// Every filter is a list; an empty list means "any". Values within one
-// filter are OR'd, different filters are AND'd — the Jira/Linear model.
+/**
+ * Each filter holds a list of selected values; an empty list matches every
+ * task. A task matches a filter if it has any of the selected values, and
+ * it must match every filter that has a selection.
+ */
 export interface MyTasksFilters {
   search: string
   projectIds: string[]
@@ -38,8 +41,10 @@ export function hasActiveMyTasksFilters(filters: MyTasksFilters): boolean {
   )
 }
 
-// Shared with the dashboard tiles, so a tile's count always equals the
-// rows its link lands on.
+/**
+ * Shared with the dashboard tiles, so a tile's count always equals the
+ * rows its link lands on.
+ */
 export function matchesDueFilter(
   dueDate: string | null,
   filter: DueFilter,
@@ -53,6 +58,11 @@ export function matchesDueFilter(
   return days >= 0 && days <= DUE_SOON_DAYS
 }
 
+/**
+ * Applies `MyTasksFilters` across projects. Tasks only carry a column id,
+ * so the caller passes lookups from column id to project id and to status
+ * name. Search matches task titles only.
+ */
 export function filterMyTasks(
   tasks: TaskItem[],
   filters: MyTasksFilters,
@@ -147,6 +157,7 @@ export function filtersToSearchParams(
   return params
 }
 
+/** Link to My Tasks with the given filters and sort encoded in the URL. */
 export function myTasksHref(
   filters: Partial<MyTasksFilters>,
   sort: SortState = null,

@@ -12,10 +12,9 @@ export type DashboardStats = {
   assigned: number
 }
 
-// Pure: derives the dashboard tiles from the tasks assigned to the user.
-// A task is done when its column is a Done column; TaskItem has no status
-// field of its own (PLAN.md §4.4). Each count is one clear thing — no
-// count is a hidden subset of another tile's number.
+/**
+ * Derives the dashboard tiles from the tasks assigned to the user.
+ */
 export function computeDashboardStats(
   tasks: TaskItem[],
   columns: KanbanColumn[],
@@ -50,8 +49,10 @@ const PRIORITY_RANK: Record<TaskPriority, number> = {
   Low: 2,
 }
 
-// Next open tasks for the "Up next" list: earliest due date first (so
-// overdue tasks lead), undated tasks last, higher priority breaking ties.
+/**
+ * Next open tasks for the "Your next tasks" list: earliest due date first (so
+ * overdue tasks lead), undated tasks last, higher priority breaking ties.
+ */
 export function selectUpNext(
   tasks: TaskItem[],
   columns: KanbanColumn[],

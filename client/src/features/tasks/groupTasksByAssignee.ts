@@ -10,6 +10,11 @@ export interface AssigneeLaneData {
   taskCount: number
 }
 
+/**
+ * Builds one board lane per assignee that has at least one task, sorted by
+ * name with the Unassigned lane last. Tasks within each column are ordered
+ * by `sortTasks`.
+ */
 export function groupTasksByAssignee(
   tasks: TaskItem[],
   users: UserDto[],

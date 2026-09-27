@@ -10,7 +10,9 @@ import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { emailSchema, nameSchema } from '../validation'
+import { EmailField } from './EmailField'
 import { authService } from '../authService'
+import { errorMessage } from '../../../utils/errorMessage'
 import { AvatarUpload } from '../../../components/AvatarUpload'
 import type { UserDto } from '../../../models/user'
 
@@ -46,7 +48,7 @@ export function ProfileForm({
       onUpdated(authService.updateProfile(user.id, values))
       setSuccess(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to update profile.')
+      setError(errorMessage(err, 'Unable to update profile.'))
     }
   }
 
@@ -55,7 +57,7 @@ export function ProfileForm({
     try {
       onUpdated(authService.updateAvatar(user.id, avatarUrl))
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to update photo.')
+      setError(errorMessage(err, 'Unable to update photo.'))
     }
   }
 
@@ -98,21 +100,7 @@ export function ProfileForm({
         )}
       />
 
-      <Controller
-        name="email"
-        control={control}
-        render={({ field, fieldState }) => (
-          <TextField
-            {...field}
-            label="Email"
-            type="email"
-            required
-            fullWidth
-            error={!!fieldState.error}
-            helperText={fieldState.error?.message}
-          />
-        )}
-      />
+      <EmailField<ProfileFormValues> control={control} />
 
       <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
         Role: {user.role} · Member since {memberSince}

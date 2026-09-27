@@ -6,6 +6,9 @@ export const PRIORITY_RANK: Record<TaskPriority, number> = {
   Low: 2,
 }
 
+/**
+ * Favorites first, then High → Low priority, then title A–Z. Returns a new array.
+ */
 export function sortTasks(tasks: TaskItem[]): TaskItem[] {
   return [...tasks].sort((a, b) => {
     if (a.isFavorite !== b.isFavorite) {

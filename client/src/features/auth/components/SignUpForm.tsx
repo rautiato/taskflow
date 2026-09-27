@@ -16,10 +16,12 @@ import {
   passwordSchema,
   PASSWORD_HINT,
 } from '../validation'
+import { EmailField } from './EmailField'
 import { AuthHeading } from './AuthHeading'
 import { PasswordField } from './PasswordField'
 import { InfoNote } from './InfoNote'
 import { authService } from '../authService'
+import { errorMessage } from '../../../utils/errorMessage'
 
 const signUpSchema = z
   .object({
@@ -49,9 +51,7 @@ export function SignUpForm() {
       authService.signUp(values.name, values.email, values.password)
       navigate('/dashboard')
     } catch (error) {
-      setAuthError(
-        error instanceof Error ? error.message : 'Unable to create account.',
-      )
+      setAuthError(errorMessage(error, 'Unable to create account.'))
     }
   }
 
@@ -84,22 +84,7 @@ export function SignUpForm() {
         )}
       />
 
-      <Controller
-        name="email"
-        control={control}
-        render={({ field, fieldState }) => (
-          <TextField
-            {...field}
-            label="Email"
-            type="email"
-            required
-            fullWidth
-            placeholder="you@example.com"
-            error={!!fieldState.error}
-            helperText={fieldState.error?.message}
-          />
-        )}
-      />
+      <EmailField<SignUpFormValues> control={control} />
 
       <PasswordField<SignUpFormValues>
         name="password"
@@ -122,12 +107,7 @@ export function SignUpForm() {
         sx={{ textAlign: 'center' }}
       >
         Already have an account?{' '}
-        <Link
-          component={RouterLink}
-          to="/login"
-          underline="hover"
-          sx={{ fontWeight: 600 }}
-        >
+        <Link component={RouterLink} to="/login" sx={{ fontWeight: 600 }}>
           Sign in
         </Link>
       </Typography>

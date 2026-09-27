@@ -80,8 +80,9 @@ export function MyTasksPage() {
   const { projects } = useProjects()
   const users = useUsers()
   const { tasks, columns, boards, isLoading } = useMyTasks(user?.id ?? '')
-  // Mutations only — read query stays disabled (empty projectId); see
-  // PLAN.md §3's "My Tasks page" decision for why this is safe to reuse.
+  // Mutations only — the read query stays disabled (empty projectId). Safe:
+  // with no cached board the optimistic updates are no-ops, and every
+  // mutation invalidates My Tasks, so this page still refreshes.
   const { updateTask, toggleFavorite, deleteTask } = useKanbanBoard('')
 
   if (!user) {
@@ -195,7 +196,6 @@ export function MyTasksPage() {
                 </Typography>
                 <Link
                   component="button"
-                  underline="hover"
                   onClick={() => handleFiltersChange(EMPTY_MY_TASKS_FILTERS)}
                   sx={{ fontSize: 13, fontWeight: 600 }}
                 >

@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import TextField from '@mui/material/TextField'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Button from '@mui/material/Button'
@@ -14,10 +13,12 @@ import Link from '@mui/material/Link'
 import Alert from '@mui/material/Alert'
 import { Link as RouterLink } from 'react-router-dom'
 import { emailSchema } from '../validation'
+import { EmailField } from './EmailField'
 import { AuthHeading } from './AuthHeading'
 import { PasswordField } from './PasswordField'
 import { InfoNote } from './InfoNote'
 import { authService } from '../authService'
+import { errorMessage } from '../../../utils/errorMessage'
 
 const loginSchema = z.object({
   email: emailSchema,
@@ -41,9 +42,7 @@ export function LoginForm() {
       authService.signIn(values.email, values.password, values.rememberMe)
       navigate('/dashboard')
     } catch (error) {
-      setAuthError(
-        error instanceof Error ? error.message : 'Unable to sign in.',
-      )
+      setAuthError(errorMessage(error, 'Unable to sign in.'))
     }
   }
 
@@ -54,29 +53,11 @@ export function LoginForm() {
       noValidate
       onSubmit={handleSubmit(onSubmit)}
     >
-      <AuthHeading
-        title="Welcome back"
-        subtitle="Sign in to continue to TaskFlow"
-      />
+      <AuthHeading title="TaskFlow" subtitle="Sign in to continue" />
 
       {authError && <Alert severity="error">{authError}</Alert>}
 
-      <Controller
-        name="email"
-        control={control}
-        render={({ field, fieldState }) => (
-          <TextField
-            {...field}
-            label="Email"
-            type="email"
-            required
-            fullWidth
-            placeholder="you@example.com"
-            error={!!fieldState.error}
-            helperText={fieldState.error?.message}
-          />
-        )}
-      />
+      <EmailField<LoginFormValues> control={control} />
 
       <Stack spacing={0.75}>
         <PasswordField<LoginFormValues> name="password" control={control} />
@@ -84,7 +65,6 @@ export function LoginForm() {
           <Link
             component={RouterLink}
             to="/forgot-password"
-            underline="hover"
             sx={{
               fontSize: 13,
               fontWeight: 600,
@@ -127,13 +107,8 @@ export function LoginForm() {
         color="text.secondary"
         sx={{ textAlign: 'center' }}
       >
-        Don&apos;t have an account?{' '}
-        <Link
-          component={RouterLink}
-          to="/signup"
-          underline="hover"
-          sx={{ fontWeight: 600 }}
-        >
+        Don't have an account?{' '}
+        <Link component={RouterLink} to="/signup" sx={{ fontWeight: 600 }}>
           Sign up
         </Link>
       </Typography>

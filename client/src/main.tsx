@@ -6,22 +6,18 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
-import App from './app/App.tsx'
+import { App } from './app/App'
 import { notifyError } from './services/notifications'
+import { errorMessage } from './utils/errorMessage'
 
-function messageOf(error: unknown, fallback: string) {
-  return error instanceof Error ? error.message : fallback
-}
-
-// One place that reports every failed load or save, so no hook or page has
-// to remember to.
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
-    onError: (error) => notifyError(messageOf(error, 'Could not load data.')),
+    onError: (error) =>
+      notifyError(errorMessage(error, 'Could not load data.')),
   }),
   mutationCache: new MutationCache({
     onError: (error) =>
-      notifyError(messageOf(error, 'Could not save your changes.')),
+      notifyError(errorMessage(error, 'Could not save your changes.')),
   }),
 })
 

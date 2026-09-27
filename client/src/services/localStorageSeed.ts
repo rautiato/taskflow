@@ -1,5 +1,10 @@
 import { writeJson } from './storage'
 
+/**
+ * Reads `key` from localStorage, seeding it on first run.
+ * When `seedVersion` differs from the stored one, the stored data is
+ * replaced with `seed` — bump the version only when old data must be reset.
+ */
 export function loadSeededData<T>(
   key: string,
   seedVersion: string,

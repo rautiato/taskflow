@@ -32,7 +32,6 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
             key={item.label}
             component={RouterLink}
             to={item.to}
-            underline="hover"
             color="text.secondary"
             sx={crumbSx}
           >

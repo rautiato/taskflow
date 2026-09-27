@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import { emailSchema } from '../validation'
+import { EmailField } from './EmailField'
 import { AuthHeading } from './AuthHeading'
 import { BackToSignInLink } from './BackToSignInLink'
 import { InfoNote } from './InfoNote'
@@ -56,22 +56,7 @@ export function ForgotPasswordForm() {
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
-          <Controller
-            name="email"
-            control={control}
-            render={({ field, fieldState }) => (
-              <TextField
-                {...field}
-                label="Email"
-                type="email"
-                required
-                fullWidth
-                placeholder="you@example.com"
-                error={!!fieldState.error}
-                helperText={fieldState.error?.message}
-              />
-            )}
-          />
+          <EmailField<ForgotPasswordFormValues> control={control} />
 
           <Button type="submit" variant="contained" size="large" fullWidth>
             Send reset link

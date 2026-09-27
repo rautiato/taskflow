@@ -22,9 +22,11 @@ export function formatShortDate(iso: string) {
   })
 }
 
-// Whole days from today until the task's due date: negative = overdue,
-// 0 = due today. Shared by the due chips and the dashboard's stats so both
-// agree on what "overdue" means.
+/**
+ * Whole days from today until the task's due date: negative = overdue,
+ * 0 = due today. Shared by the due chips and the dashboard's stats so both
+ * agree on what "overdue" means.
+ */
 export function daysUntilDue(dueDate: string, now = new Date()): number {
   return Math.ceil(
     (new Date(dueDate).getTime() - startOfDay(now).getTime()) / 86_400_000,
@@ -37,6 +39,11 @@ export function getDoneColumnIds(columns: KanbanColumn[]): Set<string> {
   return new Set(columns.filter((c) => c.isDone).map((c) => c.id))
 }
 
+/**
+ * Label and colours for a task's due-date chip, or `null` when an open
+ * task has no due date. Done tasks show their last update date as the
+ * completion date.
+ */
 export function getDueChip(task: TaskItem, isDone: boolean) {
   if (isDone) {
     return {
