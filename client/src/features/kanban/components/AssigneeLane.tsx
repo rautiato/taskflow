@@ -56,7 +56,12 @@ const styles = {
     fontWeight: 600,
     color: 'text.secondary',
   },
+  // Sticks to the right edge the same way headerContent sticks to the left,
+  // so the toggle stays in view on a board wider than the screen.
   collapseIcon: {
+    position: 'sticky',
+    right: 12,
+    ml: 'auto',
     fontSize: 18,
     color: 'text.secondary',
     transition: 'transform 0.15s ease',
@@ -133,13 +138,13 @@ export function AssigneeLane({
           />
           <Typography sx={styles.name}>{lane.assigneeName}</Typography>
           <Box sx={styles.countChip}>{lane.taskCount} tasks</Box>
-          <ExpandMoreIcon
-            sx={[
-              styles.collapseIcon,
-              { transform: collapsed ? 'rotate(-90deg)' : 'none' },
-            ]}
-          />
         </Box>
+        <ExpandMoreIcon
+          sx={[
+            styles.collapseIcon,
+            { transform: collapsed ? 'rotate(-90deg)' : 'none' },
+          ]}
+        />
       </Box>
       {!collapsed && (
         <Box sx={styles.columnsRow}>

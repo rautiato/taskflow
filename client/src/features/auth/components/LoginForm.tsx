@@ -140,8 +140,10 @@ export function LoginForm() {
 
       {/* NO-BACKEND: remove this note once real accounts exist. */}
       <InfoNote>
-        Note: sign-in uses sample accounts stored in this browser. Real accounts
-        will be added once a backend is in place.
+        Note: accounts are stored in this browser. Sign up for a new account, or
+        use the sample account <strong>administrator@example.com</strong> /{' '}
+        <strong>123456</strong>. Real accounts will be added once a backend is
+        in place.
       </InfoNote>
     </Stack>
   )

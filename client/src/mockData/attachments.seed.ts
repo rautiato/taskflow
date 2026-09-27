@@ -26,4 +26,10 @@ export const SEEDED_ATTACHMENTS: Attachment[] = [
     fileName: 'network-log.png',
     blobUrl: placeholderImage('network-log.png', '#FFF4E5', '#ED6C02'),
   },
+  {
+    id: 'attachment-4',
+    taskId: 'task-18',
+    fileName: 'ci-pipeline.png',
+    blobUrl: placeholderImage('ci-pipeline.png', '#E8F5E9', '#2E7D32'),
+  },
 ]

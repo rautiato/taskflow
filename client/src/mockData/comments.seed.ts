@@ -25,4 +25,27 @@ export const SEEDED_COMMENTS: Comment[] = [
     content: 'Left a couple of comments on the diff, mostly nits.',
     createdAt: '2026-09-16T09:12:00.000Z',
   },
+  {
+    id: 'comment-4',
+    taskId: 'task-18',
+    userId: 'seed-3',
+    content:
+      'The test step is timing out on the runner. Might need to cache node_modules.',
+    createdAt: '2026-09-19T10:20:00.000Z',
+  },
+  {
+    id: 'comment-5',
+    taskId: 'task-18',
+    userId: 'seed-4',
+    content:
+      'Added dependency caching; the pipeline is down to about 3 minutes.',
+    createdAt: '2026-09-19T12:05:00.000Z',
+  },
+  {
+    id: 'comment-6',
+    taskId: 'task-18',
+    userId: 'seed-2',
+    content: 'Nice. Can we also add a build step before merging to master?',
+    createdAt: '2026-09-19T13:45:00.000Z',
+  },
 ]
