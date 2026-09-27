@@ -11,7 +11,6 @@ import { emailSchema } from '../validation'
 import { AuthHeading } from './AuthHeading'
 import { BackToSignInLink } from './BackToSignInLink'
 import { InfoNote } from './InfoNote'
-import { Logo } from '../../../components/Logo'
 
 const forgotPasswordSchema = z.object({
   email: emailSchema,
@@ -34,18 +33,16 @@ export function ForgotPasswordForm() {
     <Stack spacing={2.75}>
       <BackToSignInLink />
 
-      <Stack spacing={0.75}>
-        <Logo />
-        <AuthHeading
-          title="Reset your password"
-          subtitle="Enter the email on your account and we'll send you a link to reset your password."
-        />
-      </Stack>
+      <AuthHeading
+        title="Reset your password"
+        subtitle="Enter the email on your account and we'll send you a link to reset your password."
+      />
 
       {submittedEmail ? (
+        // NO-BACKEND: replace with a real "check your inbox" message.
         <Alert severity="info">
-          This is a demo app, so no email was actually sent to {submittedEmail}.
-          In a real deployment:
+          Note: no email was sent to {submittedEmail}. Once a backend is in
+          place, this will:
           <Box component="ol" sx={{ m: 0, pl: 2.5 }}>
             <li>Verify the address</li>
             <li>Email a one-time reset link</li>

@@ -1,50 +1,26 @@
-import { useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator'
 import AddIcon from '@mui/icons-material/Add'
-import ViewColumnOutlinedIcon from '@mui/icons-material/ViewColumnOutlined'
 import { Droppable, Draggable } from '@hello-pangea/dnd'
 import type { KanbanColumn } from '../../../models/kanbanBoard'
-import { AddColumnMenu } from './AddColumnMenu'
-
-export const COLUMN_WIDTH = 320
+import { COLUMN_WIDTH } from '../boardLayout'
 export const COLUMN_DROPPABLE_ID = 'board-columns'
 export const COLUMN_DND_TYPE = 'COLUMN'
 
 export function ColumnHeaderRow({
   columns,
-  allColumns,
   taskCountByColumn,
   onAddTask,
-  onHideColumn,
-  onShowColumn,
-  onDeleteColumn,
-  onCreateColumn,
 }: {
   columns: KanbanColumn[]
-  allColumns: KanbanColumn[]
   taskCountByColumn: Record<string, number>
   onAddTask: (columnId: string) => void
-  onHideColumn: (columnId: string) => void
-  onShowColumn: (columnId: string) => void
-  onDeleteColumn: (columnId: string) => void
-  onCreateColumn: (name: string) => void
 }) {
-  const [manageColumnsAnchor, setManageColumnsAnchor] =
-    useState<HTMLElement | null>(null)
-
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        px: 0.25,
-      }}
-    >
+    <Box sx={{ display: 'flex', alignItems: 'center', px: 0.25 }}>
       <Droppable
         droppableId={COLUMN_DROPPABLE_ID}
         direction="horizontal"
@@ -118,46 +94,6 @@ export function ColumnHeaderRow({
           </Box>
         )}
       </Droppable>
-
-      <Box
-        component="button"
-        type="button"
-        onClick={(event) => setManageColumnsAnchor(event.currentTarget)}
-        sx={{
-          border: '1px dashed #C7CBD1',
-          borderRadius: 1,
-          px: 1.625,
-          py: 0.75,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 0.75,
-          color: 'text.secondary',
-          fontSize: 12,
-          fontWeight: 600,
-          flexShrink: 0,
-          bgcolor: 'transparent',
-          cursor: 'pointer',
-          fontFamily: 'inherit',
-        }}
-      >
-        <ViewColumnOutlinedIcon sx={{ fontSize: 14 }} />
-        Manage Columns
-      </Box>
-
-      <AddColumnMenu
-        anchorEl={manageColumnsAnchor}
-        open={!!manageColumnsAnchor}
-        onClose={() => setManageColumnsAnchor(null)}
-        columns={allColumns}
-        taskCountByColumn={taskCountByColumn}
-        onHide={onHideColumn}
-        onShow={onShowColumn}
-        onDelete={onDeleteColumn}
-        onCreate={(name) => {
-          onCreateColumn(name)
-          setManageColumnsAnchor(null)
-        }}
-      />
     </Box>
   )
 }

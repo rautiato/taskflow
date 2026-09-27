@@ -62,7 +62,16 @@ export function ProjectsListPage() {
           </Button>
         </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        {/* On phones the full-width search takes its own row and the
+            status chips wrap below it. */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: { xs: 'wrap', sm: 'nowrap' },
+            alignItems: 'center',
+            gap: 1.5,
+          }}
+        >
           <TextField
             value={search}
             onChange={(e) => setSearch(e.target.value)}

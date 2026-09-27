@@ -101,7 +101,7 @@ export function TaskDetailDrawer({
         <Box
           sx={{
             position: 'relative',
-            px: 4,
+            px: { xs: 2, sm: 4 },
             pt: 3,
             pb: 2.5,
             borderBottom: 1,
@@ -228,7 +228,7 @@ export function TaskDetailDrawer({
           sx={{
             flexGrow: 1,
             overflowY: 'auto',
-            px: 4,
+            px: { xs: 2, sm: 4 },
             py: 2.5,
             display: 'flex',
             flexDirection: 'column',
@@ -327,7 +327,7 @@ export function TaskDetailDrawer({
             display: 'flex',
             justifyContent: 'space-between',
             gap: 1.5,
-            px: 4,
+            px: { xs: 2, sm: 4 },
             py: 2.5,
             borderTop: 1,
             borderColor: 'divider',

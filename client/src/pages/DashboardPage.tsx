@@ -127,7 +127,16 @@ export function DashboardPage() {
             title="Your tasks"
             subtitle="Assigned to you across all projects"
           />
-          <Box sx={{ display: 'flex', gap: 2.25 }}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: 'repeat(2, 1fr)',
+                md: 'repeat(4, 1fr)',
+              },
+              gap: { xs: 1.5, sm: 2.25 },
+            }}
+          >
             <StatCard
               label="Open tasks"
               value={stats.open}
@@ -200,7 +209,17 @@ export function DashboardPage() {
             subtitle="Team progress on active projects where you have open tasks, most recently updated first"
           />
           {yourProjects.length > 0 ? (
-            <Box sx={{ display: 'flex', gap: 2.25 }}>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: {
+                  xs: '1fr',
+                  sm: 'repeat(2, 1fr)',
+                  md: 'repeat(3, 1fr)',
+                },
+                gap: { xs: 1.5, sm: 2.25 },
+              }}
+            >
               {yourProjects.map((project) => (
                 <ProjectCard
                   key={project.id}

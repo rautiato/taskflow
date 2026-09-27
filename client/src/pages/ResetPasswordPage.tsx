@@ -1,10 +1,10 @@
-import { AuthCard } from '../features/auth/components/AuthCard'
+import { AuthLayout } from '../features/auth/components/AuthLayout'
 import { ResetPasswordForm } from '../features/auth/components/ResetPasswordForm'
 
 export function ResetPasswordPage() {
   return (
-    <AuthCard>
+    <AuthLayout brandPanel={false}>
       <ResetPasswordForm />
-    </AuthCard>
+    </AuthLayout>
   )
 }

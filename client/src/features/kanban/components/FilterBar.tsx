@@ -27,7 +27,16 @@ export function FilterBar({
   users: UserDto[]
 }) {
   return (
-    <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
+    // Phones: 2-column grid with search spanning both columns.
+    // Wider screens: one wrapping row.
+    <Box
+      sx={{
+        display: { xs: 'grid', sm: 'flex' },
+        gridTemplateColumns: '1fr 1fr',
+        flexWrap: 'wrap',
+        gap: 1.5,
+      }}
+    >
       <TextField
         size="small"
         placeholder="Search tasks..."
@@ -35,7 +44,7 @@ export function FilterBar({
         onChange={(event) =>
           onChange({ ...filters, search: event.target.value })
         }
-        sx={{ width: 300 }}
+        sx={{ gridColumn: '1 / -1', width: { sm: 300 } }}
         slotProps={{
           input: {
             startAdornment: (
@@ -54,7 +63,7 @@ export function FilterBar({
         onChange={(event) =>
           onChange({ ...filters, columnId: event.target.value })
         }
-        sx={{ minWidth: 140 }}
+        sx={{ minWidth: { sm: 140 } }}
       >
         <MenuItem value={ALL}>All</MenuItem>
         {columns.map((column) => (
@@ -74,7 +83,7 @@ export function FilterBar({
             priority: event.target.value as TaskFilters['priority'],
           })
         }
-        sx={{ minWidth: 140 }}
+        sx={{ minWidth: { sm: 140 } }}
       >
         <MenuItem value={ALL}>All</MenuItem>
         {PRIORITIES.map((priority) => (
@@ -94,7 +103,7 @@ export function FilterBar({
             assigneeId: event.target.value as TaskFilters['assigneeId'],
           })
         }
-        sx={{ minWidth: 160 }}
+        sx={{ minWidth: { sm: 160 } }}
       >
         <MenuItem value={ALL}>All</MenuItem>
         <MenuItem value={UNASSIGNED}>Unassigned</MenuItem>
@@ -115,7 +124,7 @@ export function FilterBar({
             createdById: event.target.value as TaskFilters['createdById'],
           })
         }
-        sx={{ minWidth: 160 }}
+        sx={{ minWidth: { sm: 160 } }}
       >
         <MenuItem value={ALL}>All</MenuItem>
         <MenuItem value={UNKNOWN_CREATOR}>Unknown</MenuItem>

@@ -17,11 +17,11 @@ const styles = {
     border: 1,
     borderColor: 'divider',
     borderRadius: 2,
-    px: 2.5,
+    px: { xs: 2, sm: 2.5 },
     py: 2,
     display: 'flex',
     alignItems: 'center',
-    gap: 2,
+    gap: { xs: 1.5, sm: 2 },
   },
   info: {
     flexGrow: 1,
@@ -47,7 +47,10 @@ const styles = {
     textTransform: 'uppercase',
     letterSpacing: '0.03em',
   },
+  // The whole row is the link; the chevron is only a hint, so it's dropped
+  // on phones to leave room for the name.
   chevron: {
+    display: { xs: 'none', sm: 'block' },
     color: 'text.secondary',
   },
 } satisfies Record<string, SxProps<Theme>>

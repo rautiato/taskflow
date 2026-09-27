@@ -8,6 +8,7 @@ import { PRIORITIES } from '../../tasks/filterMyTasks'
 const styles = {
   row: {
     display: 'flex',
+    flexWrap: 'wrap',
     gap: 0.75,
   },
   chip: {

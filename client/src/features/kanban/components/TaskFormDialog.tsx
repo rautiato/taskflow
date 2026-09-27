@@ -3,6 +3,8 @@ import { useForm, useWatch, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Dialog from '@mui/material/Dialog'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { useTheme } from '@mui/material/styles'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
@@ -114,6 +116,10 @@ export function TaskFormDialog({
     isDifferentProject ? selectedProjectId : '',
   )
   const availableColumns = isDifferentProject ? otherProjectColumns : columns
+  // Full screen on phones: a long form in a floating dialog leaves little
+  // room once the on-screen keyboard is up.
+  const theme = useTheme()
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'))
   const previousColumnsRef = useRef(availableColumns)
 
   // Keep the selected column valid whenever the selected project changes
@@ -170,7 +176,13 @@ export function TaskFormDialog({
   }
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="sm"
+      fullScreen={fullScreen}
+    >
       <DialogTitle
         sx={{
           display: 'flex',

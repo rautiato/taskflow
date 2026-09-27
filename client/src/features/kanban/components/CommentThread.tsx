@@ -168,6 +168,8 @@ export function CommentThread({
                       ml: 'auto',
                       opacity: 0,
                       transition: 'opacity 0.15s ease',
+                      // Touch screens can't hover, so keep the actions visible.
+                      '@media (hover: none)': { opacity: 1 },
                     }}
                   >
                     <IconButton

@@ -1,5 +1,12 @@
+import { useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
+import Drawer from '@mui/material/Drawer'
+import List from '@mui/material/List'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemText from '@mui/material/ListItemText'
+import MenuIcon from '@mui/icons-material/Menu'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
 import type { SxProps, Theme } from '@mui/material/styles'
 import { Logo } from '../../../components/Logo'
@@ -21,12 +28,16 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    px: 3.5,
+    px: { xs: 1, sm: 3, md: 3.5 },
   },
   brandGroup: {
     display: 'flex',
     alignItems: 'center',
-    gap: 3.5,
+    gap: { xs: 0.5, sm: 3.5 },
+    height: '100%',
+  },
+  menuButton: {
+    display: { xs: 'inline-flex', sm: 'none' },
   },
   brandRow: {
     display: 'flex',
@@ -40,7 +51,7 @@ const styles = {
     fontWeight: 700,
   },
   navRow: {
-    display: 'flex',
+    display: { xs: 'none', sm: 'flex' },
     alignItems: 'center',
     gap: 2.75,
     height: '100%',
@@ -68,15 +79,31 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: 2.25,
+    pr: { xs: 1, sm: 0 },
+  },
+  drawerList: {
+    width: 240,
+    pt: 1,
   },
 } satisfies Record<string, SxProps<Theme>>
 
 export function AppHeader({ user }: { user: UserDto }) {
   const location = useLocation()
+  const [isNavOpen, setIsNavOpen] = useState(false)
+  // Prefix match so a section stays active on its sub-pages
+  // (e.g. Projects on /projects/:id/board).
+  const isActive = (path: string) => location.pathname.startsWith(path)
 
   return (
     <Box sx={styles.root}>
       <Box sx={styles.brandGroup}>
+        <IconButton
+          aria-label="Open navigation"
+          onClick={() => setIsNavOpen(true)}
+          sx={styles.menuButton}
+        >
+          <MenuIcon />
+        </IconButton>
         <Box
           component={RouterLink}
           to="/dashboard"
@@ -87,28 +114,42 @@ export function AppHeader({ user }: { user: UserDto }) {
           <Typography sx={styles.brandText}>TaskFlow</Typography>
         </Box>
         <Box sx={styles.navRow}>
-          {NAV_ITEMS.map((item) => {
-            const active = item.path === location.pathname
-            return (
-              <Box
-                key={item.label}
-                component={RouterLink}
-                to={item.path}
-                sx={[
-                  styles.navItem,
-                  styles.navLink,
-                  active && styles.navItemActive,
-                ]}
-              >
-                {item.label}
-              </Box>
-            )
-          })}
+          {NAV_ITEMS.map((item) => (
+            <Box
+              key={item.label}
+              component={RouterLink}
+              to={item.path}
+              sx={[
+                styles.navItem,
+                styles.navLink,
+                isActive(item.path) && styles.navItemActive,
+              ]}
+            >
+              {item.label}
+            </Box>
+          ))}
         </Box>
       </Box>
       <Box sx={styles.actionsGroup}>
         <AccountMenu user={user} />
       </Box>
+
+      {/* Phone navigation; the inline nav row is hidden below sm. */}
+      <Drawer open={isNavOpen} onClose={() => setIsNavOpen(false)}>
+        <List component="nav" aria-label="Main" sx={styles.drawerList}>
+          {NAV_ITEMS.map((item) => (
+            <ListItemButton
+              key={item.label}
+              component={RouterLink}
+              to={item.path}
+              selected={isActive(item.path)}
+              onClick={() => setIsNavOpen(false)}
+            >
+              <ListItemText primary={item.label} />
+            </ListItemButton>
+          ))}
+        </List>
+      </Drawer>
     </Box>
   )
 }
