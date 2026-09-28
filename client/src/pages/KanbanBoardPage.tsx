@@ -1,18 +1,7 @@
 import { useState } from 'react'
 import { Navigate, useParams, useSearchParams } from 'react-router-dom'
-import {
-  DragDropContext,
-  type DragStart,
-  type DropResult,
-} from '@hello-pangea/dnd'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import ToggleButton from '@mui/material/ToggleButton'
-import GridViewIcon from '@mui/icons-material/GridView'
-import ViewListIcon from '@mui/icons-material/ViewList'
-import AddIcon from '@mui/icons-material/Add'
-import Button from '@mui/material/Button'
 import { AppLayout } from '../features/layout/components/AppLayout'
 import { authService } from '../features/auth/authService'
 import { useUsers } from '../features/auth/useUsers'
@@ -27,24 +16,19 @@ import {
 } from '../features/tasks/filterTasks'
 import type { TaskFilters } from '../features/tasks/filterTasks'
 import {
-  ColumnHeaderRow,
-  COLUMN_DND_TYPE,
-} from '../features/kanban/components/ColumnHeaderRow'
-import { TASK_DND_TYPE, parseTaskCellId } from '../features/kanban/taskCellId'
-import { AssigneeLane } from '../features/kanban/components/AssigneeLane'
+  BoardHeader,
+  type BoardView,
+} from '../features/kanban/components/BoardHeader'
+import { KanbanView } from '../features/kanban/components/KanbanView'
 import { ManageColumnsButton } from '../features/kanban/components/ManageColumnsButton'
 import { FilterBar } from '../features/kanban/components/FilterBar'
 import { TaskListView } from '../features/kanban/components/TaskListView'
 import { TaskFormDialog } from '../features/kanban/components/TaskFormDialog'
 import { TaskDetailDrawer } from '../features/kanban/components/TaskDetailDrawer'
 import { ConfirmDialog } from '../components/ConfirmDialog'
-import { EmptyState } from '../components/EmptyState'
-import { Breadcrumbs } from '../components/Breadcrumbs'
-import InboxOutlinedIcon from '@mui/icons-material/InboxOutlined'
 import type { TaskItem } from '../models/task'
 
 type FormState = { task?: TaskItem; defaultColumnId: string }
-type BoardView = 'kanban' | 'list'
 
 export function KanbanBoardPage() {
   const { projectId } = useParams<{ projectId: string }>()
@@ -58,7 +42,6 @@ export function KanbanBoardPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const detailTaskId = searchParams.get('task')
   const [deleteTarget, setDeleteTarget] = useState<TaskItem | null>(null)
-  const [dragSourceCellId, setDragSourceCellId] = useState<string | null>(null)
 
   const { projects, isLoading: projectsLoading } = useProjects()
   const users = useUsers()
@@ -100,7 +83,6 @@ export function KanbanBoardPage() {
   }
 
   const visibleColumns = columns.filter((c) => c.isVisible)
-  const assigneeLanes = groupTasksByAssignee(tasks, users)
   const taskCountByColumn = columns.reduce<Record<string, number>>(
     (acc, column) => {
       acc[column.id] = tasks.filter((t) => t.columnId === column.id).length
@@ -135,118 +117,19 @@ export function KanbanBoardPage() {
     setDeleteTarget(null)
   }
 
-  function handleDragStart(start: DragStart) {
-    if (start.type === TASK_DND_TYPE) {
-      setDragSourceCellId(start.source.droppableId)
-    }
-  }
-
-  function handleDragEnd(result: DropResult) {
-    setDragSourceCellId(null)
-    if (!result.destination) return
-
-    if (result.type === COLUMN_DND_TYPE) {
-      if (!board || result.destination.index === result.source.index) return
-      const reordered = Array.from(visibleColumns)
-      const [moved] = reordered.splice(result.source.index, 1)
-      reordered.splice(result.destination.index, 0, moved)
-      reorderColumns(
-        board.id,
-        reordered.map((c) => c.id),
-      )
-      return
-    }
-
-    if (result.type === TASK_DND_TYPE) {
-      if (result.destination.droppableId === result.source.droppableId) return
-      const task = tasks.find((t) => t.id === result.draggableId)
-      if (!task) return
-      const { assigneeId, columnId } = parseTaskCellId(
-        result.destination.droppableId,
-      )
-      updateTask(task.id, { ...taskToInput(task), columnId, assigneeId })
-    }
-  }
-
   return (
     <AppLayout user={user}>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {/* Phones: title on its own row, controls on the next. */}
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
-            alignItems: { xs: 'stretch', sm: 'flex-end' },
-            justifyContent: 'space-between',
-            gap: 1.5,
-          }}
-        >
-          <Box sx={{ minWidth: 0 }}>
-            <Breadcrumbs
-              items={[
-                { label: 'Projects', to: '/projects' },
-                { label: project.name },
-              ]}
-            />
-            <Typography sx={{ fontSize: { xs: 20, sm: 25 }, fontWeight: 700 }}>
-              {project.name}
-            </Typography>
-          </Box>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: { xs: 1, sm: 2 },
-              flexShrink: 0,
-            }}
-          >
-            <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
-              {tasks.length} tasks
-            </Typography>
-            <ToggleButtonGroup
-              value={view}
-              exclusive
-              size="small"
-              onChange={(_event, next: BoardView | null) => {
-                if (next) setView(next)
-              }}
-              sx={{
-                '& .MuiToggleButton-root': {
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  color: 'text.secondary',
-                  borderColor: 'divider',
-                  px: 1.5,
-                  '&.Mui-selected': {
-                    bgcolor: 'primary.main',
-                    color: '#fff',
-                    '&:hover': { bgcolor: 'primary.dark' },
-                  },
-                },
-              }}
-            >
-              {/* Icon-only on phones; aria-label keeps the name. */}
-              <ToggleButton value="kanban" aria-label="Kanban">
-                <GridViewIcon sx={{ fontSize: 16, mr: { xs: 0, sm: 0.75 } }} />
-                <Box
-                  component="span"
-                  sx={{ display: { xs: 'none', sm: 'inline' } }}
-                >
-                  Kanban
-                </Box>
-              </ToggleButton>
-              <ToggleButton value="list" aria-label="List">
-                <ViewListIcon sx={{ fontSize: 16, mr: { xs: 0, sm: 0.75 } }} />
-                <Box
-                  component="span"
-                  sx={{ display: { xs: 'none', sm: 'inline' } }}
-                >
-                  List
-                </Box>
-              </ToggleButton>
-            </ToggleButtonGroup>
-            {view === 'kanban' && (
+        <BoardHeader
+          projectName={project.name}
+          taskCount={tasks.length}
+          view={view}
+          onViewChange={setView}
+          onNewTask={() =>
+            setFormState({ defaultColumnId: visibleColumns[0]?.id ?? '' })
+          }
+          columnsMenu={
+            view === 'kanban' && (
               <ManageColumnsButton
                 columns={columns}
                 taskCountByColumn={taskCountByColumn}
@@ -257,68 +140,30 @@ export function KanbanBoardPage() {
                   if (board) createColumn(board.id, name)
                 }}
               />
-            )}
-            {/* In the header, not the list toolbar, so it's in the same
-                place in both views. */}
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() =>
-                setFormState({ defaultColumnId: visibleColumns[0]?.id ?? '' })
-              }
-              sx={{ ml: { xs: 'auto', sm: 0 } }}
-            >
-              New Task
-            </Button>
-          </Box>
-        </Box>
+            )
+          }
+        />
 
         {view === 'kanban' ? (
-          <DragDropContext
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-          >
-            <Box sx={{ overflowX: 'auto', pb: 1 }}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 1,
-                  width: 'max-content',
-                  minWidth: '100%',
-                }}
-              >
-                <ColumnHeaderRow
-                  columns={visibleColumns}
-                  taskCountByColumn={taskCountByColumn}
-                  onAddTask={(columnId) =>
-                    setFormState({ defaultColumnId: columnId })
-                  }
-                />
-                <Box sx={{ borderTop: 1, borderColor: 'divider' }} />
-                {assigneeLanes.length === 0 ? (
-                  <EmptyState
-                    icon={<InboxOutlinedIcon sx={{ fontSize: 40 }} />}
-                    title="No tasks yet"
-                    description="Add a task to any column to get started."
-                  />
-                ) : (
-                  assigneeLanes.map((lane) => (
-                    <AssigneeLane
-                      key={lane.assigneeId ?? 'unassigned'}
-                      lane={lane}
-                      columns={visibleColumns}
-                      onTaskClick={openTask}
-                      onTaskEdit={handleEditTask}
-                      onTaskDelete={handleDeleteTask}
-                      onToggleFavorite={toggleFavorite}
-                      dragSourceCellId={dragSourceCellId}
-                    />
-                  ))
-                )}
-              </Box>
-            </Box>
-          </DragDropContext>
+          <KanbanView
+            columns={visibleColumns}
+            lanes={groupTasksByAssignee(tasks, users)}
+            tasks={tasks}
+            taskCountByColumn={taskCountByColumn}
+            onReorderColumns={(orderedColumnIds) => {
+              if (board) reorderColumns(board.id, orderedColumnIds)
+            }}
+            onMoveTask={(task, target) =>
+              updateTask(task.id, { ...taskToInput(task), ...target })
+            }
+            onAddTask={(columnId) =>
+              setFormState({ defaultColumnId: columnId })
+            }
+            onTaskClick={openTask}
+            onTaskEdit={handleEditTask}
+            onTaskDelete={handleDeleteTask}
+            onToggleFavorite={toggleFavorite}
+          />
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
             <FilterBar

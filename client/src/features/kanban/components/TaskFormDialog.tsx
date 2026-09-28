@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useForm, useWatch, Controller } from 'react-hook-form'
+import { useMemo, useRef, useState } from 'react'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import Dialog from '@mui/material/Dialog'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTheme } from '@mui/material/styles'
@@ -12,59 +11,30 @@ import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
 import Button from '@mui/material/Button'
-import Switch from '@mui/material/Switch'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import type { KanbanColumn } from '../../../models/kanbanBoard'
 import type { TaskItem, TaskPriority } from '../../../models/task'
 import type { UserDto } from '../../../models/user'
 import type { Project } from '../../../models/project'
 import type { TaskInput } from '../useKanbanBoard'
-import { PRIORITY_STYLES } from '../../tasks/taskDisplay'
-import { UserAvatar } from '../../../components/UserAvatar'
 import { useAttachments } from '../useAttachments'
-import { useProjectColumns } from '../useProjectColumns'
+import { useStatusColumns } from '../useStatusColumns'
+import {
+  taskFormSchema,
+  toFormValues,
+  type TaskFormValues,
+} from '../taskFormSchema'
 import { notifyError } from '../../../services/notifications'
 import { errorMessage } from '../../../utils/errorMessage'
 import {
   AttachmentPicker,
   type AttachmentPickerHandle,
 } from './AttachmentPicker'
-
-const UNASSIGNED = ''
-
-const taskFormSchema = z.object({
-  title: z.string().min(1, 'Title is required.'),
-  description: z.string().min(1, 'Description is required.'),
-  projectId: z.string().min(1, 'Project is required.'),
-  columnId: z.string().min(1, 'Status is required.'),
-  assigneeId: z.string(),
-  priority: z.enum(['Low', 'Medium', 'High']),
-  dueDate: z.string(),
-  isFavorite: z.boolean(),
-})
-
-type TaskFormValues = z.infer<typeof taskFormSchema>
-
-function toFormValues(
-  task: TaskItem | undefined,
-  defaultColumnId: string,
-  currentProjectId: string,
-): TaskFormValues {
-  return {
-    title: task?.title ?? '',
-    description: task?.description ?? '',
-    projectId: currentProjectId,
-    columnId: task?.columnId ?? defaultColumnId,
-    assigneeId: task?.assigneeId ?? UNASSIGNED,
-    priority: task?.priority ?? 'Medium',
-    dueDate: task?.dueDate ? task.dueDate.slice(0, 10) : '',
-    isFavorite: task?.isFavorite ?? false,
-  }
-}
+import { AssigneeSelect } from './AssigneeSelect'
+import { PrioritySelect } from './PrioritySelect'
+import { FavoriteSwitchField } from './FavoriteSwitchField'
 
 export function TaskFormDialog({
   open,
@@ -111,44 +81,17 @@ export function TaskFormDialog({
   const { attachments: existingAttachments } = useAttachments(taskId)
   const attachmentPickerRef = useRef<AttachmentPickerHandle>(null)
 
-  const selectedProjectId = useWatch({ control, name: 'projectId' })
-  const isDifferentProject = selectedProjectId !== currentProjectId
-  const { columns: otherProjectColumns } = useProjectColumns(
-    isDifferentProject ? selectedProjectId : '',
-  )
-  const availableColumns = isDifferentProject ? otherProjectColumns : columns
+  const availableColumns = useStatusColumns({
+    control,
+    getValues,
+    setValue,
+    columns,
+    currentProjectId,
+  })
   // Full screen on phones: a long form in a floating dialog leaves little
   // room once the on-screen keyboard is up.
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'))
-  const previousColumnsRef = useRef(availableColumns)
-
-  // Keep the selected column valid whenever the selected project changes
-  // (including the initial load, where columns can arrive asynchronously).
-  // Prefer a same-named column in the new project (e.g. "In Progress" ->
-  // "In Progress") over silently defaulting to whatever is first — a
-  // blind index-0 fallback would quietly change a task's status on every
-  // project switch, even when an equivalent status exists.
-  useEffect(() => {
-    // While the destination project's columns are still loading,
-    // availableColumns is transiently empty — skip entirely rather than
-    // overwriting previousColumnsRef with that empty list, which would
-    // erase the outgoing column's name before we ever get to look it up.
-    if (availableColumns.length === 0) return
-
-    const currentColumnId = getValues('columnId')
-    const stillValid = availableColumns.some((c) => c.id === currentColumnId)
-    if (!stillValid) {
-      const previousColumn = previousColumnsRef.current.find(
-        (c) => c.id === currentColumnId,
-      )
-      const sameNameColumn = previousColumn
-        ? availableColumns.find((c) => c.name === previousColumn.name)
-        : undefined
-      setValue('columnId', (sameNameColumn ?? availableColumns[0]).id)
-    }
-    previousColumnsRef.current = availableColumns
-  }, [availableColumns, getValues, setValue])
 
   async function onSubmit(values: TaskFormValues) {
     onSave(
@@ -264,113 +207,8 @@ export function TaskFormDialog({
           </Box>
 
           <Box sx={{ display: 'flex', gap: 2 }}>
-            <Controller
-              name="assigneeId"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  select
-                  label="Assignee"
-                  fullWidth
-                  slotProps={{
-                    select: {
-                      renderValue: (value) => {
-                        const selected = users.find((u) => u.id === value)
-                        return (
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 1,
-                            }}
-                          >
-                            <UserAvatar
-                              id={selected?.id}
-                              name={selected?.name ?? null}
-                              avatarUrl={selected?.avatarUrl}
-                              size="xs"
-                            />
-                            {selected?.name ?? 'Unassigned'}
-                          </Box>
-                        )
-                      },
-                    },
-                  }}
-                >
-                  <MenuItem value={UNASSIGNED}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <UserAvatar name={null} size="xs" />
-                      Unassigned
-                    </Box>
-                  </MenuItem>
-                  {users.map((user) => (
-                    <MenuItem key={user.id} value={user.id}>
-                      <Box
-                        sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-                      >
-                        <UserAvatar
-                          id={user.id}
-                          name={user.name}
-                          avatarUrl={user.avatarUrl}
-                          size="xs"
-                        />
-                        {user.name}
-                      </Box>
-                    </MenuItem>
-                  ))}
-                </TextField>
-              )}
-            />
-            <Controller
-              name="priority"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  select
-                  label="Priority"
-                  fullWidth
-                  slotProps={{
-                    select: {
-                      renderValue: (value) => (
-                        <Box
-                          component="span"
-                          sx={{
-                            ...PRIORITY_STYLES[value as TaskPriority],
-                            fontSize: 12,
-                            fontWeight: 700,
-                            px: 1,
-                            py: 0.25,
-                            borderRadius: 999,
-                          }}
-                        >
-                          {value as string}
-                        </Box>
-                      ),
-                    },
-                  }}
-                >
-                  {(['Low', 'Medium', 'High'] as const).map((priority) => (
-                    <MenuItem key={priority} value={priority}>
-                      <Box
-                        component="span"
-                        sx={{
-                          ...PRIORITY_STYLES[priority],
-                          fontSize: 12,
-                          fontWeight: 700,
-                          px: 1,
-                          py: 0.25,
-                          borderRadius: 999,
-                        }}
-                      >
-                        {priority}
-                      </Box>
-                    </MenuItem>
-                  ))}
-                </TextField>
-              )}
-            />
+            <AssigneeSelect control={control} users={users} />
+            <PrioritySelect control={control} />
           </Box>
 
           <Controller
@@ -405,54 +243,8 @@ export function TaskFormDialog({
                 )}
               />
             </Box>
-            <Box sx={{ flex: '1 1 0', minWidth: 0, position: 'relative' }}>
-              <Typography
-                sx={{
-                  position: 'absolute',
-                  top: -8,
-                  left: 10,
-                  px: 0.5,
-                  bgcolor: 'background.paper',
-                  fontSize: 12,
-                  color: 'text.secondary',
-                  lineHeight: 1,
-                }}
-              >
-                Favorite
-              </Typography>
-              <Box
-                sx={{
-                  border: 1,
-                  borderColor: 'divider',
-                  borderRadius: 1,
-                  px: 1.5,
-                  // Fixed to match the outlined TextField's own default
-                  // rendered height (56px) — the Switch's intrinsic size
-                  // is taller than a text input's line height, so padding
-                  // alone kept overshooting it.
-                  height: 56,
-                  boxSizing: 'border-box',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                <Controller
-                  name="isFavorite"
-                  control={control}
-                  render={({ field }) => (
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={field.value}
-                          onChange={field.onChange}
-                        />
-                      }
-                      label="Pin to top"
-                      sx={{ whiteSpace: 'nowrap', mx: 0 }}
-                    />
-                  )}
-                />
-              </Box>
+            <Box sx={{ flex: '1 1 0', minWidth: 0 }}>
+              <FavoriteSwitchField control={control} />
             </Box>
           </Box>
 
