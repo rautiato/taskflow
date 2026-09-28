@@ -6,6 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { PRIORITY_STYLES, getDueChip } from '../../tasks/taskDisplay'
 import type { TaskItem } from '../../../models/task'
 import { FavoriteToggle } from './FavoriteToggle'
+import { PriorityChip } from './PriorityChip'
 
 export function TaskCard({
   task,
@@ -69,18 +70,10 @@ export function TaskCard({
         </Typography>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-        <Box
-          sx={{
-            ...priorityStyle,
-            fontSize: 10,
-            fontWeight: 700,
-            px: 0.875,
-            py: 0.25,
-            borderRadius: 999,
-          }}
-        >
-          {task.priority}
-        </Box>
+        <PriorityChip
+          priority={task.priority}
+          sx={{ fontSize: 10, px: 0.875 }}
+        />
         {dueChip && (
           <Box
             sx={{

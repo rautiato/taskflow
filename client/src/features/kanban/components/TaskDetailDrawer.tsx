@@ -12,7 +12,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined'
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined'
-import { PRIORITY_STYLES, getDueChip } from '../../tasks/taskDisplay'
+import { getDueChip } from '../../tasks/taskDisplay'
 import { UserAvatar } from '../../../components/UserAvatar'
 import { useAttachments } from '../useAttachments'
 import type { TaskItem } from '../../../models/task'
@@ -21,6 +21,7 @@ import type { UserDto } from '../../../models/user'
 import { CommentThread } from './CommentThread'
 import { ImagePreviewDialog } from './ImagePreviewDialog'
 import { FavoriteToggle } from './FavoriteToggle'
+import { PriorityChip } from './PriorityChip'
 
 function MetaRow({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -85,7 +86,6 @@ export function TaskDetailDrawer({
   const [copiedTaskId, setCopiedTaskId] = useState<string | null>(null)
 
   if (!task) return null
-  const priorityStyle = PRIORITY_STYLES[task.priority]
   const dueChip = getDueChip(task, column?.isDone ?? false)
 
   return (
@@ -164,18 +164,7 @@ export function TaskDetailDrawer({
               </Typography>
             </MetaRow>
             <MetaRow label="Priority">
-              <Box
-                sx={{
-                  ...priorityStyle,
-                  borderRadius: 999,
-                  px: 1.25,
-                  py: 0.25,
-                  fontSize: 11,
-                  fontWeight: 700,
-                }}
-              >
-                {task.priority}
-              </Box>
+              <PriorityChip priority={task.priority} sx={{ px: 1.25 }} />
             </MetaRow>
             <MetaRow label="Assignee">
               <UserAvatar
