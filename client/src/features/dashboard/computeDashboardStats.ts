@@ -1,5 +1,6 @@
 import type { TaskItem, TaskPriority } from '../../models/task'
-import type { KanbanColumn } from '../../models/kanbanBoard'
+import type { KanbanBoard, KanbanColumn } from '../../models/kanbanBoard'
+import type { Project } from '../../models/project'
 import { getDoneColumnIds } from '../tasks/taskDisplay'
 import { matchesDueFilter } from '../tasks/filterMyTasks'
 
@@ -70,4 +71,50 @@ export function selectUpNext(
       return PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority]
     })
     .slice(0, limit)
+}
+
+export type YourProject = { project: Project; myOpenCount: number }
+
+/**
+ * Projects for the "Your projects" section. It's personal, like the rest of
+ * the dashboard: active projects where the user has at least one open task,
+ * most recently updated first. (Prod apps show "recently viewed" here — the
+ * natural upgrade once a backend can record views.)
+ */
+export function selectYourProjects(
+  tasks: TaskItem[],
+  columns: KanbanColumn[],
+  boards: KanbanBoard[],
+  projects: Project[],
+  limit = 3,
+): YourProject[] {
+  const doneColumnIds = getDoneColumnIds(columns)
+  const projectIdByColumnId = new Map(
+    columns.map((c) => [
+      c.id,
+      boards.find((b) => b.id === c.boardId)?.projectId,
+    ]),
+  )
+  const myOpenCountByProjectId = new Map<string, number>()
+  for (const task of tasks) {
+    if (doneColumnIds.has(task.columnId)) continue
+    const projectId = projectIdByColumnId.get(task.columnId)
+    if (projectId) {
+      myOpenCountByProjectId.set(
+        projectId,
+        (myOpenCountByProjectId.get(projectId) ?? 0) + 1,
+      )
+    }
+  }
+  return projects
+    .filter((p) => p.status === 'Active' && myOpenCountByProjectId.has(p.id))
+    .sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    )
+    .slice(0, limit)
+    .map((project) => ({
+      project,
+      myOpenCount: myOpenCountByProjectId.get(project.id) ?? 0,
+    }))
 }
