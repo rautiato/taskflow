@@ -10,6 +10,7 @@ import { UserAvatar } from '../../../components/UserAvatar'
 import { ConfirmDialog } from '../../../components/ConfirmDialog'
 import { useComments } from '../useComments'
 import type { UserDto } from '../../../models/user'
+import { testIdProps } from '../../../utils/testIdProps'
 
 const MAX_COMMENT_LENGTH = 32_767
 const COUNTER_WARNING_THRESHOLD = MAX_COMMENT_LENGTH - 500
@@ -100,7 +101,10 @@ export function CommentThread({
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+    <Box
+      sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}
+      data-testid="comment-thread"
+    >
       <Typography
         sx={{
           fontSize: 12,
@@ -108,6 +112,7 @@ export function CommentThread({
           color: 'text.secondary',
           textTransform: 'uppercase',
         }}
+        data-testid="comment-thread-heading"
       >
         Comments ({comments.length})
       </Typography>
@@ -120,6 +125,7 @@ export function CommentThread({
         return (
           <Box
             key={comment.id}
+            data-testid="comment-thread-item"
             sx={{
               display: 'flex',
               gap: 1.25,
@@ -142,10 +148,16 @@ export function CommentThread({
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75 }}>
-                <Typography sx={{ fontSize: 13, fontWeight: 700 }}>
+                <Typography
+                  sx={{ fontSize: 13, fontWeight: 700 }}
+                  data-testid="comment-thread-item-author"
+                >
                   {author?.name ?? 'Unknown user'}
                 </Typography>
-                <Typography sx={{ fontSize: 11, color: 'text.secondary' }}>
+                <Typography
+                  sx={{ fontSize: 11, color: 'text.secondary' }}
+                  data-testid="comment-thread-item-time"
+                >
                   {formatTimestamp(comment.updatedAt ?? comment.createdAt)}
                 </Typography>
                 {comment.updatedAt && (
@@ -155,6 +167,7 @@ export function CommentThread({
                       color: 'text.disabled',
                       fontStyle: 'italic',
                     }}
+                    data-testid="comment-thread-item-edited"
                   >
                     (edited)
                   </Typography>
@@ -174,15 +187,19 @@ export function CommentThread({
                   >
                     <IconButton
                       size="small"
+                      aria-label="Edit comment"
                       onClick={() => startEdit(comment.id, comment.content)}
                       sx={{ p: 0.5 }}
+                      data-testid="comment-thread-item-edit"
                     >
                       <EditIcon sx={{ fontSize: 18, color: 'primary.main' }} />
                     </IconButton>
                     <IconButton
                       size="small"
+                      aria-label="Delete comment"
                       onClick={() => setDeleteTargetId(comment.id)}
                       sx={{ p: 0.5 }}
+                      data-testid="comment-thread-item-delete"
                     >
                       <DeleteIcon sx={{ fontSize: 18, color: 'error.main' }} />
                     </IconButton>
@@ -204,12 +221,16 @@ export function CommentThread({
                     maxRows={10}
                     autoFocus
                     error={editDraft.length > MAX_COMMENT_LENGTH}
+                    slotProps={{
+                      htmlInput: testIdProps('comment-thread-item-edit-input'),
+                    }}
                   />
                   <Box sx={{ display: 'flex', gap: 1 }}>
                     <Button
                       size="small"
                       variant="contained"
                       onClick={() => submitEdit(comment.id)}
+                      data-testid="comment-thread-item-save"
                       disabled={
                         !editDraft.trim() ||
                         editDraft.length > MAX_COMMENT_LENGTH
@@ -221,6 +242,7 @@ export function CommentThread({
                       size="small"
                       variant="outlined"
                       onClick={cancelEdit}
+                      data-testid="comment-thread-item-cancel"
                     >
                       Cancel
                     </Button>
@@ -229,6 +251,7 @@ export function CommentThread({
               ) : (
                 <Typography
                   sx={{ fontSize: 13, lineHeight: 1.5, whiteSpace: 'pre-wrap' }}
+                  data-testid="comment-thread-item-content"
                 >
                   {comment.content}
                 </Typography>
@@ -251,11 +274,13 @@ export function CommentThread({
             minRows={1}
             maxRows={10}
             error={isTooLong}
+            slotProps={{ htmlInput: testIdProps('comment-thread-input') }}
           />
           <Button
             onClick={handleSubmit}
             disabled={!trimmedLength || isTooLong || isPosting}
             variant="contained"
+            data-testid="comment-thread-post"
           >
             Post
           </Button>
@@ -267,6 +292,7 @@ export function CommentThread({
               color: isTooLong ? 'error.main' : 'text.secondary',
               alignSelf: 'flex-end',
             }}
+            data-testid="comment-thread-counter"
           >
             {draft.length} / {MAX_COMMENT_LENGTH}
           </Typography>

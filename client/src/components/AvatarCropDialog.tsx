@@ -9,6 +9,7 @@ import Slider from '@mui/material/Slider'
 import Typography from '@mui/material/Typography'
 import Cropper, { type Area, type Point } from 'react-easy-crop'
 import { cropImageToDataUrl } from '../utils/cropImageToDataUrl'
+import { testIdProps } from '../utils/testIdProps'
 
 export function AvatarCropDialog({
   imageSrc,
@@ -39,7 +40,13 @@ export function AvatarCropDialog({
   }
 
   return (
-    <Dialog open={!!imageSrc} onClose={onCancel} maxWidth="xs" fullWidth>
+    <Dialog
+      open={!!imageSrc}
+      onClose={onCancel}
+      maxWidth="xs"
+      fullWidth
+      slotProps={{ paper: testIdProps('avatar-crop-dialog') }}
+    >
       <DialogTitle>Crop your photo</DialogTitle>
       <DialogContent>
         <Box
@@ -75,11 +82,17 @@ export function AvatarCropDialog({
             max={3}
             step={0.05}
             onChange={(_, value) => setZoom(value as number)}
+            data-testid="avatar-crop-dialog-zoom"
           />
         </Box>
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'space-between', px: 3, pb: 2.5 }}>
-        <Button variant="outlined" onClick={onCancel} sx={{ minWidth: 100 }}>
+        <Button
+          variant="outlined"
+          onClick={onCancel}
+          sx={{ minWidth: 100 }}
+          data-testid="avatar-crop-dialog-cancel"
+        >
           Cancel
         </Button>
         <Button
@@ -87,6 +100,7 @@ export function AvatarCropDialog({
           onClick={handleSave}
           disabled={isSaving || !croppedAreaPixels}
           sx={{ minWidth: 100 }}
+          data-testid="avatar-crop-dialog-save"
         >
           Save
         </Button>

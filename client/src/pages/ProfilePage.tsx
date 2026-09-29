@@ -20,6 +20,7 @@ export function ProfilePage() {
   return (
     <AppLayout user={user}>
       <Box
+        data-testid="profile-page"
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -30,10 +31,16 @@ export function ProfilePage() {
       >
         <AccountNav />
         <Box>
-          <Typography sx={{ fontSize: 24, fontWeight: 700 }}>
+          <Typography
+            sx={{ fontSize: 24, fontWeight: 700 }}
+            data-testid="profile-page-title"
+          >
             Profile
           </Typography>
-          <Typography sx={{ fontSize: 14, color: 'text.secondary' }}>
+          <Typography
+            sx={{ fontSize: 14, color: 'text.secondary' }}
+            data-testid="profile-page-subtitle"
+          >
             Manage your personal information.
           </Typography>
         </Box>

@@ -58,29 +58,45 @@ export function ChangePasswordForm({ userId }: { userId: string }) {
       component="form"
       noValidate
       onSubmit={handleSubmit(onSubmit)}
+      data-testid="change-password-form"
     >
-      {error && <Alert severity="error">{error}</Alert>}
-      {success && <Alert severity="success">Password updated.</Alert>}
+      {error && (
+        <Alert severity="error" data-testid="change-password-form-error">
+          {error}
+        </Alert>
+      )}
+      {success && (
+        <Alert severity="success" data-testid="change-password-form-success">
+          Password updated.
+        </Alert>
+      )}
 
       <PasswordField<ChangePasswordFormValues>
         name="currentPassword"
         control={control}
         label="Current password"
+        testId="change-password-form-current-password"
       />
       <PasswordField<ChangePasswordFormValues>
         name="newPassword"
         control={control}
         label="New password"
         hint={PASSWORD_HINT}
+        testId="change-password-form-new-password"
       />
       <PasswordField<ChangePasswordFormValues>
         name="confirmPassword"
         control={control}
         label="Confirm new password"
+        testId="change-password-form-confirm-password"
       />
 
       <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Button type="submit" variant="contained">
+        <Button
+          type="submit"
+          variant="contained"
+          data-testid="change-password-form-submit"
+        >
           Update password
         </Button>
       </Box>

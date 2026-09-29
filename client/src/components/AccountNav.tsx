@@ -3,8 +3,8 @@ import { Link as RouterLink, useLocation } from 'react-router-dom'
 import type { SxProps, Theme } from '@mui/material/styles'
 
 const NAV_ITEMS = [
-  { label: 'Profile', path: '/profile' },
-  { label: 'Settings', path: '/settings' },
+  { id: 'profile', label: 'Profile', path: '/profile' },
+  { id: 'settings', label: 'Settings', path: '/settings' },
 ] as const
 
 const styles = {
@@ -32,12 +32,13 @@ export function AccountNav() {
   const location = useLocation()
 
   return (
-    <Box sx={styles.root}>
+    <Box sx={styles.root} data-testid="account-nav">
       {NAV_ITEMS.map((item) => (
         <Box
           key={item.path}
           component={RouterLink}
           to={item.path}
+          data-testid={`account-nav-${item.id}`}
           sx={[
             styles.item,
             item.path === location.pathname && styles.itemActive,

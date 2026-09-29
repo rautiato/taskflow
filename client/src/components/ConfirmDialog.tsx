@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
+import { testIdProps } from '../utils/testIdProps'
 
 export function ConfirmDialog({
   open,
@@ -24,7 +25,13 @@ export function ConfirmDialog({
   onCancel: () => void
 }) {
   return (
-    <Dialog open={open} onClose={onCancel} maxWidth="xs" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onCancel}
+      maxWidth="xs"
+      fullWidth
+      slotProps={{ paper: testIdProps('confirm-dialog') }}
+    >
       <Box
         sx={{
           p: 3.5,
@@ -49,12 +56,25 @@ export function ConfirmDialog({
         >
           <WarningAmberIcon />
         </Box>
-        <Typography sx={{ fontSize: 16, fontWeight: 700 }}>{title}</Typography>
-        <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
+        <Typography
+          sx={{ fontSize: 16, fontWeight: 700 }}
+          data-testid="confirm-dialog-title"
+        >
+          {title}
+        </Typography>
+        <Typography
+          sx={{ fontSize: 13, color: 'text.secondary' }}
+          data-testid="confirm-dialog-description"
+        >
           {description}
         </Typography>
         <Box sx={{ display: 'flex', gap: 1.5, mt: 0.75, width: '100%' }}>
-          <Button onClick={onCancel} variant="outlined" fullWidth>
+          <Button
+            onClick={onCancel}
+            variant="outlined"
+            fullWidth
+            data-testid="confirm-dialog-cancel"
+          >
             {cancelLabel}
           </Button>
           <Button
@@ -62,6 +82,7 @@ export function ConfirmDialog({
             variant="contained"
             color={destructive ? 'error' : 'primary'}
             fullWidth
+            data-testid="confirm-dialog-confirm"
           >
             {confirmLabel}
           </Button>

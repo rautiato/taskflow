@@ -43,6 +43,7 @@ export function TaskListRow({
   return (
     <Box
       onClick={onClick}
+      data-testid="task-row"
       sx={{
         display: 'grid',
         gridTemplateColumns: columnTemplate,
@@ -64,6 +65,7 @@ export function TaskListRow({
         size={18}
       />
       <Typography
+        data-testid="task-row-title"
         sx={{
           fontSize: 13,
           fontWeight: 600,
@@ -76,12 +78,18 @@ export function TaskListRow({
         {task.title}
       </Typography>
       {projectName !== undefined && (
-        <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
+        <Typography
+          sx={{ fontSize: 13, color: 'text.secondary' }}
+          data-testid="task-row-project"
+        >
           {projectName}
         </Typography>
       )}
       <PriorityChip priority={task.priority} sx={{ width: 'fit-content' }} />
-      <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
+      <Typography
+        sx={{ fontSize: 13, color: 'text.secondary' }}
+        data-testid="task-row-status"
+      >
         {column?.name ?? 'Unknown'}
       </Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -91,7 +99,7 @@ export function TaskListRow({
           avatarUrl={assignee?.avatarUrl}
           size="xs"
         />
-        <Typography sx={{ fontSize: 13 }}>
+        <Typography sx={{ fontSize: 13 }} data-testid="task-row-assignee">
           {assignee?.name ?? 'Unassigned'}
         </Typography>
       </Box>
@@ -102,12 +110,13 @@ export function TaskListRow({
           avatarUrl={creator?.avatarUrl}
           size="xs"
         />
-        <Typography sx={{ fontSize: 13 }}>
+        <Typography sx={{ fontSize: 13 }} data-testid="task-row-creator">
           {creator?.name ?? 'Unknown'}
         </Typography>
       </Box>
       {dueChip ? (
         <Box
+          data-testid="task-row-due"
           sx={{
             ...dueChip.sx,
             fontSize: 11,
@@ -137,21 +146,25 @@ export function TaskListRow({
       >
         <IconButton
           size="small"
+          aria-label={`Edit ${task.title}`}
           onClick={(e) => {
             e.stopPropagation()
             onEdit()
           }}
           sx={{ p: 0.75 }}
+          data-testid="task-row-edit"
         >
           <EditIcon sx={{ fontSize: 18, color: 'primary.main' }} />
         </IconButton>
         <IconButton
           size="small"
+          aria-label={`Delete ${task.title}`}
           onClick={(e) => {
             e.stopPropagation()
             onDelete()
           }}
           sx={{ p: 0.75 }}
+          data-testid="task-row-delete"
         >
           <DeleteIcon sx={{ fontSize: 18, color: 'error.main' }} />
         </IconButton>

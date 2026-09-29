@@ -3,6 +3,7 @@ import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
 import type { TaskPriority } from '../../../models/task'
 import type { TaskFormValues } from '../taskFormSchema'
+import { testIdProps } from '../../../utils/testIdProps'
 import { PriorityChip } from './PriorityChip'
 
 const PRIORITY_OPTIONS: TaskPriority[] = ['Low', 'Medium', 'High']
@@ -30,11 +31,16 @@ export function PrioritySelect({
                   sx={{ fontSize: 12 }}
                 />
               ),
+              SelectDisplayProps: testIdProps('priority-select'),
             },
           }}
         >
           {PRIORITY_OPTIONS.map((priority) => (
-            <MenuItem key={priority} value={priority}>
+            <MenuItem
+              key={priority}
+              value={priority}
+              data-testid={`priority-select-option-${priority.toLowerCase()}`}
+            >
               <PriorityChip priority={priority} sx={{ fontSize: 12 }} />
             </MenuItem>
           ))}

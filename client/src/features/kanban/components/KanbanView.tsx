@@ -79,7 +79,7 @@ export function KanbanView({
 
   return (
     <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <Box sx={{ overflowX: 'auto', pb: 1 }}>
+      <Box sx={{ overflowX: 'auto', pb: 1 }} data-testid="kanban-view">
         <Box
           sx={{
             display: 'flex',

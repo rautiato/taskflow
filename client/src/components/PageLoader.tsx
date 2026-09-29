@@ -4,6 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 export function PageLoader() {
   return (
     <Box
+      data-testid="page-loader"
       sx={{
         minHeight: '100vh',
         bgcolor: 'background.default',

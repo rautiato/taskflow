@@ -10,6 +10,7 @@ import type { SxProps, Theme } from '@mui/material/styles'
 import type { Project } from '../../../models/project'
 import { formatProjectDate } from '../projectService'
 import { ProjectBadge } from '../../../components/ProjectBadge'
+import { testIdProps } from '../../../utils/testIdProps'
 
 const styles = {
   root: {
@@ -78,16 +79,17 @@ export function ProjectListRow({
         onClick?.()
       }}
       sx={[styles.root, { cursor: 'pointer' }, isClosed && { opacity: 0.75 }]}
+      data-testid="project-row"
     >
       <ProjectBadge
         initials={project.initials}
         paletteColor={project.paletteColor}
       />
       <Box sx={styles.info}>
-        <Typography sx={styles.name} noWrap>
+        <Typography sx={styles.name} noWrap data-testid="project-row-name">
           {project.name}
         </Typography>
-        <Typography sx={styles.meta} noWrap>
+        <Typography sx={styles.meta} noWrap data-testid="project-row-meta">
           {project.taskCount} tasks · Updated{' '}
           {formatProjectDate(project.updatedAt, true)}
         </Typography>
@@ -99,15 +101,18 @@ export function ProjectListRow({
             ? { bgcolor: 'action.selected', color: 'text.secondary' }
             : { bgcolor: 'success.light', color: 'success.main' },
         ]}
+        data-testid="project-row-status"
       >
         {project.status}
       </Box>
       <IconButton
         size="small"
+        aria-label={`More actions for ${project.name}`}
         onClick={(event) => {
           event.stopPropagation()
           setMenuAnchor(event.currentTarget)
         }}
+        data-testid="project-row-menu-button"
       >
         <MoreVertIcon fontSize="small" />
       </IconButton>
@@ -115,12 +120,14 @@ export function ProjectListRow({
         anchorEl={menuAnchor}
         open={!!menuAnchor}
         onClose={() => setMenuAnchor(null)}
+        slotProps={{ paper: testIdProps('project-row-menu') }}
       >
         <MenuItem
           onClick={() => {
             onToggleStatus?.()
             setMenuAnchor(null)
           }}
+          data-testid="project-row-toggle-status"
         >
           {isClosed ? 'Mark as Active' : 'Mark as Closed'}
         </MenuItem>

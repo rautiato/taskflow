@@ -9,11 +9,19 @@ export function AuthHeading({
   subtitle: string
 }) {
   return (
-    <Stack spacing={0.75}>
-      <Typography variant="h5" sx={{ fontWeight: 700 }}>
+    <Stack spacing={0.75} data-testid="auth-heading">
+      <Typography
+        variant="h5"
+        sx={{ fontWeight: 700 }}
+        data-testid="auth-heading-title"
+      >
         {title}
       </Typography>
-      <Typography variant="body2" color="text.secondary">
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        data-testid="auth-heading-subtitle"
+      >
         {subtitle}
       </Typography>
     </Stack>

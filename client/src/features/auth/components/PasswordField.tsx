@@ -10,17 +10,20 @@ import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
+import { testIdProps } from '../../../utils/testIdProps'
 
 export function PasswordField<T extends FieldValues>({
   name,
   control,
   label = 'Password',
   hint,
+  testId,
 }: {
   name: Path<T>
   control: Control<T>
   label?: string
   hint?: string
+  testId: string
 }) {
   const [showPassword, setShowPassword] = useState(false)
 
@@ -38,6 +41,8 @@ export function PasswordField<T extends FieldValues>({
           error={!!fieldState.error}
           helperText={fieldState.error?.message ?? hint}
           slotProps={{
+            htmlInput: testIdProps(testId),
+            formHelperText: testIdProps(`${testId}-helper`),
             input: {
               endAdornment: (
                 <InputAdornment position="end">
@@ -47,6 +52,7 @@ export function PasswordField<T extends FieldValues>({
                     aria-label={
                       showPassword ? 'Hide password' : 'Show password'
                     }
+                    data-testid={`${testId}-visibility`}
                   >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>

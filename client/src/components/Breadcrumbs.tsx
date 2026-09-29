@@ -19,6 +19,7 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
   return (
     <MuiBreadcrumbs
       separator="/"
+      data-testid="breadcrumbs"
       sx={{
         ...crumbSx,
         color: 'text.secondary',
@@ -34,6 +35,7 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
             to={item.to}
             color="text.secondary"
             sx={crumbSx}
+            data-testid="breadcrumbs-item"
           >
             {item.label}
           </Link>
@@ -41,6 +43,7 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
           <Typography
             key={item.label}
             sx={{ ...crumbSx, color: 'text.secondary' }}
+            data-testid="breadcrumbs-item"
           >
             {item.label}
           </Typography>

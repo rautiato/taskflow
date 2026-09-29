@@ -11,12 +11,13 @@ import { Link as RouterLink, useLocation } from 'react-router-dom'
 import type { SxProps, Theme } from '@mui/material/styles'
 import { Logo } from '../../../components/Logo'
 import { AccountMenu } from './AccountMenu'
+import { testIdProps } from '../../../utils/testIdProps'
 import type { UserDto } from '../../../models/user'
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', path: '/dashboard' },
-  { label: 'Projects', path: '/projects' },
-  { label: 'My Tasks', path: '/my-tasks' },
+  { id: 'dashboard', label: 'Dashboard', path: '/dashboard' },
+  { id: 'projects', label: 'Projects', path: '/projects' },
+  { id: 'my-tasks', label: 'My Tasks', path: '/my-tasks' },
 ] as const
 
 const styles = {
@@ -95,12 +96,13 @@ export function AppHeader({ user }: { user: UserDto }) {
   const isActive = (path: string) => location.pathname.startsWith(path)
 
   return (
-    <Box sx={styles.root}>
+    <Box sx={styles.root} data-testid="app-header">
       <Box sx={styles.brandGroup}>
         <IconButton
           aria-label="Open navigation"
           onClick={() => setIsNavOpen(true)}
           sx={styles.menuButton}
+          data-testid="app-header-menu-button"
         >
           <MenuIcon />
         </IconButton>
@@ -109,16 +111,18 @@ export function AppHeader({ user }: { user: UserDto }) {
           to="/dashboard"
           aria-label="TaskFlow home"
           sx={styles.brandRow}
+          data-testid="app-header-home"
         >
           <Logo />
           <Typography sx={styles.brandText}>TaskFlow</Typography>
         </Box>
-        <Box sx={styles.navRow}>
+        <Box sx={styles.navRow} data-testid="app-header-nav">
           {NAV_ITEMS.map((item) => (
             <Box
               key={item.label}
               component={RouterLink}
               to={item.path}
+              data-testid={`app-header-nav-${item.id}`}
               sx={[
                 styles.navItem,
                 styles.navLink,
@@ -135,7 +139,11 @@ export function AppHeader({ user }: { user: UserDto }) {
       </Box>
 
       {/* Phone navigation; the inline nav row is hidden below sm. */}
-      <Drawer open={isNavOpen} onClose={() => setIsNavOpen(false)}>
+      <Drawer
+        open={isNavOpen}
+        onClose={() => setIsNavOpen(false)}
+        slotProps={{ paper: testIdProps('app-header-drawer') }}
+      >
         <List component="nav" aria-label="Main" sx={styles.drawerList}>
           {NAV_ITEMS.map((item) => (
             <ListItemButton
@@ -144,6 +152,7 @@ export function AppHeader({ user }: { user: UserDto }) {
               to={item.path}
               selected={isActive(item.path)}
               onClick={() => setIsNavOpen(false)}
+              data-testid={`app-header-drawer-${item.id}`}
             >
               <ListItemText primary={item.label} />
             </ListItemButton>

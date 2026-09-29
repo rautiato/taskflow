@@ -24,6 +24,16 @@ const PROJECT_COLUMN_TEMPLATE =
 const BASE_MIN_WIDTH = 900
 const PROJECT_MIN_WIDTH = 1000
 
+const SORT_TEST_IDS: Record<SortKey, string> = {
+  title: 'title',
+  project: 'project',
+  priority: 'priority',
+  status: 'status',
+  assignee: 'assignee',
+  createdBy: 'created-by',
+  dueDate: 'due-date',
+}
+
 export function TaskListView({
   tasks,
   columns,
@@ -82,7 +92,7 @@ export function TaskListView({
   ]
 
   const emptyMessage = (
-    <Box sx={{ px: 2, py: 3 }}>
+    <Box sx={{ px: 2, py: 3 }} data-testid="task-list-view-empty">
       <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
         No tasks match these filters.
       </Typography>
@@ -92,6 +102,7 @@ export function TaskListView({
   if (isPhone) {
     return (
       <Box
+        data-testid="task-list-view"
         sx={{
           border: 1,
           borderColor: 'divider',
@@ -127,6 +138,7 @@ export function TaskListView({
 
   return (
     <Box
+      data-testid="task-list-view"
       sx={{
         border: 1,
         borderColor: 'divider',
@@ -141,6 +153,7 @@ export function TaskListView({
         }}
       >
         <Box
+          data-testid="task-list-view-header"
           sx={{
             display: 'grid',
             gridTemplateColumns: columnTemplate,
@@ -159,6 +172,7 @@ export function TaskListView({
               active={sort?.key === key}
               direction={sort?.key === key ? sort.dir : 'asc'}
               onClick={() => setSort(nextSort(sort, key))}
+              data-testid={`task-list-view-sort-${SORT_TEST_IDS[key]}`}
               sx={{
                 fontSize: 11,
                 fontWeight: 700,

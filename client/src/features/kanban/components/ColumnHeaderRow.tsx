@@ -20,7 +20,10 @@ export function ColumnHeaderRow({
   onAddTask: (columnId: string) => void
 }) {
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', px: 0.25 }}>
+    <Box
+      sx={{ display: 'flex', alignItems: 'center', px: 0.25 }}
+      data-testid="column-header-row"
+    >
       <Droppable
         droppableId={COLUMN_DROPPABLE_ID}
         direction="horizontal"
@@ -38,6 +41,7 @@ export function ColumnHeaderRow({
                   <Box
                     ref={dragProvided.innerRef}
                     {...dragProvided.draggableProps}
+                    data-testid="column-header"
                     sx={{
                       width: COLUMN_WIDTH,
                       display: 'flex',
@@ -53,15 +57,20 @@ export function ColumnHeaderRow({
                     <Box
                       {...dragProvided.dragHandleProps}
                       sx={{ display: 'flex', cursor: 'grab' }}
+                      data-testid="column-header-drag-handle"
                     >
                       <DragIndicatorIcon
                         sx={{ fontSize: 16, color: '#B7BBC1' }}
                       />
                     </Box>
-                    <Typography sx={{ fontWeight: 700, fontSize: 13 }}>
+                    <Typography
+                      sx={{ fontWeight: 700, fontSize: 13 }}
+                      data-testid="column-header-name"
+                    >
                       {column.name}
                     </Typography>
                     <Box
+                      data-testid="column-header-count"
                       sx={{
                         bgcolor: 'background.paper',
                         border: 1,
@@ -80,8 +89,9 @@ export function ColumnHeaderRow({
                       <IconButton
                         size="small"
                         onClick={() => onAddTask(column.id)}
-                        aria-label="New Task"
+                        aria-label={`New task in ${column.name}`}
                         sx={{ color: 'text.secondary' }}
+                        data-testid="column-header-add-task"
                       >
                         <AddIcon sx={{ fontSize: 16 }} />
                       </IconButton>

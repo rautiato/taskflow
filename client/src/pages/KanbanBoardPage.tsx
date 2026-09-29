@@ -72,7 +72,12 @@ export function KanbanBoardPage() {
   if (projectsLoading || boardLoading) {
     return (
       <AppLayout user={user}>
-        <Typography color="text.secondary">Loading board…</Typography>
+        <Typography
+          color="text.secondary"
+          data-testid="kanban-board-page-loading"
+        >
+          Loading board…
+        </Typography>
       </AppLayout>
     )
   }
@@ -119,7 +124,10 @@ export function KanbanBoardPage() {
 
   return (
     <AppLayout user={user}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box
+        sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+        data-testid="kanban-board-page"
+      >
         <BoardHeader
           projectName={project.name}
           taskCount={tasks.length}
@@ -165,7 +173,10 @@ export function KanbanBoardPage() {
             onToggleFavorite={toggleFavorite}
           />
         ) : (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          <Box
+            sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}
+            data-testid="kanban-board-page-list"
+          >
             <FilterBar
               filters={filters}
               onChange={setFilters}
@@ -173,7 +184,10 @@ export function KanbanBoardPage() {
               users={users}
             />
             {hasActiveFilters(filters) && (
-              <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
+              <Typography
+                sx={{ fontSize: 13, color: 'text.secondary' }}
+                data-testid="kanban-board-page-result-count"
+              >
                 {listViewTasks.length} task
                 {listViewTasks.length === 1 ? '' : 's'} found
               </Typography>

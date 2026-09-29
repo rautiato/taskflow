@@ -22,8 +22,17 @@ import { CommentThread } from './CommentThread'
 import { ImagePreviewDialog } from './ImagePreviewDialog'
 import { FavoriteToggle } from './FavoriteToggle'
 import { PriorityChip } from './PriorityChip'
+import { testIdProps } from '../../../utils/testIdProps'
 
-function MetaRow({ label, children }: { label: string; children: ReactNode }) {
+function MetaRow({
+  label,
+  testId,
+  children,
+}: {
+  label: string
+  testId: string
+  children: ReactNode
+}) {
   return (
     <Box
       sx={{
@@ -48,7 +57,10 @@ function MetaRow({ label, children }: { label: string; children: ReactNode }) {
       >
         {label}
       </Typography>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Box
+        sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+        data-testid={testId}
+      >
         {children}
       </Box>
     </Box>
@@ -89,7 +101,12 @@ export function TaskDetailDrawer({
   const dueChip = getDueChip(task, column?.isDone ?? false)
 
   return (
-    <Drawer anchor="right" open={open} onClose={onClose}>
+    <Drawer
+      anchor="right"
+      open={open}
+      onClose={onClose}
+      slotProps={{ paper: testIdProps('task-detail-drawer') }}
+    >
       <Box
         sx={{
           width: { xs: '100vw', sm: 640 },
@@ -114,7 +131,9 @@ export function TaskDetailDrawer({
           <IconButton
             onClick={onClose}
             size="small"
+            aria-label="Close"
             sx={{ position: 'absolute', top: 12, right: 16 }}
+            data-testid="task-detail-drawer-close"
           >
             <CloseIcon fontSize="small" />
           </IconButton>
@@ -132,6 +151,7 @@ export function TaskDetailDrawer({
               size="small"
               aria-label="Copy link to task"
               sx={{ position: 'absolute', top: 12, right: 52 }}
+              data-testid="task-detail-drawer-copy-link"
             >
               <LinkIcon fontSize="small" />
             </IconButton>
@@ -145,7 +165,10 @@ export function TaskDetailDrawer({
               onToggle={onToggleFavorite}
               size={24}
             />
-            <Typography sx={{ fontSize: 24, fontWeight: 700, lineHeight: 1.3 }}>
+            <Typography
+              sx={{ fontSize: 24, fontWeight: 700, lineHeight: 1.3 }}
+              data-testid="task-detail-drawer-title"
+            >
               {task.title}
             </Typography>
           </Box>
@@ -158,15 +181,15 @@ export function TaskDetailDrawer({
               overflow: 'hidden',
             }}
           >
-            <MetaRow label="Status">
+            <MetaRow label="Status" testId="task-detail-drawer-status">
               <Typography sx={{ fontSize: 13, fontWeight: 600 }}>
                 {column?.name ?? 'Unknown'}
               </Typography>
             </MetaRow>
-            <MetaRow label="Priority">
+            <MetaRow label="Priority" testId="task-detail-drawer-priority">
               <PriorityChip priority={task.priority} sx={{ px: 1.25 }} />
             </MetaRow>
-            <MetaRow label="Assignee">
+            <MetaRow label="Assignee" testId="task-detail-drawer-assignee">
               <UserAvatar
                 id={assignee?.id}
                 name={assignee?.name ?? null}
@@ -177,7 +200,7 @@ export function TaskDetailDrawer({
                 {assignee?.name ?? 'Unassigned'}
               </Typography>
             </MetaRow>
-            <MetaRow label="Created By">
+            <MetaRow label="Created By" testId="task-detail-drawer-creator">
               <UserAvatar
                 id={creator?.id}
                 name={creator?.name ?? null}
@@ -188,7 +211,7 @@ export function TaskDetailDrawer({
                 {creator?.name ?? 'Unknown'}
               </Typography>
             </MetaRow>
-            <MetaRow label="Due Date">
+            <MetaRow label="Due Date" testId="task-detail-drawer-due-date">
               {dueChip ? (
                 <>
                   <CalendarTodayOutlinedIcon
@@ -247,6 +270,7 @@ export function TaskDetailDrawer({
             >
               <Typography
                 sx={{ fontSize: 14, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}
+                data-testid="task-detail-drawer-description"
               >
                 {task.description || 'No description provided.'}
               </Typography>
@@ -273,6 +297,7 @@ export function TaskDetailDrawer({
                   gap: 1,
                   color: 'text.disabled',
                 }}
+                data-testid="task-detail-drawer-no-attachments"
               >
                 <ImageOutlinedIcon sx={{ fontSize: 18 }} />
                 <Typography sx={{ fontSize: 13 }}>
@@ -280,7 +305,10 @@ export function TaskDetailDrawer({
                 </Typography>
               </Box>
             ) : (
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              <Box
+                sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}
+                data-testid="task-detail-drawer-attachments"
+              >
                 {attachments.map((a, index) => (
                   <Box
                     key={a.id}
@@ -288,6 +316,7 @@ export function TaskDetailDrawer({
                     src={a.blobUrl}
                     alt={a.fileName}
                     onClick={() => setPreviewIndex(index)}
+                    data-testid="task-detail-drawer-attachment"
                     sx={{
                       width: 120,
                       height: 90,
@@ -326,6 +355,7 @@ export function TaskDetailDrawer({
             onClick={onDelete}
             variant="contained"
             startIcon={<DeleteIcon />}
+            data-testid="task-detail-drawer-delete"
             sx={{
               minWidth: 140,
               bgcolor: 'error.light',
@@ -340,6 +370,7 @@ export function TaskDetailDrawer({
             onClick={onEdit}
             variant="outlined"
             startIcon={<EditIcon />}
+            data-testid="task-detail-drawer-edit"
             sx={{ minWidth: 140 }}
           >
             Edit

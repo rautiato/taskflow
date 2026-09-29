@@ -25,6 +25,7 @@ export function FavoriteToggle({
           onToggle()
         }}
         sx={{ p: 0.25, flexShrink: 0 }}
+        data-testid="favorite-toggle"
       >
         {isFavorite ? (
           <StarIcon sx={{ fontSize: size, color: 'warning.main' }} />

@@ -29,6 +29,7 @@ export function TaskCard({
   return (
     <Box
       onClick={onClick}
+      data-testid="task-card"
       sx={{
         bgcolor: 'background.paper',
         border: 1,
@@ -56,6 +57,7 @@ export function TaskCard({
           onToggle={onToggleFavorite}
         />
         <Typography
+          data-testid="task-card-title"
           sx={{
             fontSize: 13,
             fontWeight: 600,
@@ -76,6 +78,7 @@ export function TaskCard({
         />
         {dueChip && (
           <Box
+            data-testid="task-card-due"
             sx={{
               ...dueChip.sx,
               fontSize: 10,
@@ -104,11 +107,13 @@ export function TaskCard({
             {onEdit && (
               <IconButton
                 size="small"
+                aria-label={`Edit ${task.title}`}
                 onClick={(e) => {
                   e.stopPropagation()
                   onEdit()
                 }}
                 sx={{ p: 0.75 }}
+                data-testid="task-card-edit"
               >
                 <EditIcon sx={{ fontSize: 18, color: 'primary.main' }} />
               </IconButton>
@@ -116,11 +121,13 @@ export function TaskCard({
             {onDelete && (
               <IconButton
                 size="small"
+                aria-label={`Delete ${task.title}`}
                 onClick={(e) => {
                   e.stopPropagation()
                   onDelete()
                 }}
                 sx={{ p: 0.75 }}
+                data-testid="task-card-delete"
               >
                 <DeleteIcon sx={{ fontSize: 18, color: 'error.main' }} />
               </IconButton>

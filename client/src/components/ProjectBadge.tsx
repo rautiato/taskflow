@@ -19,6 +19,7 @@ export function ProjectBadge({
 
   return (
     <Box
+      data-testid="project-badge"
       sx={{
         width: box,
         height: box,

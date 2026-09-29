@@ -43,7 +43,10 @@ export function AvatarUpload({
 
   return (
     <>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+      <Box
+        sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
+        data-testid="avatar-upload"
+      >
         <Box
           component="label"
           sx={{
@@ -76,6 +79,7 @@ export function AvatarUpload({
             type="file"
             accept="image/*"
             hidden
+            data-testid="avatar-upload-avatar-input"
             onChange={(e) => {
               handleFile(e.target.files?.[0])
               e.target.value = ''
@@ -84,12 +88,17 @@ export function AvatarUpload({
         </Box>
         <Box>
           <Box sx={{ display: 'flex', gap: 1.5 }}>
-            <Link component="label" sx={{ fontWeight: 600, cursor: 'pointer' }}>
+            <Link
+              component="label"
+              sx={{ fontWeight: 600, cursor: 'pointer' }}
+              data-testid="avatar-upload-change"
+            >
               Change photo
               <input
                 type="file"
                 accept="image/*"
                 hidden
+                data-testid="avatar-upload-change-input"
                 onChange={(e) => {
                   handleFile(e.target.files?.[0])
                   e.target.value = ''
@@ -103,6 +112,7 @@ export function AvatarUpload({
                 color="error"
                 sx={{ fontWeight: 600 }}
                 onClick={() => onChange(null)}
+                data-testid="avatar-upload-remove"
               >
                 Remove
               </Link>
@@ -112,7 +122,10 @@ export function AvatarUpload({
             JPG or PNG, up to 2MB.
           </Typography>
           {error && (
-            <Typography sx={{ fontSize: 12, color: 'error.main', mt: 0.5 }}>
+            <Typography
+              sx={{ fontSize: 12, color: 'error.main', mt: 0.5 }}
+              data-testid="avatar-upload-error"
+            >
               {error}
             </Typography>
           )}

@@ -30,6 +30,7 @@ export function ManageColumnsButton({
         type="button"
         aria-label="Manage Columns"
         onClick={(event) => setAnchor(event.currentTarget)}
+        data-testid="manage-columns-button"
         sx={{
           border: '1px dashed #C7CBD1',
           borderRadius: 1,

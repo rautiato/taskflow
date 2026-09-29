@@ -14,6 +14,7 @@ export function PriorityChip({
   return (
     <Box
       component="span"
+      data-testid="priority-chip"
       sx={[
         PRIORITY_STYLES[priority],
         {

@@ -157,6 +157,7 @@ export function AttachmentPicker({
         }}
         onDragLeave={() => setIsDragOver(false)}
         onDrop={handleDrop}
+        data-testid="attachment-picker"
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -181,6 +182,7 @@ export function AttachmentPicker({
         {attachments.map((a, index) => (
           <Box
             key={a.kind === 'existing' ? a.id : a.localId}
+            data-testid="attachment-picker-item"
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -197,6 +199,7 @@ export function AttachmentPicker({
               src={a.blobUrl}
               alt=""
               onClick={() => setPreviewIndex(index)}
+              data-testid="attachment-picker-item-preview"
               sx={{
                 width: 46,
                 height: 46,
@@ -207,10 +210,19 @@ export function AttachmentPicker({
                 cursor: 'pointer',
               }}
             />
-            <Typography sx={{ fontSize: 13, flexGrow: 1 }} noWrap>
+            <Typography
+              sx={{ fontSize: 13, flexGrow: 1 }}
+              noWrap
+              data-testid="attachment-picker-item-name"
+            >
               {a.fileName}
             </Typography>
-            <IconButton size="small" onClick={() => handleRemove(a)}>
+            <IconButton
+              size="small"
+              aria-label={`Remove ${a.fileName}`}
+              onClick={() => handleRemove(a)}
+              data-testid="attachment-picker-item-remove"
+            >
               <CloseIcon fontSize="small" />
             </IconButton>
           </Box>
@@ -222,6 +234,7 @@ export function AttachmentPicker({
           size="small"
           startIcon={<AddIcon />}
           sx={{ alignSelf: 'flex-start' }}
+          data-testid="attachment-picker-add"
         >
           Drag & drop or click to add
           <input
@@ -229,6 +242,7 @@ export function AttachmentPicker({
             accept="image/*"
             multiple
             hidden
+            data-testid="attachment-picker-input"
             onChange={(e) => {
               handleFiles(e.target.files)
               e.target.value = ''
@@ -236,11 +250,17 @@ export function AttachmentPicker({
           />
         </Button>
         {error ? (
-          <Typography sx={{ fontSize: 12, color: 'error.main' }}>
+          <Typography
+            sx={{ fontSize: 12, color: 'error.main' }}
+            data-testid="attachment-picker-error"
+          >
             {error}
           </Typography>
         ) : (
-          <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
+          <Typography
+            sx={{ fontSize: 12, color: 'text.secondary' }}
+            data-testid="attachment-picker-hint"
+          >
             Images up to 2 MB each
             {/* NO-BACKEND: storage usage hint; keep only the size limit. */}
             {` · Storage: ${formatSize(usedChars)} of about 5 MB used`}

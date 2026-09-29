@@ -168,11 +168,24 @@ export function MyTasksPage() {
 
   return (
     <AppLayout user={user}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Typography sx={{ fontSize: 25, fontWeight: 700 }}>My Tasks</Typography>
+      <Box
+        sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+        data-testid="my-tasks-page"
+      >
+        <Typography
+          sx={{ fontSize: 25, fontWeight: 700 }}
+          data-testid="my-tasks-page-title"
+        >
+          My Tasks
+        </Typography>
 
         {isLoading ? (
-          <Typography color="text.secondary">Loading…</Typography>
+          <Typography
+            color="text.secondary"
+            data-testid="my-tasks-page-loading"
+          >
+            Loading…
+          </Typography>
         ) : tasks.length === 0 ? (
           <EmptyState
             icon={<InboxOutlinedIcon sx={{ fontSize: 40 }} />}
@@ -190,7 +203,10 @@ export function MyTasksPage() {
             />
             {hasActiveMyTasksFilters(filters) && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
+                <Typography
+                  sx={{ fontSize: 13, color: 'text.secondary' }}
+                  data-testid="my-tasks-page-result-count"
+                >
                   {visibleTasks.length} task
                   {visibleTasks.length === 1 ? '' : 's'} found
                 </Typography>
@@ -198,6 +214,7 @@ export function MyTasksPage() {
                   component="button"
                   onClick={() => handleFiltersChange(EMPTY_MY_TASKS_FILTERS)}
                   sx={{ fontSize: 13, fontWeight: 600 }}
+                  data-testid="my-tasks-page-clear-filters"
                 >
                   Clear filters
                 </Link>

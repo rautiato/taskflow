@@ -15,6 +15,7 @@ import { authService } from '../../auth/authService'
 
 import type { UserDto } from '../../../models/user'
 import { UserAvatar } from '../../../components/UserAvatar'
+import { testIdProps } from '../../../utils/testIdProps'
 
 type AccountMenuItem = {
   id: 'profile' | 'settings' | 'logout'
@@ -63,7 +64,12 @@ export function AccountMenu({ user }: { user: UserDto }) {
 
   return (
     <>
-      <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small">
+      <IconButton
+        onClick={(e) => setAnchorEl(e.currentTarget)}
+        size="small"
+        aria-label="Account menu"
+        data-testid="account-menu-button"
+      >
         <UserAvatar
           id={user.id}
           name={user.name}
@@ -77,9 +83,12 @@ export function AccountMenu({ user }: { user: UserDto }) {
         onClose={() => setAnchorEl(null)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        slotProps={{ paper: { sx: { width: 240, mt: 1 } } }}
+        slotProps={{
+          paper: { ...testIdProps('account-menu'), sx: { width: 240, mt: 1 } },
+        }}
       >
         <Box
+          data-testid="account-menu-user"
           sx={{
             px: 2,
             py: 1.5,
@@ -116,6 +125,7 @@ export function AccountMenu({ user }: { user: UserDto }) {
               disabled={item.disabled}
               onClick={item.onClick}
               sx={item.id === 'logout' ? { color: 'error.main' } : undefined}
+              data-testid={`account-menu-${item.id}`}
             >
               <ListItemIcon
                 sx={item.id === 'logout' ? { color: 'error.main' } : undefined}

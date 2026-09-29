@@ -11,6 +11,7 @@ export function BackToSignInLink() {
       to="/login"
       color="text.secondary"
       sx={{ display: 'inline-flex' }}
+      data-testid="back-to-sign-in-link"
     >
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <ArrowBackIcon sx={{ fontSize: 15 }} />

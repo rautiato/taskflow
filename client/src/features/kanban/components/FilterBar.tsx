@@ -12,6 +12,7 @@ import {
   UNKNOWN_CREATOR,
   type TaskFilters,
 } from '../../tasks/filterTasks'
+import { testIdProps } from '../../../utils/testIdProps'
 
 const PRIORITIES: TaskPriority[] = ['High', 'Medium', 'Low']
 
@@ -30,6 +31,7 @@ export function FilterBar({
     // Phones: 2-column grid with search spanning both columns.
     // Wider screens: one wrapping row.
     <Box
+      data-testid="filter-bar"
       sx={{
         display: { xs: 'grid', sm: 'flex' },
         gridTemplateColumns: '1fr 1fr',
@@ -46,6 +48,7 @@ export function FilterBar({
         }
         sx={{ gridColumn: '1 / -1', width: { sm: 300 } }}
         slotProps={{
+          htmlInput: testIdProps('filter-bar-search'),
           input: {
             startAdornment: (
               <InputAdornment position="start">
@@ -64,10 +67,19 @@ export function FilterBar({
           onChange({ ...filters, columnId: event.target.value })
         }
         sx={{ minWidth: { sm: 140 } }}
+        slotProps={{
+          select: { SelectDisplayProps: testIdProps('filter-bar-status') },
+        }}
       >
-        <MenuItem value={ALL}>All</MenuItem>
+        <MenuItem value={ALL} data-testid="filter-bar-status-option-all">
+          All
+        </MenuItem>
         {columns.map((column) => (
-          <MenuItem key={column.id} value={column.id}>
+          <MenuItem
+            key={column.id}
+            value={column.id}
+            data-testid="filter-bar-status-option"
+          >
             {column.name}
           </MenuItem>
         ))}
@@ -84,10 +96,19 @@ export function FilterBar({
           })
         }
         sx={{ minWidth: { sm: 140 } }}
+        slotProps={{
+          select: { SelectDisplayProps: testIdProps('filter-bar-priority') },
+        }}
       >
-        <MenuItem value={ALL}>All</MenuItem>
+        <MenuItem value={ALL} data-testid="filter-bar-priority-option-all">
+          All
+        </MenuItem>
         {PRIORITIES.map((priority) => (
-          <MenuItem key={priority} value={priority}>
+          <MenuItem
+            key={priority}
+            value={priority}
+            data-testid={`filter-bar-priority-option-${priority.toLowerCase()}`}
+          >
             {priority}
           </MenuItem>
         ))}
@@ -104,11 +125,25 @@ export function FilterBar({
           })
         }
         sx={{ minWidth: { sm: 160 } }}
+        slotProps={{
+          select: { SelectDisplayProps: testIdProps('filter-bar-assignee') },
+        }}
       >
-        <MenuItem value={ALL}>All</MenuItem>
-        <MenuItem value={UNASSIGNED}>Unassigned</MenuItem>
+        <MenuItem value={ALL} data-testid="filter-bar-assignee-option-all">
+          All
+        </MenuItem>
+        <MenuItem
+          value={UNASSIGNED}
+          data-testid="filter-bar-assignee-option-unassigned"
+        >
+          Unassigned
+        </MenuItem>
         {users.map((user) => (
-          <MenuItem key={user.id} value={user.id}>
+          <MenuItem
+            key={user.id}
+            value={user.id}
+            data-testid="filter-bar-assignee-option"
+          >
             {user.name}
           </MenuItem>
         ))}
@@ -125,11 +160,25 @@ export function FilterBar({
           })
         }
         sx={{ minWidth: { sm: 160 } }}
+        slotProps={{
+          select: { SelectDisplayProps: testIdProps('filter-bar-created-by') },
+        }}
       >
-        <MenuItem value={ALL}>All</MenuItem>
-        <MenuItem value={UNKNOWN_CREATOR}>Unknown</MenuItem>
+        <MenuItem value={ALL} data-testid="filter-bar-created-by-option-all">
+          All
+        </MenuItem>
+        <MenuItem
+          value={UNKNOWN_CREATOR}
+          data-testid="filter-bar-created-by-option-unknown"
+        >
+          Unknown
+        </MenuItem>
         {users.map((user) => (
-          <MenuItem key={user.id} value={user.id}>
+          <MenuItem
+            key={user.id}
+            value={user.id}
+            data-testid="filter-bar-created-by-option"
+          >
             {user.name}
           </MenuItem>
         ))}

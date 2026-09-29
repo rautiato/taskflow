@@ -55,6 +55,7 @@ export function UserAvatar({
   return (
     <Avatar
       src={avatarUrl ?? undefined}
+      data-testid="user-avatar"
       sx={{
         width: box,
         height: box,

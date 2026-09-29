@@ -7,6 +7,7 @@ import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
+import { testIdProps } from '../../../utils/testIdProps'
 
 export function NewProjectDialog({
   open,
@@ -32,7 +33,13 @@ export function NewProjectDialog({
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      fullWidth
+      maxWidth="xs"
+      slotProps={{ paper: testIdProps('new-project-dialog') }}
+    >
       <DialogTitle
         sx={{
           display: 'flex',
@@ -41,7 +48,12 @@ export function NewProjectDialog({
         }}
       >
         New Project
-        <IconButton onClick={handleClose} size="small">
+        <IconButton
+          onClick={handleClose}
+          size="small"
+          aria-label="Close"
+          data-testid="new-project-dialog-close"
+        >
           <CloseIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
@@ -59,10 +71,16 @@ export function NewProjectDialog({
               handleCreate()
             }
           }}
+          slotProps={{ htmlInput: testIdProps('new-project-dialog-name') }}
         />
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2, justifyContent: 'space-between' }}>
-        <Button onClick={handleClose} variant="outlined" sx={{ minWidth: 120 }}>
+        <Button
+          onClick={handleClose}
+          variant="outlined"
+          sx={{ minWidth: 120 }}
+          data-testid="new-project-dialog-cancel"
+        >
           Cancel
         </Button>
         <Button
@@ -70,6 +88,7 @@ export function NewProjectDialog({
           variant="contained"
           disabled={!trimmed}
           sx={{ minWidth: 120 }}
+          data-testid="new-project-dialog-submit"
         >
           Create Project
         </Button>

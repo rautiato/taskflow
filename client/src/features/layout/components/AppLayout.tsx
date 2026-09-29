@@ -12,6 +12,7 @@ export function AppLayout({
 }) {
   return (
     <Box
+      data-testid="app-layout"
       sx={{
         minHeight: '100vh',
         bgcolor: 'background.default',
@@ -21,6 +22,7 @@ export function AppLayout({
     >
       <AppHeader user={user} />
       <Box
+        data-testid="app-layout-content"
         sx={{
           flexGrow: 1,
           px: { xs: 2, sm: 3, md: 4 },

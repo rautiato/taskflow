@@ -16,6 +16,7 @@ export function SettingsPage() {
   return (
     <AppLayout user={user}>
       <Box
+        data-testid="settings-page"
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -26,10 +27,16 @@ export function SettingsPage() {
       >
         <AccountNav />
         <Box>
-          <Typography sx={{ fontSize: 24, fontWeight: 700 }}>
+          <Typography
+            sx={{ fontSize: 24, fontWeight: 700 }}
+            data-testid="settings-page-title"
+          >
             Settings
           </Typography>
-          <Typography sx={{ fontSize: 14, color: 'text.secondary' }}>
+          <Typography
+            sx={{ fontSize: 14, color: 'text.secondary' }}
+            data-testid="settings-page-subtitle"
+          >
             Manage your account security.
           </Typography>
         </Box>
@@ -42,7 +49,10 @@ export function SettingsPage() {
             p: { xs: 2, sm: 3 },
           }}
         >
-          <Typography sx={{ fontSize: 16, fontWeight: 700, mb: 2 }}>
+          <Typography
+            sx={{ fontSize: 16, fontWeight: 700, mb: 2 }}
+            data-testid="settings-page-change-password-title"
+          >
             Change Password
           </Typography>
           <ChangePasswordForm userId={user.id} />

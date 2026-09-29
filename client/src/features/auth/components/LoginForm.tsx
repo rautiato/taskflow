@@ -19,6 +19,7 @@ import { PasswordField } from './PasswordField'
 import { InfoNote } from './InfoNote'
 import { authService } from '../authService'
 import { errorMessage } from '../../../utils/errorMessage'
+import { testIdProps } from '../../../utils/testIdProps'
 
 const loginSchema = z.object({
   email: emailSchema,
@@ -52,19 +53,32 @@ export function LoginForm() {
       component="form"
       noValidate
       onSubmit={handleSubmit(onSubmit)}
+      data-testid="login-form"
     >
       <AuthHeading title="TaskFlow" subtitle="Sign in to continue" />
 
-      {authError && <Alert severity="error">{authError}</Alert>}
+      {authError && (
+        <Alert severity="error" data-testid="login-form-error">
+          {authError}
+        </Alert>
+      )}
 
-      <EmailField<LoginFormValues> control={control} />
+      <EmailField<LoginFormValues>
+        control={control}
+        testId="login-form-email"
+      />
 
       <Stack spacing={0.75}>
-        <PasswordField<LoginFormValues> name="password" control={control} />
+        <PasswordField<LoginFormValues>
+          name="password"
+          control={control}
+          testId="login-form-password"
+        />
         <Box sx={{ textAlign: 'right' }}>
           <Link
             component={RouterLink}
             to="/forgot-password"
+            data-testid="login-form-forgot-password"
             sx={{
               fontSize: 13,
               fontWeight: 600,
@@ -87,6 +101,7 @@ export function LoginForm() {
                 checked={field.value}
                 onChange={(e) => field.onChange(e.target.checked)}
                 size="small"
+                slotProps={{ input: testIdProps('login-form-remember-me') }}
               />
             }
             label={
@@ -98,7 +113,13 @@ export function LoginForm() {
         )}
       />
 
-      <Button type="submit" variant="contained" size="large" fullWidth>
+      <Button
+        type="submit"
+        variant="contained"
+        size="large"
+        fullWidth
+        data-testid="login-form-submit"
+      >
         Sign in
       </Button>
 
@@ -108,7 +129,12 @@ export function LoginForm() {
         sx={{ textAlign: 'center' }}
       >
         Don't have an account?{' '}
-        <Link component={RouterLink} to="/signup" sx={{ fontWeight: 600 }}>
+        <Link
+          component={RouterLink}
+          to="/signup"
+          sx={{ fontWeight: 600 }}
+          data-testid="login-form-sign-up"
+        >
           Sign up
         </Link>
       </Typography>

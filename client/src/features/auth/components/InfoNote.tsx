@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 export function InfoNote({ children }: { children: ReactNode }) {
   return (
     <Box
+      data-testid="info-note"
       sx={{
         bgcolor: 'background.default',
         borderRadius: 2,
