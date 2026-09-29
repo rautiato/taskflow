@@ -58,7 +58,12 @@ export function AuthLayout({
             data-testid="auth-layout-brand"
           >
             <Logo />
-            <Typography sx={styles.brandText}>TaskFlow</Typography>
+            <Typography
+              data-testid="auth-layout-brand-text"
+              sx={styles.brandText}
+            >
+              TaskFlow
+            </Typography>
           </Stack>
           {children}
         </Box>

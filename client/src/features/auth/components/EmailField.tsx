@@ -1,11 +1,5 @@
-import {
-  Controller,
-  type Control,
-  type FieldValues,
-  type Path,
-} from 'react-hook-form'
-import TextField from '@mui/material/TextField'
-import { testIdProps } from '../../../utils/testIdProps'
+import type { Control, FieldValues, Path } from 'react-hook-form'
+import { FormTextField } from '../../../components/FormTextField'
 
 export function EmailField<T extends FieldValues>({
   control,
@@ -17,25 +11,15 @@ export function EmailField<T extends FieldValues>({
   testId: string
 }) {
   return (
-    <Controller
+    <FormTextField<T>
       name={name}
       control={control}
-      render={({ field, fieldState }) => (
-        <TextField
-          {...field}
-          label="Email"
-          type="email"
-          required
-          fullWidth
-          placeholder="you@example.com"
-          error={!!fieldState.error}
-          helperText={fieldState.error?.message}
-          slotProps={{
-            htmlInput: testIdProps(testId),
-            formHelperText: testIdProps(`${testId}-helper`),
-          }}
-        />
-      )}
+      label="Email"
+      type="email"
+      required
+      fullWidth
+      placeholder="you@example.com"
+      testId={testId}
     />
   )
 }

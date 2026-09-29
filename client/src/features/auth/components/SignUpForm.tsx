@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useNavigate } from 'react-router-dom'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Alert from '@mui/material/Alert'
@@ -22,7 +21,7 @@ import { PasswordField } from './PasswordField'
 import { InfoNote } from './InfoNote'
 import { authService } from '../authService'
 import { errorMessage } from '../../../utils/errorMessage'
-import { testIdProps } from '../../../utils/testIdProps'
+import { FormTextField } from '../../../components/FormTextField'
 
 const signUpSchema = z
   .object({
@@ -75,23 +74,13 @@ export function SignUpForm() {
         </Alert>
       )}
 
-      <Controller
+      <FormTextField<SignUpFormValues>
         name="name"
         control={control}
-        render={({ field, fieldState }) => (
-          <TextField
-            {...field}
-            label="Name"
-            required
-            fullWidth
-            error={!!fieldState.error}
-            helperText={fieldState.error?.message}
-            slotProps={{
-              htmlInput: testIdProps('sign-up-form-name'),
-              formHelperText: testIdProps('sign-up-form-name-helper'),
-            }}
-          />
-        )}
+        label="Name"
+        required
+        fullWidth
+        testId="sign-up-form-name"
       />
 
       <EmailField<SignUpFormValues>

@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import Divider from '@mui/material/Divider'
@@ -13,7 +12,7 @@ import { emailSchema, nameSchema } from '../validation'
 import { EmailField } from './EmailField'
 import { authService } from '../authService'
 import { errorMessage } from '../../../utils/errorMessage'
-import { testIdProps } from '../../../utils/testIdProps'
+import { FormTextField } from '../../../components/FormTextField'
 import { AvatarUpload } from '../../../components/AvatarUpload'
 import type { UserDto } from '../../../models/user'
 
@@ -95,23 +94,13 @@ export function ProfileForm({
 
       <Divider />
 
-      <Controller
+      <FormTextField<ProfileFormValues>
         name="name"
         control={control}
-        render={({ field, fieldState }) => (
-          <TextField
-            {...field}
-            label="Name"
-            required
-            fullWidth
-            error={!!fieldState.error}
-            helperText={fieldState.error?.message}
-            slotProps={{
-              htmlInput: testIdProps('profile-form-name'),
-              formHelperText: testIdProps('profile-form-name-helper'),
-            }}
-          />
-        )}
+        label="Name"
+        required
+        fullWidth
+        testId="profile-form-name"
       />
 
       <EmailField<ProfileFormValues>

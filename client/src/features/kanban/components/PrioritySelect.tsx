@@ -1,9 +1,8 @@
-import { Controller, type Control } from 'react-hook-form'
-import TextField from '@mui/material/TextField'
+import type { Control } from 'react-hook-form'
 import MenuItem from '@mui/material/MenuItem'
 import type { TaskPriority } from '../../../models/task'
 import type { TaskFormValues } from '../taskFormSchema'
-import { testIdProps } from '../../../utils/testIdProps'
+import { FormSingleSelect } from '../../../components/FormSingleSelect'
 import { PriorityChip } from './PriorityChip'
 
 const PRIORITY_OPTIONS: TaskPriority[] = ['Low', 'Medium', 'High']
@@ -14,38 +13,25 @@ export function PrioritySelect({
   control: Control<TaskFormValues>
 }) {
   return (
-    <Controller
+    <FormSingleSelect<TaskFormValues>
       name="priority"
       control={control}
-      render={({ field }) => (
-        <TextField
-          {...field}
-          select
-          label="Priority"
-          fullWidth
-          slotProps={{
-            select: {
-              renderValue: (value) => (
-                <PriorityChip
-                  priority={value as TaskPriority}
-                  sx={{ fontSize: 12 }}
-                />
-              ),
-              SelectDisplayProps: testIdProps('priority-select'),
-            },
-          }}
-        >
-          {PRIORITY_OPTIONS.map((priority) => (
-            <MenuItem
-              key={priority}
-              value={priority}
-              data-testid={`priority-select-option-${priority.toLowerCase()}`}
-            >
-              <PriorityChip priority={priority} sx={{ fontSize: 12 }} />
-            </MenuItem>
-          ))}
-        </TextField>
+      label="Priority"
+      fullWidth
+      testId="priority-select"
+      renderValue={(value) => (
+        <PriorityChip priority={value as TaskPriority} sx={{ fontSize: 12 }} />
       )}
-    />
+    >
+      {PRIORITY_OPTIONS.map((priority) => (
+        <MenuItem
+          key={priority}
+          value={priority}
+          data-testid={`priority-select-option-${priority.toLowerCase()}`}
+        >
+          <PriorityChip priority={priority} sx={{ fontSize: 12 }} />
+        </MenuItem>
+      ))}
+    </FormSingleSelect>
   )
 }
