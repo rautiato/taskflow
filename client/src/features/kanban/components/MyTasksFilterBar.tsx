@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
+import type { SxProps, Theme } from '@mui/material/styles'
 import SearchIcon from '@mui/icons-material/Search'
 import type { Project } from '../../../models/project'
 import type { UserDto } from '../../../models/user'
@@ -20,6 +21,25 @@ const DUE_OPTIONS: { value: DueFilter; label: string }[] = [
   { value: 'none', label: 'No due date' },
 ]
 
+const styles = {
+  // Phones: 2-column grid with search spanning both columns.
+  // Wider screens: one wrapping row.
+  root: {
+    display: { xs: 'grid', sm: 'flex' },
+    gridTemplateColumns: '1fr 1fr',
+    flexWrap: 'wrap',
+    gap: 1.5,
+  },
+  search: {
+    gridColumn: '1 / -1',
+    width: { sm: 300 },
+  },
+  searchIcon: {
+    fontSize: 18,
+    color: 'text.secondary',
+  },
+} satisfies Record<string, SxProps<Theme>>
+
 export function MyTasksFilterBar({
   filters,
   onChange,
@@ -34,17 +54,7 @@ export function MyTasksFilterBar({
   creators: UserDto[]
 }) {
   return (
-    // Phones: 2-column grid with search spanning both columns.
-    // Wider screens: one wrapping row.
-    <Box
-      data-testid="my-tasks-filter-bar"
-      sx={{
-        display: { xs: 'grid', sm: 'flex' },
-        gridTemplateColumns: '1fr 1fr',
-        flexWrap: 'wrap',
-        gap: 1.5,
-      }}
-    >
+    <Box data-testid="my-tasks-filter-bar" sx={styles.root}>
       <TextField
         size="small"
         placeholder="Search tasks..."
@@ -52,13 +62,13 @@ export function MyTasksFilterBar({
         onChange={(event) =>
           onChange({ ...filters, search: event.target.value })
         }
-        sx={{ gridColumn: '1 / -1', width: { sm: 300 } }}
+        sx={styles.search}
         slotProps={{
           htmlInput: testIdProps('my-tasks-filter-bar-search'),
           input: {
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                <SearchIcon sx={styles.searchIcon} />
               </InputAdornment>
             ),
           },

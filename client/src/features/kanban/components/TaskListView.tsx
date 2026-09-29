@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import TableSortLabel from '@mui/material/TableSortLabel'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { useTheme } from '@mui/material/styles'
+import { useTheme, type SxProps, type Theme } from '@mui/material/styles'
 import {
   nextSort,
   sortTaskList,
@@ -23,6 +23,43 @@ const PROJECT_COLUMN_TEMPLATE =
 // sideways inside its own box. Phones get cards instead (see below).
 const BASE_MIN_WIDTH = 900
 const PROJECT_MIN_WIDTH = 1000
+
+const styles = {
+  empty: {
+    px: 2,
+    py: 3,
+  },
+  cardList: {
+    border: 1,
+    borderColor: 'divider',
+    borderRadius: 1.5,
+    bgcolor: 'background.paper',
+    overflow: 'hidden',
+  },
+  table: {
+    border: 1,
+    borderColor: 'divider',
+    borderRadius: 1.5,
+    bgcolor: 'background.paper',
+    overflowX: 'auto',
+  },
+  header: {
+    display: 'grid',
+    gap: 1,
+    px: 2,
+    py: 1,
+    bgcolor: 'background.subtle',
+    borderBottom: 1,
+    borderColor: 'divider',
+  },
+  sortLabel: {
+    fontSize: 11,
+    fontWeight: 700,
+    color: 'text.secondary',
+    textTransform: 'uppercase',
+    '&.Mui-active': { color: 'text.primary' },
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 const SORT_TEST_IDS: Record<SortKey, string> = {
   title: 'title',
@@ -92,8 +129,8 @@ export function TaskListView({
   ]
 
   const emptyMessage = (
-    <Box sx={{ px: 2, py: 3 }} data-testid="task-list-view-empty">
-      <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
+    <Box sx={styles.empty} data-testid="task-list-view-empty">
+      <Typography variant="secondaryText">
         No tasks match these filters.
       </Typography>
     </Box>
@@ -101,16 +138,7 @@ export function TaskListView({
 
   if (isPhone) {
     return (
-      <Box
-        data-testid="task-list-view"
-        sx={{
-          border: 1,
-          borderColor: 'divider',
-          borderRadius: 1.5,
-          bgcolor: 'background.paper',
-          overflow: 'hidden',
-        }}
-      >
+      <Box data-testid="task-list-view" sx={styles.cardList}>
         {displayedTasks.length === 0
           ? emptyMessage
           : displayedTasks.map((task) => {
@@ -137,16 +165,7 @@ export function TaskListView({
   }
 
   return (
-    <Box
-      data-testid="task-list-view"
-      sx={{
-        border: 1,
-        borderColor: 'divider',
-        borderRadius: 1.5,
-        bgcolor: 'background.paper',
-        overflowX: 'auto',
-      }}
-    >
+    <Box data-testid="task-list-view" sx={styles.table}>
       <Box
         sx={{
           minWidth: projectNameByColumnId ? PROJECT_MIN_WIDTH : BASE_MIN_WIDTH,
@@ -154,16 +173,7 @@ export function TaskListView({
       >
         <Box
           data-testid="task-list-view-header"
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: columnTemplate,
-            gap: 1,
-            px: 2,
-            py: 1,
-            bgcolor: '#F5F6F8',
-            borderBottom: 1,
-            borderColor: 'divider',
-          }}
+          sx={[styles.header, { gridTemplateColumns: columnTemplate }]}
         >
           <Box />
           {headerColumns.map(({ key, label }) => (
@@ -173,13 +183,7 @@ export function TaskListView({
               direction={sort?.key === key ? sort.dir : 'asc'}
               onClick={() => setSort(nextSort(sort, key))}
               data-testid={`task-list-view-sort-${SORT_TEST_IDS[key]}`}
-              sx={{
-                fontSize: 11,
-                fontWeight: 700,
-                color: 'text.secondary',
-                textTransform: 'uppercase',
-                '&.Mui-active': { color: 'text.primary' },
-              }}
+              sx={styles.sortLabel}
             >
               {label}
             </TableSortLabel>

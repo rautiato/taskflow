@@ -4,8 +4,50 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
+import type { SxProps, Theme } from '@mui/material/styles'
 import type { KanbanColumn } from '../../../models/kanbanBoard'
 import { testIdProps } from '../../../utils/testIdProps'
+
+const styles = {
+  root: {
+    width: 300,
+    p: 2,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 2,
+  },
+  title: {
+    fontSize: 15,
+    fontWeight: 700,
+  },
+  hint: {
+    fontSize: 12,
+    color: 'text.secondary',
+  },
+  section: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 1,
+  },
+  sectionLabel: {
+    fontSize: 11,
+    fontWeight: 700,
+    color: 'text.secondary',
+    textTransform: 'uppercase',
+  },
+  columnRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  columnName: {
+    fontSize: 13,
+  },
+  columnActions: {
+    display: 'flex',
+    gap: 0.5,
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function AddColumnMenu({
   anchorEl,
@@ -57,34 +99,15 @@ export function AddColumnMenu({
       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       slotProps={{ paper: testIdProps('add-column-menu') }}
     >
-      <Box
-        sx={{
-          width: 300,
-          p: 2,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-        }}
-      >
-        <Typography sx={{ fontSize: 15, fontWeight: 700 }}>
-          Board columns
-        </Typography>
-        <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
+      <Box sx={styles.root}>
+        <Typography sx={styles.title}>Board columns</Typography>
+        <Typography sx={styles.hint}>
           Empty columns can be hidden or deleted — the last visible one always
           stays.
         </Typography>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          <Typography
-            sx={{
-              fontSize: 11,
-              fontWeight: 700,
-              color: 'text.secondary',
-              textTransform: 'uppercase',
-            }}
-          >
-            Shown on this board
-          </Typography>
+        <Box sx={styles.section}>
+          <Typography sx={styles.sectionLabel}>Shown on this board</Typography>
 
           {shownColumns.map((column) => {
             const hasTasks = (taskCountByColumn[column.id] ?? 0) > 0
@@ -99,19 +122,15 @@ export function AddColumnMenu({
               <Box
                 key={column.id}
                 data-testid="add-column-menu-shown-column"
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
+                sx={styles.columnRow}
               >
                 <Typography
-                  sx={{ fontSize: 13 }}
+                  sx={styles.columnName}
                   data-testid="add-column-menu-column-name"
                 >
                   {column.name}
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 0.5 }}>
+                <Box sx={styles.columnActions}>
                   <Button
                     size="small"
                     disabled={actionsDisabled}
@@ -138,34 +157,21 @@ export function AddColumnMenu({
         </Box>
 
         {hiddenColumns.length > 0 && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <Typography
-              sx={{
-                fontSize: 11,
-                fontWeight: 700,
-                color: 'text.secondary',
-                textTransform: 'uppercase',
-              }}
-            >
-              Available to add
-            </Typography>
+          <Box sx={styles.section}>
+            <Typography sx={styles.sectionLabel}>Available to add</Typography>
             {hiddenColumns.map((column) => (
               <Box
                 key={column.id}
                 data-testid="add-column-menu-hidden-column"
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
+                sx={styles.columnRow}
               >
                 <Typography
-                  sx={{ fontSize: 13 }}
+                  sx={styles.columnName}
                   data-testid="add-column-menu-column-name"
                 >
                   {column.name}
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 0.5 }}>
+                <Box sx={styles.columnActions}>
                   <Button
                     size="small"
                     onClick={() => onShow(column.id)}
@@ -187,15 +193,8 @@ export function AddColumnMenu({
           </Box>
         )}
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          <Typography
-            sx={{
-              fontSize: 11,
-              fontWeight: 700,
-              color: 'text.secondary',
-              textTransform: 'uppercase',
-            }}
-          >
+        <Box sx={styles.section}>
+          <Typography sx={styles.sectionLabel}>
             Or create a new column
           </Typography>
           <TextField

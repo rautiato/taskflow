@@ -82,6 +82,12 @@ const styles = {
     borderRadius: 1.5,
     transition: 'background-color 0.15s ease, outline-color 0.15s ease',
   },
+  task: {
+    opacity: 1,
+  },
+  taskDragging: {
+    opacity: 0.85,
+  },
 } satisfies Record<string, SxProps<Theme>>
 
 export function AssigneeLane({
@@ -191,9 +197,10 @@ export function AssigneeLane({
                               ref={dragProvided.innerRef}
                               {...dragProvided.draggableProps}
                               {...dragProvided.dragHandleProps}
-                              sx={{
-                                opacity: dragSnapshot.isDragging ? 0.85 : 1,
-                              }}
+                              sx={[
+                                styles.task,
+                                dragSnapshot.isDragging && styles.taskDragging,
+                              ]}
                             >
                               <TaskCard
                                 task={task}

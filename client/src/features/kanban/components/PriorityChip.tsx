@@ -3,6 +3,16 @@ import type { SxProps, Theme } from '@mui/material/styles'
 import { PRIORITY_STYLES } from '../../tasks/taskDisplay'
 import type { TaskPriority } from '../../../models/task'
 
+const styles = {
+  root: {
+    fontSize: 11,
+    fontWeight: 700,
+    px: 1,
+    py: 0.25,
+    borderRadius: 999,
+  },
+} satisfies Record<string, SxProps<Theme>>
+
 /** Coloured pill for a task's priority. `sx` adjusts its size per screen. */
 export function PriorityChip({
   priority,
@@ -17,13 +27,7 @@ export function PriorityChip({
       data-testid="priority-chip"
       sx={[
         PRIORITY_STYLES[priority],
-        {
-          fontSize: 11,
-          fontWeight: 700,
-          px: 1,
-          py: 0.25,
-          borderRadius: 999,
-        },
+        styles.root,
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
     >

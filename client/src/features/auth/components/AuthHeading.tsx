@@ -1,5 +1,12 @@
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import type { SxProps, Theme } from '@mui/material/styles'
+
+const styles = {
+  title: {
+    fontWeight: 700,
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function AuthHeading({
   title,
@@ -12,7 +19,7 @@ export function AuthHeading({
     <Stack spacing={0.75} data-testid="auth-heading">
       <Typography
         variant="h5"
-        sx={{ fontWeight: 700 }}
+        sx={styles.title}
         data-testid="auth-heading-title"
       >
         {title}

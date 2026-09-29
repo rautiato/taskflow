@@ -30,14 +30,6 @@ const styles = {
     flexDirection: 'column',
     gap: 3,
   },
-  greeting: {
-    fontSize: 24,
-    fontWeight: 700,
-  },
-  date: {
-    fontSize: 14,
-    color: 'text.secondary',
-  },
   emptyIcon: {
     fontSize: 40,
   },
@@ -98,13 +90,10 @@ export function DashboardPage() {
     <AppLayout user={user}>
       <Box sx={styles.root} data-testid="dashboard-page">
         <Box>
-          <Typography
-            sx={styles.greeting}
-            data-testid="dashboard-page-greeting"
-          >
+          <Typography variant="pageTitle" data-testid="dashboard-page-greeting">
             {greetingFor(now)}, {firstName}
           </Typography>
-          <Typography sx={styles.date} data-testid="dashboard-page-date">
+          <Typography variant="pageSubtitle" data-testid="dashboard-page-date">
             {now.toLocaleDateString('en-US', {
               weekday: 'long',
               month: 'long',

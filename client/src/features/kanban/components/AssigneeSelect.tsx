@@ -1,10 +1,19 @@
 import type { Control } from 'react-hook-form'
 import Box from '@mui/material/Box'
 import MenuItem from '@mui/material/MenuItem'
+import type { SxProps, Theme } from '@mui/material/styles'
 import { UserAvatar } from '../../../components/UserAvatar'
 import { FormSingleSelect } from '../../../components/FormSingleSelect'
 import type { UserDto } from '../../../models/user'
 import { UNASSIGNED, type TaskFormValues } from '../taskFormSchema'
+
+const styles = {
+  option: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1,
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function AssigneeSelect({
   control,
@@ -23,7 +32,7 @@ export function AssigneeSelect({
       renderValue={(value) => {
         const selected = users.find((u) => u.id === value)
         return (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={styles.option}>
             <UserAvatar
               id={selected?.id}
               name={selected?.name ?? null}
@@ -39,7 +48,7 @@ export function AssigneeSelect({
         value={UNASSIGNED}
         data-testid="assignee-select-option-unassigned"
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={styles.option}>
           <UserAvatar name={null} size="xs" />
           Unassigned
         </Box>
@@ -50,7 +59,7 @@ export function AssigneeSelect({
           value={user.id}
           data-testid="assignee-select-option"
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={styles.option}>
             <UserAvatar
               id={user.id}
               name={user.name}

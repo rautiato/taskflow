@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import Button from '@mui/material/Button'
+import type { SxProps, Theme } from '@mui/material/styles'
 import CloseIcon from '@mui/icons-material/Close'
 import AddIcon from '@mui/icons-material/Add'
 import {
@@ -17,6 +18,62 @@ import {
 import { useAttachments } from '../useAttachments'
 import { ImagePreviewDialog } from './ImagePreviewDialog'
 import type { Attachment } from '../../../models/attachment'
+
+const styles = {
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 1,
+    borderRadius: 1.5,
+    outlineWidth: 2,
+    outlineStyle: 'none',
+    outlineColor: 'primary.main',
+    outlineOffset: 4,
+  },
+  rootDragOver: {
+    outlineStyle: 'dashed',
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: 700,
+    color: 'text.secondary',
+    textTransform: 'uppercase',
+  },
+  item: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1.5,
+    border: 1,
+    borderColor: 'divider',
+    borderRadius: 1.5,
+    px: 1.5,
+    py: 1,
+  },
+  preview: {
+    width: 46,
+    height: 46,
+    borderRadius: 1,
+    objectFit: 'cover',
+    bgcolor: 'background.default',
+    flexShrink: 0,
+    cursor: 'pointer',
+  },
+  fileName: {
+    fontSize: 13,
+    flexGrow: 1,
+  },
+  addButton: {
+    alignSelf: 'flex-start',
+  },
+  error: {
+    fontSize: 12,
+    color: 'error.main',
+  },
+  hint: {
+    fontSize: 12,
+    color: 'text.secondary',
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 type StagedAttachment =
   | { kind: 'existing'; id: string; fileName: string; blobUrl: string }
@@ -158,41 +215,15 @@ export function AttachmentPicker({
         onDragLeave={() => setIsDragOver(false)}
         onDrop={handleDrop}
         data-testid="attachment-picker"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 1,
-          borderRadius: 1.5,
-          outline: isDragOver ? '2px dashed' : 'none',
-          outlineColor: 'primary.main',
-          outlineOffset: 4,
-        }}
+        sx={[styles.root, isDragOver && styles.rootDragOver]}
       >
-        <Typography
-          sx={{
-            fontSize: 12,
-            fontWeight: 700,
-            color: 'text.secondary',
-            textTransform: 'uppercase',
-          }}
-        >
-          Attachment
-        </Typography>
+        <Typography sx={styles.label}>Attachment</Typography>
 
         {attachments.map((a, index) => (
           <Box
             key={a.kind === 'existing' ? a.id : a.localId}
             data-testid="attachment-picker-item"
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.5,
-              border: 1,
-              borderColor: 'divider',
-              borderRadius: 1.5,
-              px: 1.5,
-              py: 1,
-            }}
+            sx={styles.item}
           >
             <Box
               component="img"
@@ -200,18 +231,10 @@ export function AttachmentPicker({
               alt=""
               onClick={() => setPreviewIndex(index)}
               data-testid="attachment-picker-item-preview"
-              sx={{
-                width: 46,
-                height: 46,
-                borderRadius: 1,
-                objectFit: 'cover',
-                bgcolor: 'background.default',
-                flexShrink: 0,
-                cursor: 'pointer',
-              }}
+              sx={styles.preview}
             />
             <Typography
-              sx={{ fontSize: 13, flexGrow: 1 }}
+              sx={styles.fileName}
               noWrap
               data-testid="attachment-picker-item-name"
             >
@@ -233,7 +256,7 @@ export function AttachmentPicker({
           variant="text"
           size="small"
           startIcon={<AddIcon />}
-          sx={{ alignSelf: 'flex-start' }}
+          sx={styles.addButton}
           data-testid="attachment-picker-add"
         >
           Drag & drop or click to add
@@ -250,17 +273,11 @@ export function AttachmentPicker({
           />
         </Button>
         {error ? (
-          <Typography
-            sx={{ fontSize: 12, color: 'error.main' }}
-            data-testid="attachment-picker-error"
-          >
+          <Typography sx={styles.error} data-testid="attachment-picker-error">
             {error}
           </Typography>
         ) : (
-          <Typography
-            sx={{ fontSize: 12, color: 'text.secondary' }}
-            data-testid="attachment-picker-hint"
-          >
+          <Typography sx={styles.hint} data-testid="attachment-picker-hint">
             Images up to 2 MB each
             {/* NO-BACKEND: storage usage hint; keep only the size limit. */}
             {` · Storage: ${formatSize(usedChars)} of about 5 MB used`}

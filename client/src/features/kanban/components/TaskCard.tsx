@@ -1,12 +1,76 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
+import type { SxProps, Theme } from '@mui/material/styles'
+import {
+  DeleteIconButton,
+  EditIconButton,
+} from '../../../components/ActionIconButtons'
 import { PRIORITY_STYLES, getDueChip } from '../../tasks/taskDisplay'
 import type { TaskItem } from '../../../models/task'
 import { FavoriteToggle } from './FavoriteToggle'
 import { PriorityChip } from './PriorityChip'
+
+const styles = {
+  root: {
+    bgcolor: 'background.paper',
+    border: 1,
+    borderColor: 'divider',
+    borderRadius: 1.5,
+    px: 1.375,
+    py: 1.125,
+    boxShadow: '0 1px 2px rgba(16,24,40,0.06)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 0.75,
+    cursor: 'pointer',
+    '&:hover .task-card-actions': { opacity: 1 },
+  },
+  rootDone: {
+    opacity: 0.75,
+  },
+  titleRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 0.875,
+  },
+  title: {
+    fontSize: 13,
+    fontWeight: 600,
+    flexGrow: 1,
+  },
+  titleDone: {
+    textDecoration: 'line-through',
+    color: 'text.secondary',
+  },
+  chipRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 0.75,
+  },
+  priorityChip: {
+    fontSize: 10,
+    px: 0.875,
+  },
+  due: {
+    fontSize: 10,
+    fontWeight: 600,
+    px: 0.875,
+    py: 0.25,
+    borderRadius: 999,
+  },
+  actions: {
+    display: 'flex',
+    gap: 0.25,
+    ml: 'auto',
+    opacity: 0,
+    transition: 'opacity 0.15s ease',
+    // Touch screens can't hover, so keep the actions visible.
+    '@media (hover: none)': { opacity: 1 },
+  },
+  actionButton: {
+    p: 0.75,
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function TaskCard({
   task,
@@ -30,107 +94,58 @@ export function TaskCard({
     <Box
       onClick={onClick}
       data-testid="task-card"
-      sx={{
-        bgcolor: 'background.paper',
-        border: 1,
-        borderColor: 'divider',
-        borderRadius: 1.5,
-        px: 1.375,
-        py: 1.125,
-        boxShadow: '0 1px 2px rgba(16,24,40,0.06)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 0.75,
-        cursor: 'pointer',
-        ...(isDoneColumn && { opacity: 0.75 }),
-        ...(task.isFavorite &&
+      sx={[
+        styles.root,
+        isDoneColumn && styles.rootDone,
+        task.isFavorite &&
           !isDoneColumn && {
             borderLeft: 3,
             borderLeftColor: priorityStyle.color,
-          }),
-        '&:hover .task-card-actions': { opacity: 1 },
-      }}
+          },
+      ]}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.875 }}>
+      <Box sx={styles.titleRow}>
         <FavoriteToggle
           isFavorite={task.isFavorite}
           onToggle={onToggleFavorite}
         />
         <Typography
           data-testid="task-card-title"
-          sx={{
-            fontSize: 13,
-            fontWeight: 600,
-            flexGrow: 1,
-            ...(isDoneColumn && {
-              textDecoration: 'line-through',
-              color: 'text.secondary',
-            }),
-          }}
+          sx={[styles.title, isDoneColumn && styles.titleDone]}
         >
           {task.title}
         </Typography>
       </Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-        <PriorityChip
-          priority={task.priority}
-          sx={{ fontSize: 10, px: 0.875 }}
-        />
+      <Box sx={styles.chipRow}>
+        <PriorityChip priority={task.priority} sx={styles.priorityChip} />
         {dueChip && (
-          <Box
-            data-testid="task-card-due"
-            sx={{
-              ...dueChip.sx,
-              fontSize: 10,
-              fontWeight: 600,
-              px: 0.875,
-              py: 0.25,
-              borderRadius: 999,
-            }}
-          >
+          <Box data-testid="task-card-due" sx={[dueChip.sx, styles.due]}>
             {dueChip.label}
           </Box>
         )}
         {(onEdit || onDelete) && (
-          <Box
-            className="task-card-actions"
-            sx={{
-              display: 'flex',
-              gap: 0.25,
-              ml: 'auto',
-              opacity: 0,
-              transition: 'opacity 0.15s ease',
-              // Touch screens can't hover, so keep the actions visible.
-              '@media (hover: none)': { opacity: 1 },
-            }}
-          >
+          <Box className="task-card-actions" sx={styles.actions}>
             {onEdit && (
-              <IconButton
-                size="small"
+              <EditIconButton
                 aria-label={`Edit ${task.title}`}
                 onClick={(e) => {
                   e.stopPropagation()
                   onEdit()
                 }}
-                sx={{ p: 0.75 }}
+                sx={styles.actionButton}
                 data-testid="task-card-edit"
-              >
-                <EditIcon sx={{ fontSize: 18, color: 'primary.main' }} />
-              </IconButton>
+              />
             )}
             {onDelete && (
-              <IconButton
-                size="small"
+              <DeleteIconButton
                 aria-label={`Delete ${task.title}`}
                 onClick={(e) => {
                   e.stopPropagation()
                   onDelete()
                 }}
-                sx={{ p: 0.75 }}
+                sx={styles.actionButton}
                 data-testid="task-card-delete"
-              >
-                <DeleteIcon sx={{ fontSize: 18, color: 'error.main' }} />
-              </IconButton>
+              />
             )}
           </Box>
         )}

@@ -7,9 +7,34 @@ import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import Slider from '@mui/material/Slider'
 import Typography from '@mui/material/Typography'
+import type { SxProps, Theme } from '@mui/material/styles'
 import Cropper, { type Area, type Point } from 'react-easy-crop'
 import { cropImageToDataUrl } from '../utils/cropImageToDataUrl'
 import { testIdProps } from '../utils/testIdProps'
+
+const styles = {
+  cropArea: {
+    position: 'relative',
+    width: '100%',
+    height: 280,
+    bgcolor: '#111',
+    borderRadius: 1,
+  },
+  zoomRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1.5,
+    mt: 2.5,
+  },
+  actions: {
+    justifyContent: 'space-between',
+    px: 3,
+    pb: 2.5,
+  },
+  actionButton: {
+    minWidth: 100,
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function AvatarCropDialog({
   imageSrc,
@@ -49,15 +74,7 @@ export function AvatarCropDialog({
     >
       <DialogTitle>Crop your photo</DialogTitle>
       <DialogContent>
-        <Box
-          sx={{
-            position: 'relative',
-            width: '100%',
-            height: 280,
-            bgcolor: '#111',
-            borderRadius: 1,
-          }}
-        >
+        <Box sx={styles.cropArea}>
           {imageSrc && (
             <Cropper
               image={imageSrc}
@@ -72,10 +89,8 @@ export function AvatarCropDialog({
             />
           )}
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 2.5 }}>
-          <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
-            Zoom
-          </Typography>
+        <Box sx={styles.zoomRow}>
+          <Typography variant="secondaryText">Zoom</Typography>
           <Slider
             value={zoom}
             min={1}
@@ -86,11 +101,11 @@ export function AvatarCropDialog({
           />
         </Box>
       </DialogContent>
-      <DialogActions sx={{ justifyContent: 'space-between', px: 3, pb: 2.5 }}>
+      <DialogActions sx={styles.actions}>
         <Button
           variant="outlined"
           onClick={onCancel}
-          sx={{ minWidth: 100 }}
+          sx={styles.actionButton}
           data-testid="avatar-crop-dialog-cancel"
         >
           Cancel
@@ -99,7 +114,7 @@ export function AvatarCropDialog({
           variant="contained"
           onClick={handleSave}
           disabled={isSaving || !croppedAreaPixels}
-          sx={{ minWidth: 100 }}
+          sx={styles.actionButton}
           data-testid="avatar-crop-dialog-save"
         >
           Save

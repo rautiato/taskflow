@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
 import InputAdornment from '@mui/material/InputAdornment'
+import type { SxProps, Theme } from '@mui/material/styles'
 import SearchIcon from '@mui/icons-material/Search'
 import type { KanbanColumn } from '../../../models/kanbanBoard'
 import type { TaskPriority } from '../../../models/task'
@@ -16,6 +17,31 @@ import { testIdProps } from '../../../utils/testIdProps'
 
 const PRIORITIES: TaskPriority[] = ['High', 'Medium', 'Low']
 
+const styles = {
+  // Phones: 2-column grid with search spanning both columns.
+  // Wider screens: one wrapping row.
+  root: {
+    display: { xs: 'grid', sm: 'flex' },
+    gridTemplateColumns: '1fr 1fr',
+    flexWrap: 'wrap',
+    gap: 1.5,
+  },
+  search: {
+    gridColumn: '1 / -1',
+    width: { sm: 300 },
+  },
+  searchIcon: {
+    fontSize: 18,
+    color: 'text.secondary',
+  },
+  select: {
+    minWidth: { sm: 140 },
+  },
+  personSelect: {
+    minWidth: { sm: 160 },
+  },
+} satisfies Record<string, SxProps<Theme>>
+
 export function FilterBar({
   filters,
   onChange,
@@ -28,17 +54,7 @@ export function FilterBar({
   users: UserDto[]
 }) {
   return (
-    // Phones: 2-column grid with search spanning both columns.
-    // Wider screens: one wrapping row.
-    <Box
-      data-testid="filter-bar"
-      sx={{
-        display: { xs: 'grid', sm: 'flex' },
-        gridTemplateColumns: '1fr 1fr',
-        flexWrap: 'wrap',
-        gap: 1.5,
-      }}
-    >
+    <Box data-testid="filter-bar" sx={styles.root}>
       <TextField
         size="small"
         placeholder="Search tasks..."
@@ -46,13 +62,13 @@ export function FilterBar({
         onChange={(event) =>
           onChange({ ...filters, search: event.target.value })
         }
-        sx={{ gridColumn: '1 / -1', width: { sm: 300 } }}
+        sx={styles.search}
         slotProps={{
           htmlInput: testIdProps('filter-bar-search'),
           input: {
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                <SearchIcon sx={styles.searchIcon} />
               </InputAdornment>
             ),
           },
@@ -66,7 +82,7 @@ export function FilterBar({
         onChange={(event) =>
           onChange({ ...filters, columnId: event.target.value })
         }
-        sx={{ minWidth: { sm: 140 } }}
+        sx={styles.select}
         slotProps={{
           select: { SelectDisplayProps: testIdProps('filter-bar-status') },
         }}
@@ -95,7 +111,7 @@ export function FilterBar({
             priority: event.target.value as TaskFilters['priority'],
           })
         }
-        sx={{ minWidth: { sm: 140 } }}
+        sx={styles.select}
         slotProps={{
           select: { SelectDisplayProps: testIdProps('filter-bar-priority') },
         }}
@@ -124,7 +140,7 @@ export function FilterBar({
             assigneeId: event.target.value as TaskFilters['assigneeId'],
           })
         }
-        sx={{ minWidth: { sm: 160 } }}
+        sx={styles.personSelect}
         slotProps={{
           select: { SelectDisplayProps: testIdProps('filter-bar-assignee') },
         }}
@@ -159,7 +175,7 @@ export function FilterBar({
             createdById: event.target.value as TaskFilters['createdById'],
           })
         }
-        sx={{ minWidth: { sm: 160 } }}
+        sx={styles.personSelect}
         slotProps={{
           select: { SelectDisplayProps: testIdProps('filter-bar-created-by') },
         }}

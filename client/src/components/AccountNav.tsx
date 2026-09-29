@@ -24,7 +24,7 @@ const styles = {
   },
   itemActive: {
     bgcolor: 'primary.main',
-    color: '#FFFFFF',
+    color: 'common.white',
   },
 } satisfies Record<string, SxProps<Theme>>
 

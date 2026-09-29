@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
+import type { SxProps, Theme } from '@mui/material/styles'
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator'
 import AddIcon from '@mui/icons-material/Add'
 import { Droppable, Draggable } from '@hello-pangea/dnd'
@@ -9,6 +10,62 @@ import type { KanbanColumn } from '../../../models/kanbanBoard'
 import { COLUMN_WIDTH } from '../boardLayout'
 export const COLUMN_DROPPABLE_ID = 'board-columns'
 export const COLUMN_DND_TYPE = 'COLUMN'
+
+const styles = {
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+    px: 0.25,
+  },
+  columns: {
+    display: 'flex',
+    gap: 2,
+  },
+  column: {
+    width: COLUMN_WIDTH,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 0.875,
+    borderRadius: 1,
+    bgcolor: 'transparent',
+    boxShadow: 'none',
+  },
+  columnDragging: {
+    bgcolor: 'background.paper',
+    boxShadow: 2,
+  },
+  dragHandle: {
+    display: 'flex',
+    cursor: 'grab',
+  },
+  dragIcon: {
+    fontSize: 16,
+    color: '#B7BBC1',
+  },
+  name: {
+    fontWeight: 700,
+    fontSize: 13,
+  },
+  count: {
+    bgcolor: 'background.paper',
+    border: 1,
+    borderColor: 'divider',
+    borderRadius: 999,
+    px: 1.125,
+    fontSize: 11,
+    fontWeight: 600,
+    color: 'text.secondary',
+  },
+  spacer: {
+    flexGrow: 1,
+  },
+  addButton: {
+    color: 'text.secondary',
+  },
+  addIcon: {
+    fontSize: 16,
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function ColumnHeaderRow({
   columns,
@@ -20,10 +77,7 @@ export function ColumnHeaderRow({
   onAddTask: (columnId: string) => void
 }) {
   return (
-    <Box
-      sx={{ display: 'flex', alignItems: 'center', px: 0.25 }}
-      data-testid="column-header-row"
-    >
+    <Box sx={styles.root} data-testid="column-header-row">
       <Droppable
         droppableId={COLUMN_DROPPABLE_ID}
         direction="horizontal"
@@ -33,7 +87,7 @@ export function ColumnHeaderRow({
           <Box
             ref={provided.innerRef}
             {...provided.droppableProps}
-            sx={{ display: 'flex', gap: 2 }}
+            sx={styles.columns}
           >
             {columns.map((column, index) => (
               <Draggable key={column.id} draggableId={column.id} index={index}>
@@ -42,58 +96,37 @@ export function ColumnHeaderRow({
                     ref={dragProvided.innerRef}
                     {...dragProvided.draggableProps}
                     data-testid="column-header"
-                    sx={{
-                      width: COLUMN_WIDTH,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 0.875,
-                      borderRadius: 1,
-                      bgcolor: dragSnapshot.isDragging
-                        ? 'background.paper'
-                        : 'transparent',
-                      boxShadow: dragSnapshot.isDragging ? 2 : 'none',
-                    }}
+                    sx={[
+                      styles.column,
+                      dragSnapshot.isDragging && styles.columnDragging,
+                    ]}
                   >
                     <Box
                       {...dragProvided.dragHandleProps}
-                      sx={{ display: 'flex', cursor: 'grab' }}
+                      sx={styles.dragHandle}
                       data-testid="column-header-drag-handle"
                     >
-                      <DragIndicatorIcon
-                        sx={{ fontSize: 16, color: '#B7BBC1' }}
-                      />
+                      <DragIndicatorIcon sx={styles.dragIcon} />
                     </Box>
                     <Typography
-                      sx={{ fontWeight: 700, fontSize: 13 }}
+                      sx={styles.name}
                       data-testid="column-header-name"
                     >
                       {column.name}
                     </Typography>
-                    <Box
-                      data-testid="column-header-count"
-                      sx={{
-                        bgcolor: 'background.paper',
-                        border: 1,
-                        borderColor: 'divider',
-                        borderRadius: 999,
-                        px: 1.125,
-                        fontSize: 11,
-                        fontWeight: 600,
-                        color: 'text.secondary',
-                      }}
-                    >
+                    <Box data-testid="column-header-count" sx={styles.count}>
                       {taskCountByColumn[column.id] ?? 0}
                     </Box>
-                    <Box sx={{ flexGrow: 1 }} />
+                    <Box sx={styles.spacer} />
                     <Tooltip title="New Task">
                       <IconButton
                         size="small"
                         onClick={() => onAddTask(column.id)}
                         aria-label={`New task in ${column.name}`}
-                        sx={{ color: 'text.secondary' }}
+                        sx={styles.addButton}
                         data-testid="column-header-add-task"
                       >
-                        <AddIcon sx={{ fontSize: 16 }} />
+                        <AddIcon sx={styles.addIcon} />
                       </IconButton>
                     </Tooltip>
                   </Box>

@@ -63,7 +63,7 @@ const styles = {
     alignItems: 'center',
   },
   logoText: {
-    color: '#fff',
+    color: 'common.white',
     fontWeight: 700,
     fontSize: 20,
   },
@@ -72,7 +72,7 @@ const styles = {
     maxWidth: 400,
   },
   headline: {
-    color: '#fff',
+    color: 'common.white',
     fontWeight: 700,
     fontSize: 30,
     lineHeight: 1.3,
@@ -90,7 +90,7 @@ const styles = {
   },
   featureIcon: {
     fontSize: 16,
-    color: '#fff',
+    color: 'common.white',
   },
   featureLabel: {
     fontSize: 13,
@@ -104,11 +104,7 @@ export function BrandPanel() {
       <Box sx={styles.circleTopRight} />
       <Box sx={styles.circleBottomLeft} />
 
-      <Stack
-        direction="row"
-        spacing={1.25}
-        sx={{ position: 'relative', alignItems: 'center' }}
-      >
+      <Stack direction="row" spacing={1.25} sx={styles.logoRow}>
         <Logo variant="inverted" />
         <Typography data-testid="brand-panel-logo-text" sx={styles.logoText}>
           TaskFlow

@@ -6,6 +6,7 @@ import IconButton from '@mui/material/IconButton'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Tooltip from '@mui/material/Tooltip'
+import type { SxProps, Theme } from '@mui/material/styles'
 import CloseIcon from '@mui/icons-material/Close'
 import LinkIcon from '@mui/icons-material/Link'
 import EditIcon from '@mui/icons-material/Edit'
@@ -24,6 +25,158 @@ import { FavoriteToggle } from './FavoriteToggle'
 import { PriorityChip } from './PriorityChip'
 import { testIdProps } from '../../../utils/testIdProps'
 
+const styles = {
+  metaRow: {
+    display: 'grid',
+    gridTemplateColumns: '120px 1fr',
+    alignItems: 'center',
+    gap: 1,
+    px: 2,
+    py: 1.25,
+    borderBottom: 1,
+    borderColor: 'divider',
+    '&:last-of-type': { borderBottom: 0 },
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: 700,
+    color: 'text.secondary',
+    textTransform: 'uppercase',
+  },
+  metaValue: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1,
+  },
+  root: {
+    width: { xs: '100vw', sm: 640 },
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  header: {
+    position: 'relative',
+    px: { xs: 2, sm: 4 },
+    pt: 3,
+    pb: 2.5,
+    borderBottom: 1,
+    borderColor: 'divider',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 2,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 12,
+    right: 16,
+  },
+  copyLinkButton: {
+    position: 'absolute',
+    top: 12,
+    right: 52,
+  },
+  titleRow: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: 1.25,
+    pr: 9,
+  },
+  title: {
+    lineHeight: 1.3,
+  },
+  metaTable: {
+    border: 1,
+    borderColor: 'divider',
+    borderRadius: 1.5,
+    overflow: 'hidden',
+  },
+  metaText: {
+    fontSize: 13,
+    fontWeight: 600,
+  },
+  priorityChip: {
+    px: 1.25,
+  },
+  dueIcon: {
+    fontSize: 15,
+  },
+  noDueDate: {
+    fontSize: 13,
+    color: 'text.disabled',
+  },
+  body: {
+    flexGrow: 1,
+    overflowY: 'auto',
+    px: { xs: 2, sm: 4 },
+    py: 2.5,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 2.5,
+  },
+  section: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 1,
+  },
+  descriptionBox: {
+    bgcolor: 'background.default',
+    border: 1,
+    borderColor: 'divider',
+    borderRadius: 1.5,
+    px: 2,
+    py: 1.5,
+  },
+  description: {
+    fontSize: 14,
+    lineHeight: 1.6,
+    whiteSpace: 'pre-wrap',
+  },
+  noAttachments: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1,
+    color: 'text.disabled',
+  },
+  noAttachmentsIcon: {
+    fontSize: 18,
+  },
+  noAttachmentsText: {
+    fontSize: 13,
+  },
+  attachments: {
+    display: 'flex',
+    gap: 1,
+    flexWrap: 'wrap',
+  },
+  attachment: {
+    width: 120,
+    height: 90,
+    borderRadius: 1,
+    objectFit: 'cover',
+    bgcolor: 'background.default',
+    cursor: 'pointer',
+  },
+  footer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: 1.5,
+    px: { xs: 2, sm: 4 },
+    py: 2.5,
+    borderTop: 1,
+    borderColor: 'divider',
+  },
+  deleteButton: {
+    minWidth: 140,
+    bgcolor: 'error.light',
+    color: 'error.main',
+    boxShadow: 'none',
+    '&:hover': { bgcolor: 'error.light', boxShadow: 'none' },
+  },
+  editButton: {
+    minWidth: 140,
+  },
+} satisfies Record<string, SxProps<Theme>>
+
 function MetaRow({
   label,
   testId,
@@ -34,33 +187,9 @@ function MetaRow({
   children: ReactNode
 }) {
   return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: '120px 1fr',
-        alignItems: 'center',
-        gap: 1,
-        px: 2,
-        py: 1.25,
-        borderBottom: 1,
-        borderColor: 'divider',
-        '&:last-of-type': { borderBottom: 0 },
-      }}
-    >
-      <Typography
-        sx={{
-          fontSize: 12,
-          fontWeight: 700,
-          color: 'text.secondary',
-          textTransform: 'uppercase',
-        }}
-      >
-        {label}
-      </Typography>
-      <Box
-        sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-        data-testid={testId}
-      >
+    <Box sx={styles.metaRow}>
+      <Typography sx={styles.label}>{label}</Typography>
+      <Box sx={styles.metaValue} data-testid={testId}>
         {children}
       </Box>
     </Box>
@@ -107,32 +236,13 @@ export function TaskDetailDrawer({
       onClose={onClose}
       slotProps={{ paper: testIdProps('task-detail-drawer') }}
     >
-      <Box
-        sx={{
-          width: { xs: '100vw', sm: 640 },
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        <Box
-          sx={{
-            position: 'relative',
-            px: { xs: 2, sm: 4 },
-            pt: 3,
-            pb: 2.5,
-            borderBottom: 1,
-            borderColor: 'divider',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-          }}
-        >
+      <Box sx={styles.root}>
+        <Box sx={styles.header}>
           <IconButton
             onClick={onClose}
             size="small"
             aria-label="Close"
-            sx={{ position: 'absolute', top: 12, right: 16 }}
+            sx={styles.closeButton}
             data-testid="task-detail-drawer-close"
           >
             <CloseIcon fontSize="small" />
@@ -150,44 +260,36 @@ export function TaskDetailDrawer({
               }}
               size="small"
               aria-label="Copy link to task"
-              sx={{ position: 'absolute', top: 12, right: 52 }}
+              sx={styles.copyLinkButton}
               data-testid="task-detail-drawer-copy-link"
             >
               <LinkIcon fontSize="small" />
             </IconButton>
           </Tooltip>
 
-          <Box
-            sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.25, pr: 9 }}
-          >
+          <Box sx={styles.titleRow}>
             <FavoriteToggle
               isFavorite={task.isFavorite}
               onToggle={onToggleFavorite}
               size={24}
             />
             <Typography
-              sx={{ fontSize: 24, fontWeight: 700, lineHeight: 1.3 }}
+              variant="pageTitle"
+              sx={styles.title}
               data-testid="task-detail-drawer-title"
             >
               {task.title}
             </Typography>
           </Box>
 
-          <Box
-            sx={{
-              border: 1,
-              borderColor: 'divider',
-              borderRadius: 1.5,
-              overflow: 'hidden',
-            }}
-          >
+          <Box sx={styles.metaTable}>
             <MetaRow label="Status" testId="task-detail-drawer-status">
-              <Typography sx={{ fontSize: 13, fontWeight: 600 }}>
+              <Typography sx={styles.metaText}>
                 {column?.name ?? 'Unknown'}
               </Typography>
             </MetaRow>
             <MetaRow label="Priority" testId="task-detail-drawer-priority">
-              <PriorityChip priority={task.priority} sx={{ px: 1.25 }} />
+              <PriorityChip priority={task.priority} sx={styles.priorityChip} />
             </MetaRow>
             <MetaRow label="Assignee" testId="task-detail-drawer-assignee">
               <UserAvatar
@@ -196,7 +298,7 @@ export function TaskDetailDrawer({
                 avatarUrl={assignee?.avatarUrl}
                 size="xs"
               />
-              <Typography sx={{ fontSize: 13, fontWeight: 600 }}>
+              <Typography sx={styles.metaText}>
                 {assignee?.name ?? 'Unassigned'}
               </Typography>
             </MetaRow>
@@ -207,7 +309,7 @@ export function TaskDetailDrawer({
                 avatarUrl={creator?.avatarUrl}
                 size="xs"
               />
-              <Typography sx={{ fontSize: 13, fontWeight: 600 }}>
+              <Typography sx={styles.metaText}>
                 {creator?.name ?? 'Unknown'}
               </Typography>
             </MetaRow>
@@ -215,61 +317,27 @@ export function TaskDetailDrawer({
               {dueChip ? (
                 <>
                   <CalendarTodayOutlinedIcon
-                    sx={{ fontSize: 15, color: dueChip.sx.color }}
+                    sx={[styles.dueIcon, { color: dueChip.sx.color }]}
                   />
                   <Typography
-                    sx={{
-                      fontSize: 13,
-                      fontWeight: 600,
-                      color: dueChip.sx.color,
-                    }}
+                    sx={[styles.metaText, { color: dueChip.sx.color }]}
                   >
                     {dueChip.label}
                   </Typography>
                 </>
               ) : (
-                <Typography sx={{ fontSize: 13, color: 'text.disabled' }}>
-                  No due date
-                </Typography>
+                <Typography sx={styles.noDueDate}>No due date</Typography>
               )}
             </MetaRow>
           </Box>
         </Box>
 
-        <Box
-          sx={{
-            flexGrow: 1,
-            overflowY: 'auto',
-            px: { xs: 2, sm: 4 },
-            py: 2.5,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2.5,
-          }}
-        >
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <Typography
-              sx={{
-                fontSize: 12,
-                fontWeight: 700,
-                color: 'text.secondary',
-                textTransform: 'uppercase',
-              }}
-            >
-              Description
-            </Typography>
-            <Box
-              sx={{
-                bgcolor: 'background.default',
-                border: 1,
-                borderColor: 'divider',
-                borderRadius: 1.5,
-                px: 2,
-                py: 1.5,
-              }}
-            >
+        <Box sx={styles.body}>
+          <Box sx={styles.section}>
+            <Typography sx={styles.label}>Description</Typography>
+            <Box sx={styles.descriptionBox}>
               <Typography
-                sx={{ fontSize: 14, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}
+                sx={styles.description}
                 data-testid="task-detail-drawer-description"
               >
                 {task.description || 'No description provided.'}
@@ -277,36 +345,24 @@ export function TaskDetailDrawer({
             </Box>
           </Box>
 
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <Typography
-              sx={{
-                fontSize: 12,
-                fontWeight: 700,
-                color: 'text.secondary',
-                textTransform: 'uppercase',
-              }}
-            >
+          <Box sx={styles.section}>
+            <Typography sx={styles.label}>
               Attachments
               {attachments.length > 0 ? ` (${attachments.length})` : ''}
             </Typography>
             {attachments.length === 0 ? (
               <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  color: 'text.disabled',
-                }}
+                sx={styles.noAttachments}
                 data-testid="task-detail-drawer-no-attachments"
               >
-                <ImageOutlinedIcon sx={{ fontSize: 18 }} />
-                <Typography sx={{ fontSize: 13 }}>
+                <ImageOutlinedIcon sx={styles.noAttachmentsIcon} />
+                <Typography sx={styles.noAttachmentsText}>
                   No attachments yet
                 </Typography>
               </Box>
             ) : (
               <Box
-                sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}
+                sx={styles.attachments}
                 data-testid="task-detail-drawer-attachments"
               >
                 {attachments.map((a, index) => (
@@ -317,14 +373,7 @@ export function TaskDetailDrawer({
                     alt={a.fileName}
                     onClick={() => setPreviewIndex(index)}
                     data-testid="task-detail-drawer-attachment"
-                    sx={{
-                      width: 120,
-                      height: 90,
-                      borderRadius: 1,
-                      objectFit: 'cover',
-                      bgcolor: 'background.default',
-                      cursor: 'pointer',
-                    }}
+                    sx={styles.attachment}
                   />
                 ))}
               </Box>
@@ -340,29 +389,13 @@ export function TaskDetailDrawer({
           />
         </Box>
 
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            gap: 1.5,
-            px: { xs: 2, sm: 4 },
-            py: 2.5,
-            borderTop: 1,
-            borderColor: 'divider',
-          }}
-        >
+        <Box sx={styles.footer}>
           <Button
             onClick={onDelete}
             variant="contained"
             startIcon={<DeleteIcon />}
             data-testid="task-detail-drawer-delete"
-            sx={{
-              minWidth: 140,
-              bgcolor: 'error.light',
-              color: 'error.main',
-              boxShadow: 'none',
-              '&:hover': { bgcolor: 'error.light', boxShadow: 'none' },
-            }}
+            sx={styles.deleteButton}
           >
             Delete
           </Button>
@@ -371,7 +404,7 @@ export function TaskDetailDrawer({
             variant="outlined"
             startIcon={<EditIcon />}
             data-testid="task-detail-drawer-edit"
-            sx={{ minWidth: 140 }}
+            sx={styles.editButton}
           >
             Edit
           </Button>

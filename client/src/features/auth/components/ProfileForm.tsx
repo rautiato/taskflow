@@ -8,6 +8,7 @@ import Alert from '@mui/material/Alert'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import type { SxProps, Theme } from '@mui/material/styles'
 import { emailSchema, nameSchema } from '../validation'
 import { EmailField } from './EmailField'
 import { authService } from '../authService'
@@ -22,6 +23,13 @@ const profileSchema = z.object({
 })
 
 type ProfileFormValues = z.infer<typeof profileSchema>
+
+const styles = {
+  actions: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function ProfileForm({
   user,
@@ -108,14 +116,11 @@ export function ProfileForm({
         testId="profile-form-email"
       />
 
-      <Typography
-        sx={{ fontSize: 13, color: 'text.secondary' }}
-        data-testid="profile-form-meta"
-      >
+      <Typography variant="secondaryText" data-testid="profile-form-meta">
         Role: {user.role} · Member since {memberSince}
       </Typography>
 
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <Box sx={styles.actions}>
         <Button
           type="submit"
           variant="contained"

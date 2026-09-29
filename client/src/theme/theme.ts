@@ -1,6 +1,6 @@
 import { createTheme } from '@mui/material/styles'
 
-export const theme = createTheme({
+const baseTheme = createTheme({
   palette: {
     primary: {
       main: '#1976D2',
@@ -22,6 +22,7 @@ export const theme = createTheme({
     background: {
       default: '#F4F5F7',
       paper: '#FFFFFF',
+      subtle: '#F5F6F8', // header rows in lists
     },
     text: {
       primary: '#1D1F23',
@@ -72,6 +73,33 @@ export const theme = createTheme({
               backgroundColor: '#FDECEA',
             }),
         }),
+      },
+    },
+  },
+})
+
+// App text styles, built on body1 so they keep its font, line height and
+// letter spacing.
+const { body1 } = baseTheme.typography
+const { secondary } = baseTheme.palette.text
+
+export const theme = createTheme(baseTheme, {
+  typography: {
+    pageTitle: { ...body1, fontSize: 24, fontWeight: 700 },
+    pageSubtitle: { ...body1, fontSize: 14, color: secondary },
+    sectionTitle: { ...body1, fontSize: 16, fontWeight: 700 },
+    secondaryText: { ...body1, fontSize: 13, color: secondary },
+  },
+  components: {
+    MuiTypography: {
+      defaultProps: {
+        // Custom variants otherwise render as <span>, which would break layout.
+        variantMapping: {
+          pageTitle: 'p',
+          pageSubtitle: 'p',
+          sectionTitle: 'p',
+          secondaryText: 'p',
+        },
       },
     },
   },
