@@ -4,6 +4,7 @@ import Fullscreen from 'yet-another-react-lightbox/plugins/fullscreen'
 import Counter from 'yet-another-react-lightbox/plugins/counter'
 import 'yet-another-react-lightbox/styles.css'
 import 'yet-another-react-lightbox/plugins/counter.css'
+import { testIdProps } from '../../../utils/testIdProps'
 
 export type PreviewSlide = {
   src: string
@@ -28,6 +29,7 @@ export function ImagePreviewDialog({
       slides={slides}
       index={index}
       plugins={[Zoom, Fullscreen, Counter]}
+      portal={{ container: testIdProps('image-preview-dialog') }}
     />
   )
 }

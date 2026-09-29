@@ -5,6 +5,7 @@ import MenuItem from '@mui/material/MenuItem'
 import { UserAvatar } from '../../../components/UserAvatar'
 import type { UserDto } from '../../../models/user'
 import { UNASSIGNED, type TaskFormValues } from '../taskFormSchema'
+import { testIdProps } from '../../../utils/testIdProps'
 
 export function AssigneeSelect({
   control,
@@ -39,17 +40,25 @@ export function AssigneeSelect({
                   </Box>
                 )
               },
+              SelectDisplayProps: testIdProps('assignee-select'),
             },
           }}
         >
-          <MenuItem value={UNASSIGNED}>
+          <MenuItem
+            value={UNASSIGNED}
+            data-testid="assignee-select-option-unassigned"
+          >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <UserAvatar name={null} size="xs" />
               Unassigned
             </Box>
           </MenuItem>
           {users.map((user) => (
-            <MenuItem key={user.id} value={user.id}>
+            <MenuItem
+              key={user.id}
+              value={user.id}
+              data-testid="assignee-select-option"
+            >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <UserAvatar
                   id={user.id}

@@ -22,6 +22,7 @@ import { PasswordField } from './PasswordField'
 import { InfoNote } from './InfoNote'
 import { authService } from '../authService'
 import { errorMessage } from '../../../utils/errorMessage'
+import { testIdProps } from '../../../utils/testIdProps'
 
 const signUpSchema = z
   .object({
@@ -61,13 +62,18 @@ export function SignUpForm() {
       component="form"
       noValidate
       onSubmit={handleSubmit(onSubmit)}
+      data-testid="sign-up-form"
     >
       <AuthHeading
         title="Create your account"
         subtitle="Start organizing your work"
       />
 
-      {authError && <Alert severity="error">{authError}</Alert>}
+      {authError && (
+        <Alert severity="error" data-testid="sign-up-form-error">
+          {authError}
+        </Alert>
+      )}
 
       <Controller
         name="name"
@@ -80,24 +86,39 @@ export function SignUpForm() {
             fullWidth
             error={!!fieldState.error}
             helperText={fieldState.error?.message}
+            slotProps={{
+              htmlInput: testIdProps('sign-up-form-name'),
+              formHelperText: testIdProps('sign-up-form-name-helper'),
+            }}
           />
         )}
       />
 
-      <EmailField<SignUpFormValues> control={control} />
+      <EmailField<SignUpFormValues>
+        control={control}
+        testId="sign-up-form-email"
+      />
 
       <PasswordField<SignUpFormValues>
         name="password"
         control={control}
         hint={PASSWORD_HINT}
+        testId="sign-up-form-password"
       />
       <PasswordField<SignUpFormValues>
         name="confirmPassword"
         control={control}
         label="Confirm password"
+        testId="sign-up-form-confirm-password"
       />
 
-      <Button type="submit" variant="contained" size="large" fullWidth>
+      <Button
+        type="submit"
+        variant="contained"
+        size="large"
+        fullWidth
+        data-testid="sign-up-form-submit"
+      >
         Sign up
       </Button>
 
@@ -107,7 +128,12 @@ export function SignUpForm() {
         sx={{ textAlign: 'center' }}
       >
         Already have an account?{' '}
-        <Link component={RouterLink} to="/login" sx={{ fontWeight: 600 }}>
+        <Link
+          component={RouterLink}
+          to="/login"
+          sx={{ fontWeight: 600 }}
+          data-testid="sign-up-form-sign-in"
+        >
           Sign in
         </Link>
       </Typography>

@@ -6,6 +6,7 @@ import {
   getErrorMessage,
   subscribe,
 } from '../services/notifications'
+import { testIdProps } from '../utils/testIdProps'
 
 // App-wide toast for failures that happen after the UI has moved on (a
 // dialog already closed, an optimistic update rolled back), so they're never
@@ -27,6 +28,8 @@ export function ErrorSnackbar() {
         severity="error"
         variant="outlined"
         onClose={clearError}
+        data-testid="error-snackbar"
+        slotProps={{ closeButton: testIdProps('error-snackbar-close') }}
         sx={{
           bgcolor: 'background.paper',
           color: 'text.primary',

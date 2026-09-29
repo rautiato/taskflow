@@ -29,6 +29,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
     // instead of re-rendering whatever just crashed.
     return (
       <Box
+        data-testid="error-boundary"
         sx={{
           minHeight: '100vh',
           bgcolor: 'background.default',
@@ -45,12 +46,14 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
               <Button
                 variant="outlined"
                 onClick={() => window.location.reload()}
+                data-testid="error-boundary-reload"
               >
                 Reload
               </Button>
               <Button
                 variant="contained"
                 onClick={() => window.location.assign('/dashboard')}
+                data-testid="error-boundary-go-to-dashboard"
               >
                 Go to dashboard
               </Button>

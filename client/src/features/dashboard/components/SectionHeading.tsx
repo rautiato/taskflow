@@ -11,9 +11,17 @@ export function SectionHeading({
   subtitle: string
 }) {
   return (
-    <Box sx={{ mb: 1.75 }}>
-      <Typography sx={{ fontSize: 16, fontWeight: 700 }}>{title}</Typography>
-      <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
+    <Box sx={{ mb: 1.75 }} data-testid="section-heading">
+      <Typography
+        sx={{ fontSize: 16, fontWeight: 700 }}
+        data-testid="section-heading-title"
+      >
+        {title}
+      </Typography>
+      <Typography
+        sx={{ fontSize: 12, color: 'text.secondary' }}
+        data-testid="section-heading-subtitle"
+      >
         {subtitle}
       </Typography>
     </Box>

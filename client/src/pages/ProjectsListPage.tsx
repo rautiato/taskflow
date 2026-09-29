@@ -14,6 +14,7 @@ import { ProjectListRow } from '../features/projects/components/ProjectListRow'
 import { NewProjectDialog } from '../features/projects/components/NewProjectDialog'
 import type { ProjectStatus } from '../models/project'
 import { Navigate, useNavigate } from 'react-router-dom'
+import { testIdProps } from '../utils/testIdProps'
 
 const STATUS_FILTERS: Array<'All' | ProjectStatus> = ['All', 'Active', 'Closed']
 
@@ -42,7 +43,10 @@ export function ProjectsListPage() {
 
   return (
     <AppLayout user={user}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+      <Box
+        sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}
+        data-testid="projects-page"
+      >
         <Box
           sx={{
             display: 'flex',
@@ -50,13 +54,17 @@ export function ProjectsListPage() {
             justifyContent: 'space-between',
           }}
         >
-          <Typography sx={{ fontSize: 24, fontWeight: 700 }}>
+          <Typography
+            sx={{ fontSize: 24, fontWeight: 700 }}
+            data-testid="projects-page-title"
+          >
             Projects
           </Typography>
           <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => setIsNewProjectOpen(true)}
+            data-testid="projects-page-new-project"
           >
             New Project
           </Button>
@@ -79,6 +87,7 @@ export function ProjectsListPage() {
             size="small"
             fullWidth
             slotProps={{
+              htmlInput: testIdProps('projects-page-search'),
               input: {
                 startAdornment: (
                   <InputAdornment position="start">
@@ -95,6 +104,7 @@ export function ProjectsListPage() {
                 key={status}
                 label={status}
                 onClick={() => setStatusFilter(status)}
+                data-testid={`projects-page-status-${status.toLowerCase()}`}
                 sx={{
                   fontWeight: 700,
                   fontSize: 12,
@@ -116,7 +126,10 @@ export function ProjectsListPage() {
           })}
         </Box>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+        <Box
+          sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}
+          data-testid="projects-page-list"
+        >
           {filteredProjects.map((project) => (
             <ProjectListRow
               key={project.id}
@@ -134,6 +147,7 @@ export function ProjectsListPage() {
             <Typography
               color="text.secondary"
               sx={{ textAlign: 'center', py: 4 }}
+              data-testid="projects-page-no-results"
             >
               No projects match your filters.
             </Typography>

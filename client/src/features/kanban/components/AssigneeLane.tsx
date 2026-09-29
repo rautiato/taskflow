@@ -119,7 +119,7 @@ export function AssigneeLane({
   }
 
   return (
-    <Box sx={styles.root}>
+    <Box sx={styles.root} data-testid="assignee-lane">
       <Box
         role="button"
         tabIndex={0}
@@ -128,6 +128,7 @@ export function AssigneeLane({
         onClick={toggleCollapsed}
         onKeyDown={handleKeyDown}
         sx={styles.header}
+        data-testid="assignee-lane-header"
       >
         <Box sx={styles.headerContent}>
           <UserAvatar
@@ -136,8 +137,12 @@ export function AssigneeLane({
             avatarUrl={lane.assigneeAvatarUrl}
             size="xs"
           />
-          <Typography sx={styles.name}>{lane.assigneeName}</Typography>
-          <Box sx={styles.countChip}>{lane.taskCount} tasks</Box>
+          <Typography sx={styles.name} data-testid="assignee-lane-name">
+            {lane.assigneeName}
+          </Typography>
+          <Box sx={styles.countChip} data-testid="assignee-lane-count">
+            {lane.taskCount} tasks
+          </Box>
         </Box>
         <ExpandMoreIcon
           sx={[
@@ -161,6 +166,9 @@ export function AssigneeLane({
                   <Box
                     ref={dropProvided.innerRef}
                     {...dropProvided.droppableProps}
+                    role="group"
+                    aria-label={`${lane.assigneeName}, ${column.name}`}
+                    data-testid="assignee-lane-cell"
                     sx={[
                       styles.columnDroppable,
                       dropSnapshot.isDraggingOver && {

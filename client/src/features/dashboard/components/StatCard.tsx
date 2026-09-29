@@ -56,6 +56,7 @@ export function StatCard({
   note,
   accentColor,
   children,
+  testId,
 }: {
   label: string
   value: number
@@ -63,17 +64,32 @@ export function StatCard({
   note?: string
   accentColor?: string // colors the number and the note together
   children?: ReactNode
+  testId: string
 }) {
   const accent = accentColor ? { color: accentColor } : {}
 
   return (
-    <Box sx={styles.root}>
-      <Box component={RouterLink} to={to} sx={styles.link}>
-        <Typography sx={styles.label}>{label}</Typography>
-        <Typography sx={[styles.value, accent]}>{value}</Typography>
+    <Box sx={styles.root} data-testid={testId}>
+      <Box
+        component={RouterLink}
+        to={to}
+        sx={styles.link}
+        data-testid={`${testId}-link`}
+      >
+        <Typography sx={styles.label} data-testid={`${testId}-label`}>
+          {label}
+        </Typography>
+        <Typography sx={[styles.value, accent]} data-testid={`${testId}-value`}>
+          {value}
+        </Typography>
         {note && (
           <Box sx={styles.footer}>
-            <Typography sx={[styles.note, accent]}>{note}</Typography>
+            <Typography
+              sx={[styles.note, accent]}
+              data-testid={`${testId}-note`}
+            >
+              {note}
+            </Typography>
           </Box>
         )}
       </Box>

@@ -38,6 +38,7 @@ export function ResetPasswordForm() {
       component="form"
       noValidate
       onSubmit={handleSubmit(onSubmit)}
+      data-testid="reset-password-form"
     >
       <BackToSignInLink />
 
@@ -51,14 +52,22 @@ export function ResetPasswordForm() {
         control={control}
         label="New password"
         hint={PASSWORD_HINT}
+        testId="reset-password-form-new-password"
       />
       <PasswordField<ResetPasswordFormValues>
         name="confirmPassword"
         control={control}
         label="Confirm password"
+        testId="reset-password-form-confirm-password"
       />
 
-      <Button type="submit" variant="contained" size="large" fullWidth>
+      <Button
+        type="submit"
+        variant="contained"
+        size="large"
+        fullWidth
+        data-testid="reset-password-form-submit"
+      >
         Reset password
       </Button>
 

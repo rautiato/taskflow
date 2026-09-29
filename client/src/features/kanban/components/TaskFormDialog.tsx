@@ -28,6 +28,7 @@ import {
 } from '../taskFormSchema'
 import { notifyError } from '../../../services/notifications'
 import { errorMessage } from '../../../utils/errorMessage'
+import { testIdProps } from '../../../utils/testIdProps'
 import {
   AttachmentPicker,
   type AttachmentPickerHandle,
@@ -124,6 +125,7 @@ export function TaskFormDialog({
       fullWidth
       maxWidth="sm"
       fullScreen={fullScreen}
+      slotProps={{ paper: testIdProps('task-form-dialog') }}
     >
       <DialogTitle
         sx={{
@@ -131,9 +133,15 @@ export function TaskFormDialog({
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
+        data-testid="task-form-dialog-title"
       >
         {isEditing ? 'Edit Task' : 'Add Task'}
-        <IconButton onClick={onClose} size="small">
+        <IconButton
+          onClick={onClose}
+          size="small"
+          aria-label="Close"
+          data-testid="task-form-dialog-close"
+        >
           <CloseIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
@@ -147,6 +155,7 @@ export function TaskFormDialog({
             void handleSubmit(onSubmit)(event)
           }}
           sx={{ pt: 0.5 }}
+          data-testid="task-form-dialog-form"
         >
           <Controller
             name="title"
@@ -159,6 +168,12 @@ export function TaskFormDialog({
                 fullWidth
                 error={!!fieldState.error}
                 helperText={fieldState.error?.message}
+                slotProps={{
+                  htmlInput: testIdProps('task-form-dialog-title-input'),
+                  formHelperText: testIdProps(
+                    'task-form-dialog-title-input-helper',
+                  ),
+                }}
               />
             )}
           />
@@ -175,9 +190,23 @@ export function TaskFormDialog({
                   fullWidth
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message}
+                  slotProps={{
+                    select: {
+                      SelectDisplayProps: testIdProps(
+                        'task-form-dialog-project',
+                      ),
+                    },
+                    formHelperText: testIdProps(
+                      'task-form-dialog-project-helper',
+                    ),
+                  }}
                 >
                   {projects.map((project) => (
-                    <MenuItem key={project.id} value={project.id}>
+                    <MenuItem
+                      key={project.id}
+                      value={project.id}
+                      data-testid="task-form-dialog-project-option"
+                    >
                       {project.name}
                     </MenuItem>
                   ))}
@@ -195,9 +224,23 @@ export function TaskFormDialog({
                   fullWidth
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message}
+                  slotProps={{
+                    select: {
+                      SelectDisplayProps: testIdProps(
+                        'task-form-dialog-status',
+                      ),
+                    },
+                    formHelperText: testIdProps(
+                      'task-form-dialog-status-helper',
+                    ),
+                  }}
                 >
                   {availableColumns.map((column) => (
-                    <MenuItem key={column.id} value={column.id}>
+                    <MenuItem
+                      key={column.id}
+                      value={column.id}
+                      data-testid="task-form-dialog-status-option"
+                    >
                       {column.name}
                     </MenuItem>
                   ))}
@@ -224,6 +267,12 @@ export function TaskFormDialog({
                 minRows={3}
                 error={!!fieldState.error}
                 helperText={fieldState.error?.message}
+                slotProps={{
+                  htmlInput: testIdProps('task-form-dialog-description'),
+                  formHelperText: testIdProps(
+                    'task-form-dialog-description-helper',
+                  ),
+                }}
               />
             )}
           />
@@ -239,6 +288,9 @@ export function TaskFormDialog({
                     type="date"
                     label="Deadline"
                     fullWidth
+                    slotProps={{
+                      htmlInput: testIdProps('task-form-dialog-due-date'),
+                    }}
                   />
                 )}
               />
@@ -257,7 +309,12 @@ export function TaskFormDialog({
         </Stack>
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2, justifyContent: 'space-between' }}>
-        <Button onClick={onClose} variant="outlined" sx={{ minWidth: 120 }}>
+        <Button
+          onClick={onClose}
+          variant="outlined"
+          sx={{ minWidth: 120 }}
+          data-testid="task-form-dialog-cancel"
+        >
           Cancel
         </Button>
         <Button
@@ -265,6 +322,7 @@ export function TaskFormDialog({
           form="task-form"
           variant="contained"
           sx={{ minWidth: 120 }}
+          data-testid="task-form-dialog-submit"
         >
           Save Task
         </Button>

@@ -13,6 +13,7 @@ import { emailSchema, nameSchema } from '../validation'
 import { EmailField } from './EmailField'
 import { authService } from '../authService'
 import { errorMessage } from '../../../utils/errorMessage'
+import { testIdProps } from '../../../utils/testIdProps'
 import { AvatarUpload } from '../../../components/AvatarUpload'
 import type { UserDto } from '../../../models/user'
 
@@ -72,9 +73,18 @@ export function ProfileForm({
       component="form"
       noValidate
       onSubmit={handleSubmit(onSubmit)}
+      data-testid="profile-form"
     >
-      {error && <Alert severity="error">{error}</Alert>}
-      {success && <Alert severity="success">Profile updated.</Alert>}
+      {error && (
+        <Alert severity="error" data-testid="profile-form-error">
+          {error}
+        </Alert>
+      )}
+      {success && (
+        <Alert severity="success" data-testid="profile-form-success">
+          Profile updated.
+        </Alert>
+      )}
 
       <AvatarUpload
         id={user.id}
@@ -96,18 +106,33 @@ export function ProfileForm({
             fullWidth
             error={!!fieldState.error}
             helperText={fieldState.error?.message}
+            slotProps={{
+              htmlInput: testIdProps('profile-form-name'),
+              formHelperText: testIdProps('profile-form-name-helper'),
+            }}
           />
         )}
       />
 
-      <EmailField<ProfileFormValues> control={control} />
+      <EmailField<ProfileFormValues>
+        control={control}
+        testId="profile-form-email"
+      />
 
-      <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
+      <Typography
+        sx={{ fontSize: 13, color: 'text.secondary' }}
+        data-testid="profile-form-meta"
+      >
         Role: {user.role} · Member since {memberSince}
       </Typography>
 
       <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Button type="submit" variant="contained" disabled={!isDirty}>
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={!isDirty}
+          data-testid="profile-form-submit"
+        >
           Save changes
         </Button>
       </Box>

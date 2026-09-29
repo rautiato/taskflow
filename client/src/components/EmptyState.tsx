@@ -15,6 +15,7 @@ export function EmptyState({
 }) {
   return (
     <Box
+      data-testid="empty-state"
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -26,11 +27,17 @@ export function EmptyState({
       }}
     >
       {icon}
-      <Typography sx={{ fontSize: 15, fontWeight: 700, color: 'text.primary' }}>
+      <Typography
+        sx={{ fontSize: 15, fontWeight: 700, color: 'text.primary' }}
+        data-testid="empty-state-title"
+      >
         {title}
       </Typography>
       {description && (
-        <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
+        <Typography
+          sx={{ fontSize: 13, color: 'text.secondary' }}
+          data-testid="empty-state-description"
+        >
           {description}
         </Typography>
       )}

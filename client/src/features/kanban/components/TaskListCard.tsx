@@ -93,22 +93,37 @@ export function TaskListCard({
   const dueChip = getDueChip(task, isDone)
 
   return (
-    <Box onClick={onClick} sx={styles.root}>
+    <Box onClick={onClick} sx={styles.root} data-testid="task-row">
       <FavoriteToggle
         isFavorite={task.isFavorite}
         onToggle={onToggleFavorite}
         size={18}
       />
       <Box sx={styles.body}>
-        <Typography sx={[styles.title, isDone && styles.titleDone]}>
+        <Typography
+          sx={[styles.title, isDone && styles.titleDone]}
+          data-testid="task-row-title"
+        >
           {task.title}
         </Typography>
         <Box sx={styles.chipRow}>
-          <Box sx={[styles.chip, PRIORITY_STYLES[task.priority]]}>
+          <Box
+            sx={[styles.chip, PRIORITY_STYLES[task.priority]]}
+            data-testid="priority-chip"
+          >
             {task.priority}
           </Box>
-          <Box sx={[styles.chip, styles.statusChip]}>{statusName}</Box>
-          {dueChip && <Box sx={[styles.chip, dueChip.sx]}>{dueChip.label}</Box>}
+          <Box
+            sx={[styles.chip, styles.statusChip]}
+            data-testid="task-row-status"
+          >
+            {statusName}
+          </Box>
+          {dueChip && (
+            <Box sx={[styles.chip, dueChip.sx]} data-testid="task-row-due">
+              {dueChip.label}
+            </Box>
+          )}
         </Box>
         <Box sx={styles.meta}>
           <UserAvatar
@@ -118,29 +133,38 @@ export function TaskListCard({
             size="xs"
           />
           <Typography noWrap sx={{ fontSize: 12 }}>
-            {assignee?.name ?? 'Unassigned'}
-            {projectName && ` · ${projectName}`}
+            <span data-testid="task-row-assignee">
+              {assignee?.name ?? 'Unassigned'}
+            </span>
+            {projectName && (
+              <>
+                {' · '}
+                <span data-testid="task-row-project">{projectName}</span>
+              </>
+            )}
           </Typography>
         </Box>
       </Box>
       <Box sx={styles.actions}>
         <IconButton
           size="small"
-          aria-label="Edit task"
+          aria-label={`Edit ${task.title}`}
           onClick={(e) => {
             e.stopPropagation()
             onEdit()
           }}
+          data-testid="task-row-edit"
         >
           <EditIcon sx={{ fontSize: 18, color: 'primary.main' }} />
         </IconButton>
         <IconButton
           size="small"
-          aria-label="Delete task"
+          aria-label={`Delete ${task.title}`}
           onClick={(e) => {
             e.stopPropagation()
             onDelete()
           }}
+          data-testid="task-row-delete"
         >
           <DeleteIcon sx={{ fontSize: 18, color: 'error.main' }} />
         </IconButton>

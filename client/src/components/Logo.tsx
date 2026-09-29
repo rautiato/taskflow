@@ -17,6 +17,7 @@ export function Logo({
 
   return (
     <Box
+      data-testid="logo"
       sx={{
         width: box,
         height: box,

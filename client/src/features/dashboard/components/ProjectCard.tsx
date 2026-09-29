@@ -117,7 +117,7 @@ export function ProjectCard({
   ]
 
   return (
-    <Box onClick={onClick} sx={styles.root}>
+    <Box onClick={onClick} sx={styles.root} data-testid="project-card">
       <Box sx={styles.header}>
         <ProjectBadge
           initials={initials}
@@ -125,14 +125,20 @@ export function ProjectCard({
           size="sm"
         />
         <Box>
-          <Typography sx={styles.name}>{name}</Typography>
-          <Typography sx={styles.meta}>Updated {updated}</Typography>
+          <Typography sx={styles.name} data-testid="project-card-name">
+            {name}
+          </Typography>
+          <Typography sx={styles.meta} data-testid="project-card-updated">
+            Updated {updated}
+          </Typography>
         </Box>
       </Box>
 
       {taskCount === 0 ? (
         // A project with no tasks isn't 0% behind — say so instead.
-        <Typography sx={styles.statsLine}>No tasks yet</Typography>
+        <Typography sx={styles.statsLine} data-testid="project-card-no-tasks">
+          No tasks yet
+        </Typography>
       ) : (
         <>
           <Box sx={styles.barRow}>
@@ -140,6 +146,7 @@ export function ProjectCard({
               sx={styles.bar}
               role="img"
               aria-label={`${completedCount} done, ${openCount} open, ${overdueCount} overdue`}
+              data-testid="project-card-progress-bar"
             >
               {segments.map(
                 (segment) =>
@@ -154,10 +161,12 @@ export function ProjectCard({
                   ),
               )}
             </Box>
-            <Typography sx={styles.percent}>{stats.progress}%</Typography>
+            <Typography sx={styles.percent} data-testid="project-card-percent">
+              {stats.progress}%
+            </Typography>
           </Box>
 
-          <Box sx={styles.statsLine}>
+          <Box sx={styles.statsLine} data-testid="project-card-team">
             <Typography component="span" sx={styles.lineLabel}>
               Team
             </Typography>
@@ -171,6 +180,7 @@ export function ProjectCard({
                       ? { color: 'error.main' }
                       : {}
                   }
+                  data-testid={`project-card-team-${segment.key}`}
                 >
                   {segment.count} {segment.key}
                 </Box>
@@ -179,6 +189,7 @@ export function ProjectCard({
             <Box
               component="span"
               sx={unassignedCount > 0 ? { color: 'warning.main' } : {}}
+              data-testid="project-card-team-unassigned"
             >
               · {unassignedCount} unassigned
             </Box>
@@ -186,11 +197,13 @@ export function ProjectCard({
         </>
       )}
 
-      <Box sx={styles.statsLine}>
+      <Box sx={styles.statsLine} data-testid="project-card-you">
         <Typography component="span" sx={styles.lineLabel}>
           You
         </Typography>
-        <Box component="span">{myOpenCount} open</Box>
+        <Box component="span" data-testid="project-card-you-open">
+          {myOpenCount} open
+        </Box>
       </Box>
     </Box>
   )

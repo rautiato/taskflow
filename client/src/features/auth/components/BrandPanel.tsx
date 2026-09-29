@@ -88,7 +88,7 @@ const styles = {
 
 export function BrandPanel() {
   return (
-    <Box sx={styles.root}>
+    <Box sx={styles.root} data-testid="brand-panel">
       <Box sx={styles.circleTopRight} />
       <Box sx={styles.circleBottomLeft} />
 

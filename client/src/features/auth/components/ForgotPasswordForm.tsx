@@ -30,7 +30,7 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <Stack spacing={2.75}>
+    <Stack spacing={2.75} data-testid="forgot-password-form">
       <BackToSignInLink />
 
       <AuthHeading
@@ -40,7 +40,7 @@ export function ForgotPasswordForm() {
 
       {submittedEmail ? (
         // NO-BACKEND: replace with a real "check your inbox" message.
-        <Alert severity="info">
+        <Alert severity="info" data-testid="forgot-password-form-sent">
           Note: no email was sent to {submittedEmail}. Once a backend is in
           place, this will:
           <Box component="ol" sx={{ m: 0, pl: 2.5 }}>
@@ -56,9 +56,18 @@ export function ForgotPasswordForm() {
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
-          <EmailField<ForgotPasswordFormValues> control={control} />
+          <EmailField<ForgotPasswordFormValues>
+            control={control}
+            testId="forgot-password-form-email"
+          />
 
-          <Button type="submit" variant="contained" size="large" fullWidth>
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            fullWidth
+            data-testid="forgot-password-form-submit"
+          >
             Send reset link
           </Button>
 

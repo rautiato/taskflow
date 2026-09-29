@@ -108,12 +108,21 @@ export function DashboardPage() {
 
   return (
     <AppLayout user={user}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <Box
+        sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}
+        data-testid="dashboard-page"
+      >
         <Box>
-          <Typography sx={{ fontSize: 24, fontWeight: 700 }}>
+          <Typography
+            sx={{ fontSize: 24, fontWeight: 700 }}
+            data-testid="dashboard-page-greeting"
+          >
             {greetingFor(now)}, {firstName}
           </Typography>
-          <Typography sx={{ fontSize: 14, color: 'text.secondary' }}>
+          <Typography
+            sx={{ fontSize: 14, color: 'text.secondary' }}
+            data-testid="dashboard-page-date"
+          >
             {now.toLocaleDateString('en-US', {
               weekday: 'long',
               month: 'long',
@@ -122,7 +131,7 @@ export function DashboardPage() {
           </Typography>
         </Box>
 
-        <Box>
+        <Box data-testid="dashboard-page-your-tasks">
           <SectionHeading
             title="Your tasks"
             subtitle="Assigned to you across all projects"
@@ -142,6 +151,7 @@ export function DashboardPage() {
               value={stats.open}
               accentColor={stats.open ? 'primary.main' : undefined}
               to={openHref}
+              testId="dashboard-page-open-tasks"
             >
               <PriorityBreakdown
                 counts={stats.openByPriority}
@@ -162,6 +172,7 @@ export function DashboardPage() {
                 statusNames: openStatusNames,
                 due: ['overdue'],
               })}
+              testId="dashboard-page-overdue"
             />
             <StatCard
               label="Due this week"
@@ -169,6 +180,7 @@ export function DashboardPage() {
               accentColor={stats.dueThisWeek ? 'warning.main' : undefined}
               note="Due in the next 7 days"
               to={myTasksHref({ statusNames: openStatusNames, due: ['next7'] })}
+              testId="dashboard-page-due-this-week"
             />
             <StatCard
               label="Completed"
@@ -176,6 +188,7 @@ export function DashboardPage() {
               accentColor={stats.completed ? 'success.main' : undefined}
               note={`of ${stats.assigned} assigned`}
               to={myTasksHref({ statusNames: statusNamesWhere(true) })}
+              testId="dashboard-page-completed"
             />
           </Box>
         </Box>
@@ -195,6 +208,7 @@ export function DashboardPage() {
                 <Button
                   variant="outlined"
                   onClick={() => navigate('/projects')}
+                  data-testid="dashboard-page-browse-projects"
                 >
                   Browse projects
                 </Button>
@@ -203,7 +217,7 @@ export function DashboardPage() {
           }
         />
 
-        <Box>
+        <Box data-testid="dashboard-page-your-projects">
           <SectionHeading
             title="Your projects"
             subtitle="Team progress on active projects where you have open tasks, most recently updated first"
@@ -242,6 +256,7 @@ export function DashboardPage() {
                 <Button
                   variant="outlined"
                   onClick={() => navigate('/projects')}
+                  data-testid="dashboard-page-browse-projects"
                 >
                   Browse projects
                 </Button>
@@ -257,6 +272,7 @@ export function DashboardPage() {
                   variant="contained"
                   startIcon={<AddIcon />}
                   onClick={() => setIsNewProjectOpen(true)}
+                  data-testid="dashboard-page-new-project"
                 >
                   New Project
                 </Button>

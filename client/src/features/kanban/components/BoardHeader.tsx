@@ -30,6 +30,7 @@ export function BoardHeader({
   return (
     // Phones: title on its own row, controls on the next.
     <Box
+      data-testid="board-header"
       sx={{
         display: 'flex',
         flexDirection: { xs: 'column', sm: 'row' },
@@ -45,7 +46,10 @@ export function BoardHeader({
             { label: projectName },
           ]}
         />
-        <Typography sx={{ fontSize: { xs: 20, sm: 25 }, fontWeight: 700 }}>
+        <Typography
+          sx={{ fontSize: { xs: 20, sm: 25 }, fontWeight: 700 }}
+          data-testid="board-header-title"
+        >
           {projectName}
         </Typography>
       </Box>
@@ -58,13 +62,17 @@ export function BoardHeader({
           flexShrink: 0,
         }}
       >
-        <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
+        <Typography
+          sx={{ fontSize: 13, color: 'text.secondary' }}
+          data-testid="board-header-task-count"
+        >
           {taskCount} tasks
         </Typography>
         <ToggleButtonGroup
           value={view}
           exclusive
           size="small"
+          data-testid="board-header-view"
           onChange={(_event, next: BoardView | null) => {
             if (next) onViewChange(next)
           }}
@@ -84,7 +92,11 @@ export function BoardHeader({
           }}
         >
           {/* Icon-only on phones; aria-label keeps the name. */}
-          <ToggleButton value="kanban" aria-label="Kanban">
+          <ToggleButton
+            value="kanban"
+            aria-label="Kanban"
+            data-testid="board-header-view-kanban"
+          >
             <GridViewIcon sx={{ fontSize: 16, mr: { xs: 0, sm: 0.75 } }} />
             <Box
               component="span"
@@ -93,7 +105,11 @@ export function BoardHeader({
               Kanban
             </Box>
           </ToggleButton>
-          <ToggleButton value="list" aria-label="List">
+          <ToggleButton
+            value="list"
+            aria-label="List"
+            data-testid="board-header-view-list"
+          >
             <ViewListIcon sx={{ fontSize: 16, mr: { xs: 0, sm: 0.75 } }} />
             <Box
               component="span"
@@ -111,6 +127,7 @@ export function BoardHeader({
           startIcon={<AddIcon />}
           onClick={onNewTask}
           sx={{ ml: { xs: 'auto', sm: 0 } }}
+          data-testid="board-header-new-task"
         >
           New Task
         </Button>

@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import type { KanbanColumn } from '../../../models/kanbanBoard'
+import { testIdProps } from '../../../utils/testIdProps'
 
 export function AddColumnMenu({
   anchorEl,
@@ -54,6 +55,7 @@ export function AddColumnMenu({
       onClose={handleClose}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      slotProps={{ paper: testIdProps('add-column-menu') }}
     >
       <Box
         sx={{
@@ -96,19 +98,26 @@ export function AddColumnMenu({
             return (
               <Box
                 key={column.id}
+                data-testid="add-column-menu-shown-column"
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}
               >
-                <Typography sx={{ fontSize: 13 }}>{column.name}</Typography>
+                <Typography
+                  sx={{ fontSize: 13 }}
+                  data-testid="add-column-menu-column-name"
+                >
+                  {column.name}
+                </Typography>
                 <Box sx={{ display: 'flex', gap: 0.5 }}>
                   <Button
                     size="small"
                     disabled={actionsDisabled}
                     onClick={() => onHide(column.id)}
                     title={disabledReason}
+                    data-testid="add-column-menu-hide"
                   >
                     Hide
                   </Button>
@@ -118,6 +127,7 @@ export function AddColumnMenu({
                     disabled={actionsDisabled}
                     onClick={() => onDelete(column.id)}
                     title={disabledReason}
+                    data-testid="add-column-menu-delete"
                   >
                     Delete
                   </Button>
@@ -142,21 +152,32 @@ export function AddColumnMenu({
             {hiddenColumns.map((column) => (
               <Box
                 key={column.id}
+                data-testid="add-column-menu-hidden-column"
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}
               >
-                <Typography sx={{ fontSize: 13 }}>{column.name}</Typography>
+                <Typography
+                  sx={{ fontSize: 13 }}
+                  data-testid="add-column-menu-column-name"
+                >
+                  {column.name}
+                </Typography>
                 <Box sx={{ display: 'flex', gap: 0.5 }}>
-                  <Button size="small" onClick={() => onShow(column.id)}>
+                  <Button
+                    size="small"
+                    onClick={() => onShow(column.id)}
+                    data-testid="add-column-menu-show"
+                  >
                     + Add
                   </Button>
                   <Button
                     size="small"
                     color="error"
                     onClick={() => onDelete(column.id)}
+                    data-testid="add-column-menu-delete"
                   >
                     Delete
                   </Button>
@@ -193,11 +214,16 @@ export function AddColumnMenu({
                 handleCreate()
               }
             }}
+            slotProps={{
+              htmlInput: testIdProps('add-column-menu-new-name'),
+              formHelperText: testIdProps('add-column-menu-new-name-helper'),
+            }}
           />
           <Button
             variant="contained"
             disabled={!trimmedName || isDuplicate}
             onClick={handleCreate}
+            data-testid="add-column-menu-create"
           >
             Add Column
           </Button>

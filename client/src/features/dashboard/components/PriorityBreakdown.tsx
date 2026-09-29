@@ -36,12 +36,13 @@ export function PriorityBreakdown({
   hrefFor: (priority: TaskPriority) => string
 }) {
   return (
-    <Box sx={styles.row}>
+    <Box sx={styles.row} data-testid="priority-breakdown">
       {PRIORITIES.map((priority) => (
         <Box
           key={priority}
           component={RouterLink}
           to={hrefFor(priority)}
+          data-testid={`priority-breakdown-${priority.toLowerCase()}`}
           sx={[
             styles.chip,
             counts[priority] ? PRIORITY_STYLES[priority] : styles.empty,

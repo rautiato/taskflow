@@ -84,11 +84,16 @@ export function NextTasksList({
   viewAllHref: string
 }) {
   return (
-    <Box sx={styles.root}>
+    <Box sx={styles.root} data-testid="next-tasks-list">
       <Box sx={styles.header}>
         <Box>
-          <Typography sx={styles.title}>Your next tasks</Typography>
-          <Typography sx={styles.subtitle}>
+          <Typography sx={styles.title} data-testid="next-tasks-list-title">
+            Your next tasks
+          </Typography>
+          <Typography
+            sx={styles.subtitle}
+            data-testid="next-tasks-list-subtitle"
+          >
             Open tasks assigned to you, soonest due first
           </Typography>
         </Box>
@@ -96,6 +101,7 @@ export function NextTasksList({
           component={RouterLink}
           to={viewAllHref}
           sx={{ fontSize: 13, fontWeight: 600 }}
+          data-testid="next-tasks-list-view-all"
         >
           View all
         </Link>
@@ -110,18 +116,38 @@ export function NextTasksList({
                 component={RouterLink}
                 to={href}
                 sx={styles.row}
+                data-testid="next-tasks-list-item"
               >
                 <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography noWrap sx={styles.taskTitle}>
+                  <Typography
+                    noWrap
+                    sx={styles.taskTitle}
+                    data-testid="next-tasks-list-item-title"
+                  >
                     {task.title}
                   </Typography>
-                  <Typography sx={styles.project}>{projectName}</Typography>
+                  <Typography
+                    sx={styles.project}
+                    data-testid="next-tasks-list-item-project"
+                  >
+                    {projectName}
+                  </Typography>
                 </Box>
                 <Box sx={styles.chips}>
-                  <Box sx={[styles.chip, PRIORITY_STYLES[task.priority]]}>
+                  <Box
+                    sx={[styles.chip, PRIORITY_STYLES[task.priority]]}
+                    data-testid="next-tasks-list-item-priority"
+                  >
                     {task.priority}
                   </Box>
-                  {due && <Box sx={[styles.chip, due.sx]}>{due.label}</Box>}
+                  {due && (
+                    <Box
+                      sx={[styles.chip, due.sx]}
+                      data-testid="next-tasks-list-item-due"
+                    >
+                      {due.label}
+                    </Box>
+                  )}
                 </Box>
               </Box>
             )

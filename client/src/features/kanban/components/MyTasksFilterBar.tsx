@@ -10,6 +10,7 @@ import {
   type DueFilter,
   type MyTasksFilters,
 } from '../../tasks/filterMyTasks'
+import { testIdProps } from '../../../utils/testIdProps'
 import { MultiSelectFilter } from './MultiSelectFilter'
 
 const DUE_OPTIONS: { value: DueFilter; label: string }[] = [
@@ -36,6 +37,7 @@ export function MyTasksFilterBar({
     // Phones: 2-column grid with search spanning both columns.
     // Wider screens: one wrapping row.
     <Box
+      data-testid="my-tasks-filter-bar"
       sx={{
         display: { xs: 'grid', sm: 'flex' },
         gridTemplateColumns: '1fr 1fr',
@@ -52,6 +54,7 @@ export function MyTasksFilterBar({
         }
         sx={{ gridColumn: '1 / -1', width: { sm: 300 } }}
         slotProps={{
+          htmlInput: testIdProps('my-tasks-filter-bar-search'),
           input: {
             startAdornment: (
               <InputAdornment position="start">
@@ -70,12 +73,14 @@ export function MyTasksFilterBar({
           onChange({ ...filters, projectIds, statusNames: [] })
         }
         minWidth={180}
+        testId="my-tasks-filter-bar-project"
       />
       <MultiSelectFilter
         label="Status"
         value={filters.statusNames}
         options={statusOptions.map((name) => ({ value: name, label: name }))}
         onChange={(statusNames) => onChange({ ...filters, statusNames })}
+        testId="my-tasks-filter-bar-status"
       />
       <MultiSelectFilter
         label="Priority"
@@ -83,12 +88,14 @@ export function MyTasksFilterBar({
         options={PRIORITIES.map((p) => ({ value: p, label: p }))}
         onChange={(priorities) => onChange({ ...filters, priorities })}
         minWidth={140}
+        testId="my-tasks-filter-bar-priority"
       />
       <MultiSelectFilter
         label="Due date"
         value={filters.due}
         options={DUE_OPTIONS}
         onChange={(due) => onChange({ ...filters, due })}
+        testId="my-tasks-filter-bar-due"
       />
       <MultiSelectFilter
         label="Created By"
@@ -98,6 +105,7 @@ export function MyTasksFilterBar({
           ...creators.map((u) => ({ value: u.id, label: u.name })),
         ]}
         onChange={(createdByIds) => onChange({ ...filters, createdByIds })}
+        testId="my-tasks-filter-bar-created-by"
       />
     </Box>
   )
