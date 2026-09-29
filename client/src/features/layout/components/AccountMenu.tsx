@@ -8,6 +8,7 @@ import ListItemText from '@mui/material/ListItemText'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import type { SxProps, Theme } from '@mui/material/styles'
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import LogoutIcon from '@mui/icons-material/Logout'
@@ -16,6 +17,29 @@ import { authService } from '../../auth/authService'
 import type { UserDto } from '../../../models/user'
 import { UserAvatar } from '../../../components/UserAvatar'
 import { testIdProps } from '../../../utils/testIdProps'
+
+const styles = {
+  paper: {
+    width: 240,
+    mt: 1,
+  },
+  user: {
+    px: 2,
+    py: 1.5,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1.5,
+  },
+  userText: {
+    minWidth: 0,
+  },
+  userName: {
+    fontWeight: 700,
+  },
+  userEmail: {
+    display: 'block',
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 type AccountMenuItem = {
   id: 'profile' | 'settings' | 'logout'
@@ -84,33 +108,24 @@ export function AccountMenu({ user }: { user: UserDto }) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         slotProps={{
-          paper: { ...testIdProps('account-menu'), sx: { width: 240, mt: 1 } },
+          paper: { ...testIdProps('account-menu'), sx: styles.paper },
         }}
       >
-        <Box
-          data-testid="account-menu-user"
-          sx={{
-            px: 2,
-            py: 1.5,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.5,
-          }}
-        >
+        <Box data-testid="account-menu-user" sx={styles.user}>
           <UserAvatar
             id={user.id}
             name={user.name}
             avatarUrl={user.avatarUrl}
           />
-          <Box sx={{ minWidth: 0 }}>
-            <Typography variant="body2" noWrap sx={{ fontWeight: 700 }}>
+          <Box sx={styles.userText}>
+            <Typography variant="body2" noWrap sx={styles.userName}>
               {user.name}
             </Typography>
             <Typography
               variant="caption"
               color="text.secondary"
               noWrap
-              sx={{ display: 'block' }}
+              sx={styles.userEmail}
             >
               {user.email}
             </Typography>

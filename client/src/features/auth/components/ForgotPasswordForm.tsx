@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
+import type { SxProps, Theme } from '@mui/material/styles'
 import { emailSchema } from '../validation'
 import { EmailField } from './EmailField'
 import { AuthHeading } from './AuthHeading'
@@ -17,6 +18,13 @@ const forgotPasswordSchema = z.object({
 })
 
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>
+
+const styles = {
+  steps: {
+    m: 0,
+    pl: 2.5,
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function ForgotPasswordForm() {
   const [submittedEmail, setSubmittedEmail] = useState<string | null>(null)
@@ -43,7 +51,7 @@ export function ForgotPasswordForm() {
         <Alert severity="info" data-testid="forgot-password-form-sent">
           Note: no email was sent to {submittedEmail}. Once a backend is in
           place, this will:
-          <Box component="ol" sx={{ m: 0, pl: 2.5 }}>
+          <Box component="ol" sx={styles.steps}>
             <li>Verify the address</li>
             <li>Email a one-time reset link</li>
             <li>Let you set a new password after you click it</li>

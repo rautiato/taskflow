@@ -11,6 +11,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Alert from '@mui/material/Alert'
+import type { SxProps, Theme } from '@mui/material/styles'
 import { Link as RouterLink } from 'react-router-dom'
 import { emailSchema } from '../validation'
 import { EmailField } from './EmailField'
@@ -28,6 +29,24 @@ const loginSchema = z.object({
 })
 
 type LoginFormValues = z.infer<typeof loginSchema>
+
+const styles = {
+  forgotRow: {
+    textAlign: 'right',
+  },
+  forgotLink: {
+    fontSize: 13,
+    fontWeight: 600,
+    display: 'inline-block',
+    py: 0.5,
+  },
+  footer: {
+    textAlign: 'center',
+  },
+  footerLink: {
+    fontWeight: 600,
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function LoginForm() {
   const navigate = useNavigate()
@@ -74,17 +93,12 @@ export function LoginForm() {
           control={control}
           testId="login-form-password"
         />
-        <Box sx={{ textAlign: 'right' }}>
+        <Box sx={styles.forgotRow}>
           <Link
             component={RouterLink}
             to="/forgot-password"
             data-testid="login-form-forgot-password"
-            sx={{
-              fontSize: 13,
-              fontWeight: 600,
-              display: 'inline-block',
-              py: 0.5,
-            }}
+            sx={styles.forgotLink}
           >
             Forgot password?
           </Link>
@@ -123,16 +137,12 @@ export function LoginForm() {
         Sign in
       </Button>
 
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ textAlign: 'center' }}
-      >
+      <Typography variant="body2" color="text.secondary" sx={styles.footer}>
         Don't have an account?{' '}
         <Link
           component={RouterLink}
           to="/signup"
-          sx={{ fontWeight: 600 }}
+          sx={styles.footerLink}
           data-testid="login-form-sign-up"
         >
           Sign up

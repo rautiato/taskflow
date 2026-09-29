@@ -1,10 +1,11 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
 import type { SxProps, Theme } from '@mui/material/styles'
 import { UserAvatar } from '../../../components/UserAvatar'
+import {
+  DeleteIconButton,
+  EditIconButton,
+} from '../../../components/ActionIconButtons'
 import { PRIORITY_STYLES, getDueChip } from '../../tasks/taskDisplay'
 import type { TaskItem } from '../../../models/task'
 import type { UserDto } from '../../../models/user'
@@ -59,6 +60,9 @@ const styles = {
     gap: 0.75,
     color: 'text.secondary',
     minWidth: 0,
+  },
+  metaText: {
+    fontSize: 12,
   },
   actions: {
     display: 'flex',
@@ -132,7 +136,7 @@ export function TaskListCard({
             avatarUrl={assignee?.avatarUrl}
             size="xs"
           />
-          <Typography noWrap sx={{ fontSize: 12 }}>
+          <Typography noWrap sx={styles.metaText}>
             <span data-testid="task-row-assignee">
               {assignee?.name ?? 'Unassigned'}
             </span>
@@ -146,28 +150,22 @@ export function TaskListCard({
         </Box>
       </Box>
       <Box sx={styles.actions}>
-        <IconButton
-          size="small"
+        <EditIconButton
           aria-label={`Edit ${task.title}`}
           onClick={(e) => {
             e.stopPropagation()
             onEdit()
           }}
           data-testid="task-row-edit"
-        >
-          <EditIcon sx={{ fontSize: 18, color: 'primary.main' }} />
-        </IconButton>
-        <IconButton
-          size="small"
+        />
+        <DeleteIconButton
           aria-label={`Delete ${task.title}`}
           onClick={(e) => {
             e.stopPropagation()
             onDelete()
           }}
           data-testid="task-row-delete"
-        >
-          <DeleteIcon sx={{ fontSize: 18, color: 'error.main' }} />
-        </IconButton>
+        />
       </Box>
     </Box>
   )

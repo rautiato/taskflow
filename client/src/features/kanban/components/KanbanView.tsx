@@ -5,6 +5,7 @@ import {
   type DropResult,
 } from '@hello-pangea/dnd'
 import Box from '@mui/material/Box'
+import type { SxProps, Theme } from '@mui/material/styles'
 import InboxOutlinedIcon from '@mui/icons-material/InboxOutlined'
 import { EmptyState } from '../../../components/EmptyState'
 import type { AssigneeLaneData } from '../../tasks/groupTasksByAssignee'
@@ -13,6 +14,27 @@ import type { TaskItem } from '../../../models/task'
 import { TASK_DND_TYPE, parseTaskCellId } from '../taskCellId'
 import { ColumnHeaderRow, COLUMN_DND_TYPE } from './ColumnHeaderRow'
 import { AssigneeLane } from './AssigneeLane'
+
+const styles = {
+  root: {
+    overflowX: 'auto',
+    pb: 1,
+  },
+  board: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 1,
+    width: 'max-content',
+    minWidth: '100%',
+  },
+  divider: {
+    borderTop: 1,
+    borderColor: 'divider',
+  },
+  emptyIcon: {
+    fontSize: 40,
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 /**
  * The board: column headers plus one lane per assignee, with drag-and-drop
@@ -79,25 +101,17 @@ export function KanbanView({
 
   return (
     <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <Box sx={{ overflowX: 'auto', pb: 1 }} data-testid="kanban-view">
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 1,
-            width: 'max-content',
-            minWidth: '100%',
-          }}
-        >
+      <Box sx={styles.root} data-testid="kanban-view">
+        <Box sx={styles.board}>
           <ColumnHeaderRow
             columns={columns}
             taskCountByColumn={taskCountByColumn}
             onAddTask={onAddTask}
           />
-          <Box sx={{ borderTop: 1, borderColor: 'divider' }} />
+          <Box sx={styles.divider} />
           {lanes.length === 0 ? (
             <EmptyState
-              icon={<InboxOutlinedIcon sx={{ fontSize: 40 }} />}
+              icon={<InboxOutlinedIcon sx={styles.emptyIcon} />}
               title="No tasks yet"
               description="Add a task to any column to get started."
             />

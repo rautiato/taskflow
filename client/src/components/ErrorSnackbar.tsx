@@ -1,12 +1,27 @@
 import { useSyncExternalStore } from 'react'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
+import type { SxProps, Theme } from '@mui/material/styles'
 import {
   clearError,
   getErrorMessage,
   subscribe,
 } from '../services/notifications'
 import { testIdProps } from '../utils/testIdProps'
+
+const styles = {
+  alert: {
+    bgcolor: 'background.paper',
+    color: 'text.primary',
+    borderColor: 'divider',
+    borderLeft: 4,
+    borderLeftColor: 'error.main',
+    borderRadius: 2,
+    boxShadow: 3,
+    alignItems: 'center',
+    maxWidth: 480,
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 // App-wide toast for failures that happen after the UI has moved on (a
 // dialog already closed, an optimistic update rolled back), so they're never
@@ -30,17 +45,7 @@ export function ErrorSnackbar() {
         onClose={clearError}
         data-testid="error-snackbar"
         slotProps={{ closeButton: testIdProps('error-snackbar-close') }}
-        sx={{
-          bgcolor: 'background.paper',
-          color: 'text.primary',
-          borderColor: 'divider',
-          borderLeft: 4,
-          borderLeftColor: 'error.main',
-          borderRadius: 2,
-          boxShadow: 3,
-          alignItems: 'center',
-          maxWidth: 480,
-        }}
+        sx={styles.alert}
       >
         {message}
       </Alert>

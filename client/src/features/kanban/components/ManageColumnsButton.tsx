@@ -1,8 +1,34 @@
 import { useState } from 'react'
 import Box from '@mui/material/Box'
+import type { SxProps, Theme } from '@mui/material/styles'
 import ViewColumnOutlinedIcon from '@mui/icons-material/ViewColumnOutlined'
 import type { KanbanColumn } from '../../../models/kanbanBoard'
 import { AddColumnMenu } from './AddColumnMenu'
+
+const styles = {
+  button: {
+    border: '1px dashed #C7CBD1',
+    borderRadius: 1,
+    px: { xs: 1, sm: 1.625 },
+    py: 0.75,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 0.75,
+    color: 'text.secondary',
+    fontSize: 12,
+    fontWeight: 600,
+    flexShrink: 0,
+    bgcolor: 'transparent',
+    cursor: 'pointer',
+    fontFamily: 'inherit',
+  },
+  icon: {
+    fontSize: { xs: 18, sm: 14 },
+  },
+  label: {
+    display: { xs: 'none', sm: 'inline' },
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 // Lives in the page header, not at the end of the column row, so it stays
 // on screen however many columns the board has.
@@ -31,25 +57,10 @@ export function ManageColumnsButton({
         aria-label="Manage Columns"
         onClick={(event) => setAnchor(event.currentTarget)}
         data-testid="manage-columns-button"
-        sx={{
-          border: '1px dashed #C7CBD1',
-          borderRadius: 1,
-          px: { xs: 1, sm: 1.625 },
-          py: 0.75,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 0.75,
-          color: 'text.secondary',
-          fontSize: 12,
-          fontWeight: 600,
-          flexShrink: 0,
-          bgcolor: 'transparent',
-          cursor: 'pointer',
-          fontFamily: 'inherit',
-        }}
+        sx={styles.button}
       >
-        <ViewColumnOutlinedIcon sx={{ fontSize: { xs: 18, sm: 14 } }} />
-        <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+        <ViewColumnOutlinedIcon sx={styles.icon} />
+        <Box component="span" sx={styles.label}>
           Manage Columns
         </Box>
       </Box>

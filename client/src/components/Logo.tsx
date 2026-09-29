@@ -1,9 +1,26 @@
 import Box from '@mui/material/Box'
+import type { SxProps, Theme } from '@mui/material/styles'
 
 const SIZES = {
   sm: { box: 30, font: 14 },
   md: { box: 34, font: 15 },
 } as const
+
+const styles = {
+  root: {
+    borderRadius: '8px',
+    bgcolor: 'primary.main',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'common.white',
+    fontWeight: 700,
+  },
+  inverted: {
+    bgcolor: 'common.white',
+    color: 'primary.main',
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function Logo({
   variant = 'solid',
@@ -18,18 +35,11 @@ export function Logo({
   return (
     <Box
       data-testid="logo"
-      sx={{
-        width: box,
-        height: box,
-        borderRadius: '8px',
-        bgcolor: inverted ? '#fff' : 'primary.main',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: inverted ? 'primary.main' : '#fff',
-        fontWeight: 700,
-        fontSize: font,
-      }}
+      sx={[
+        styles.root,
+        inverted && styles.inverted,
+        { width: box, height: box, fontSize: font },
+      ]}
     >
       TF
     </Box>

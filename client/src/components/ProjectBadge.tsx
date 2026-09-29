@@ -1,10 +1,21 @@
 import Box from '@mui/material/Box'
+import type { SxProps, Theme } from '@mui/material/styles'
 import type { ProjectPaletteColor } from '../models/project'
 
 const SIZES = {
   sm: { box: 34, font: 13, radius: 1 },
   md: { box: 42, font: 14, radius: 1.25 },
 } as const
+
+const styles = {
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: 700,
+    flexShrink: 0,
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function ProjectBadge({
   initials,
@@ -20,19 +31,17 @@ export function ProjectBadge({
   return (
     <Box
       data-testid="project-badge"
-      sx={{
-        width: box,
-        height: box,
-        borderRadius: radius,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontWeight: 700,
-        fontSize: font,
-        flexShrink: 0,
-        bgcolor: `${paletteColor}.light`,
-        color: `${paletteColor}.main`,
-      }}
+      sx={[
+        styles.root,
+        {
+          width: box,
+          height: box,
+          borderRadius: radius,
+          fontSize: font,
+          bgcolor: `${paletteColor}.light`,
+          color: `${paletteColor}.main`,
+        },
+      ]}
     >
       {initials}
     </Box>

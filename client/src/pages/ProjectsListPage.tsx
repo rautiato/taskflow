@@ -5,6 +5,7 @@ import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
 import Chip from '@mui/material/Chip'
+import type { SxProps, Theme } from '@mui/material/styles'
 import SearchIcon from '@mui/icons-material/Search'
 import AddIcon from '@mui/icons-material/Add'
 import { AppLayout } from '../features/layout/components/AppLayout'
@@ -17,6 +18,52 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import { testIdProps } from '../utils/testIdProps'
 
 const STATUS_FILTERS: Array<'All' | ProjectStatus> = ['All', 'Active', 'Closed']
+
+const styles = {
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 2.5,
+  },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  // On phones the full-width search takes its own row and the status
+  // chips wrap below it.
+  toolbar: {
+    display: 'flex',
+    flexWrap: { xs: 'wrap', sm: 'nowrap' },
+    alignItems: 'center',
+    gap: 1.5,
+  },
+  searchIcon: {
+    fontSize: 18,
+  },
+  chip: {
+    fontWeight: 700,
+    fontSize: 12,
+    border: 1,
+    bgcolor: 'background.paper',
+    color: 'text.secondary',
+    borderColor: 'divider',
+  },
+  chipActive: {
+    bgcolor: 'primary.light',
+    color: 'primary.main',
+    borderColor: 'primary.main',
+  },
+  list: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 1.5,
+  },
+  noResults: {
+    textAlign: 'center',
+    py: 4,
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function ProjectsListPage() {
   const user = authService.getSession()
@@ -43,21 +90,9 @@ export function ProjectsListPage() {
 
   return (
     <AppLayout user={user}>
-      <Box
-        sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}
-        data-testid="projects-page"
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Typography
-            sx={{ fontSize: 24, fontWeight: 700 }}
-            data-testid="projects-page-title"
-          >
+      <Box sx={styles.root} data-testid="projects-page">
+        <Box sx={styles.header}>
+          <Typography variant="pageTitle" data-testid="projects-page-title">
             Projects
           </Typography>
           <Button
@@ -70,16 +105,7 @@ export function ProjectsListPage() {
           </Button>
         </Box>
 
-        {/* On phones the full-width search takes its own row and the
-            status chips wrap below it. */}
-        <Box
-          sx={{
-            display: 'flex',
-            flexWrap: { xs: 'wrap', sm: 'nowrap' },
-            alignItems: 'center',
-            gap: 1.5,
-          }}
-        >
+        <Box sx={styles.toolbar}>
           <TextField
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -91,7 +117,7 @@ export function ProjectsListPage() {
               input: {
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon sx={{ fontSize: 18 }} />
+                    <SearchIcon sx={styles.searchIcon} />
                   </InputAdornment>
                 ),
               },
@@ -105,31 +131,13 @@ export function ProjectsListPage() {
                 label={status}
                 onClick={() => setStatusFilter(status)}
                 data-testid={`projects-page-status-${status.toLowerCase()}`}
-                sx={{
-                  fontWeight: 700,
-                  fontSize: 12,
-                  border: 1,
-                  ...(active
-                    ? {
-                        bgcolor: 'primary.light',
-                        color: 'primary.main',
-                        borderColor: 'primary.main',
-                      }
-                    : {
-                        bgcolor: 'background.paper',
-                        color: 'text.secondary',
-                        borderColor: 'divider',
-                      }),
-                }}
+                sx={[styles.chip, active && styles.chipActive]}
               />
             )
           })}
         </Box>
 
-        <Box
-          sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}
-          data-testid="projects-page-list"
-        >
+        <Box sx={styles.list} data-testid="projects-page-list">
           {filteredProjects.map((project) => (
             <ProjectListRow
               key={project.id}
@@ -146,7 +154,7 @@ export function ProjectsListPage() {
           {filteredProjects.length === 0 && (
             <Typography
               color="text.secondary"
-              sx={{ textAlign: 'center', py: 4 }}
+              sx={styles.noResults}
               data-testid="projects-page-no-results"
             >
               No projects match your filters.

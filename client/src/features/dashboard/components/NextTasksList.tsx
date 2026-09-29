@@ -26,7 +26,7 @@ const styles = {
     gap: 2,
     px: 2.25,
     py: 1.75,
-    bgcolor: '#F5F6F8',
+    bgcolor: 'background.subtle',
     borderBottom: 1,
     borderColor: 'divider',
   },
@@ -72,6 +72,14 @@ const styles = {
     borderRadius: 1,
     whiteSpace: 'nowrap',
   },
+  viewAll: {
+    fontSize: 13,
+    fontWeight: 600,
+  },
+  rowText: {
+    flex: 1,
+    minWidth: 0,
+  },
 } satisfies Record<string, SxProps<Theme>>
 
 export function NextTasksList({
@@ -100,7 +108,7 @@ export function NextTasksList({
         <Link
           component={RouterLink}
           to={viewAllHref}
-          sx={{ fontSize: 13, fontWeight: 600 }}
+          sx={styles.viewAll}
           data-testid="next-tasks-list-view-all"
         >
           View all
@@ -118,7 +126,7 @@ export function NextTasksList({
                 sx={styles.row}
                 data-testid="next-tasks-list-item"
               >
-                <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Box sx={styles.rowText}>
                   <Typography
                     noWrap
                     sx={styles.taskTitle}

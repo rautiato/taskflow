@@ -3,6 +3,7 @@ import { Navigate, useSearchParams } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
+import type { SxProps, Theme } from '@mui/material/styles'
 import { AppLayout } from '../features/layout/components/AppLayout'
 import { authService } from '../features/auth/authService'
 import { useUsers } from '../features/auth/useUsers'
@@ -34,6 +35,31 @@ import type { TaskItem } from '../models/task'
 import type { KanbanColumn } from '../models/kanbanBoard'
 
 type FormState = { task: TaskItem; projectId: string }
+
+const styles = {
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 2,
+  },
+  emptyIcon: {
+    fontSize: 40,
+  },
+  content: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 1.5,
+  },
+  resultBar: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1.5,
+  },
+  clearFilters: {
+    fontSize: 13,
+    fontWeight: 600,
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function MyTasksPage() {
   const user = authService.getSession()
@@ -168,14 +194,8 @@ export function MyTasksPage() {
 
   return (
     <AppLayout user={user}>
-      <Box
-        sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-        data-testid="my-tasks-page"
-      >
-        <Typography
-          sx={{ fontSize: 25, fontWeight: 700 }}
-          data-testid="my-tasks-page-title"
-        >
+      <Box sx={styles.root} data-testid="my-tasks-page">
+        <Typography variant="pageTitle" data-testid="my-tasks-page-title">
           My Tasks
         </Typography>
 
@@ -188,12 +208,12 @@ export function MyTasksPage() {
           </Typography>
         ) : tasks.length === 0 ? (
           <EmptyState
-            icon={<InboxOutlinedIcon sx={{ fontSize: 40 }} />}
+            icon={<InboxOutlinedIcon sx={styles.emptyIcon} />}
             title="No tasks assigned to you"
             description="Tasks assigned to you across every project will show up here."
           />
         ) : (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          <Box sx={styles.content}>
             <MyTasksFilterBar
               filters={filters}
               onChange={handleFiltersChange}
@@ -202,9 +222,9 @@ export function MyTasksPage() {
               creators={creatorsWithMyTasks}
             />
             {hasActiveMyTasksFilters(filters) && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box sx={styles.resultBar}>
                 <Typography
-                  sx={{ fontSize: 13, color: 'text.secondary' }}
+                  variant="secondaryText"
                   data-testid="my-tasks-page-result-count"
                 >
                   {visibleTasks.length} task
@@ -213,7 +233,7 @@ export function MyTasksPage() {
                 <Link
                   component="button"
                   onClick={() => handleFiltersChange(EMPTY_MY_TASKS_FILTERS)}
-                  sx={{ fontSize: 13, fontWeight: 600 }}
+                  sx={styles.clearFilters}
                   data-testid="my-tasks-page-clear-filters"
                 >
                   Clear filters

@@ -2,8 +2,40 @@ import Dialog from '@mui/material/Dialog'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
+import type { SxProps, Theme } from '@mui/material/styles'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import { testIdProps } from '../utils/testIdProps'
+
+const styles = {
+  root: {
+    p: 3.5,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 1.5,
+    textAlign: 'center',
+  },
+  icon: {
+    width: 48,
+    height: 48,
+    borderRadius: '50%',
+    bgcolor: 'warning.light',
+    color: 'warning.main',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconDestructive: {
+    bgcolor: 'error.light',
+    color: 'error.main',
+  },
+  actions: {
+    display: 'flex',
+    gap: 1.5,
+    mt: 0.75,
+    width: '100%',
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function ConfirmDialog({
   open,
@@ -32,43 +64,20 @@ export function ConfirmDialog({
       fullWidth
       slotProps={{ paper: testIdProps('confirm-dialog') }}
     >
-      <Box
-        sx={{
-          p: 3.5,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 1.5,
-          textAlign: 'center',
-        }}
-      >
-        <Box
-          sx={{
-            width: 48,
-            height: 48,
-            borderRadius: '50%',
-            bgcolor: destructive ? 'error.light' : 'warning.light',
-            color: destructive ? 'error.main' : 'warning.main',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
+      <Box sx={styles.root}>
+        <Box sx={[styles.icon, destructive && styles.iconDestructive]}>
           <WarningAmberIcon />
         </Box>
-        <Typography
-          sx={{ fontSize: 16, fontWeight: 700 }}
-          data-testid="confirm-dialog-title"
-        >
+        <Typography variant="sectionTitle" data-testid="confirm-dialog-title">
           {title}
         </Typography>
         <Typography
-          sx={{ fontSize: 13, color: 'text.secondary' }}
+          variant="secondaryText"
           data-testid="confirm-dialog-description"
         >
           {description}
         </Typography>
-        <Box sx={{ display: 'flex', gap: 1.5, mt: 0.75, width: '100%' }}>
+        <Box sx={styles.actions}>
           <Button
             onClick={onCancel}
             variant="outlined"

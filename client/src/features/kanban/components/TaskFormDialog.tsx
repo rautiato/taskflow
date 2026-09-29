@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Dialog from '@mui/material/Dialog'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { useTheme } from '@mui/material/styles'
+import { useTheme, type SxProps, type Theme } from '@mui/material/styles'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
@@ -37,6 +37,33 @@ import {
 import { AssigneeSelect } from './AssigneeSelect'
 import { PrioritySelect } from './PrioritySelect'
 import { FavoriteSwitchField } from './FavoriteSwitchField'
+
+const styles = {
+  title: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  form: {
+    pt: 0.5,
+  },
+  fieldRow: {
+    display: 'flex',
+    gap: 2,
+  },
+  halfField: {
+    flex: '1 1 0',
+    minWidth: 0,
+  },
+  actions: {
+    px: 3,
+    py: 2,
+    justifyContent: 'space-between',
+  },
+  actionButton: {
+    minWidth: 120,
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function TaskFormDialog({
   open,
@@ -128,14 +155,7 @@ export function TaskFormDialog({
       fullScreen={fullScreen}
       slotProps={{ paper: testIdProps('task-form-dialog') }}
     >
-      <DialogTitle
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-        data-testid="task-form-dialog-title"
-      >
+      <DialogTitle sx={styles.title} data-testid="task-form-dialog-title">
         {isEditing ? 'Edit Task' : 'Add Task'}
         <IconButton
           onClick={onClose}
@@ -155,7 +175,7 @@ export function TaskFormDialog({
           onSubmit={(event) => {
             void handleSubmit(onSubmit)(event)
           }}
-          sx={{ pt: 0.5 }}
+          sx={styles.form}
           data-testid="task-form-dialog-form"
         >
           <FormTextField<TaskFormValues>
@@ -167,7 +187,7 @@ export function TaskFormDialog({
             testId="task-form-dialog-title-input"
           />
 
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={styles.fieldRow}>
             <FormSingleSelect<TaskFormValues>
               name="projectId"
               control={control}
@@ -204,7 +224,7 @@ export function TaskFormDialog({
             </FormSingleSelect>
           </Box>
 
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={styles.fieldRow}>
             <AssigneeSelect control={control} users={users} />
             <PrioritySelect control={control} />
           </Box>
@@ -220,8 +240,8 @@ export function TaskFormDialog({
             testId="task-form-dialog-description"
           />
 
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <Box sx={{ flex: '1 1 0', minWidth: 0 }}>
+          <Box sx={styles.fieldRow}>
+            <Box sx={styles.halfField}>
               <FormTextField<TaskFormValues>
                 name="dueDate"
                 control={control}
@@ -231,7 +251,7 @@ export function TaskFormDialog({
                 testId="task-form-dialog-due-date"
               />
             </Box>
-            <Box sx={{ flex: '1 1 0', minWidth: 0 }}>
+            <Box sx={styles.halfField}>
               <FavoriteSwitchField control={control} />
             </Box>
           </Box>
@@ -244,11 +264,11 @@ export function TaskFormDialog({
           />
         </Stack>
       </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2, justifyContent: 'space-between' }}>
+      <DialogActions sx={styles.actions}>
         <Button
           onClick={onClose}
           variant="outlined"
-          sx={{ minWidth: 120 }}
+          sx={styles.actionButton}
           data-testid="task-form-dialog-cancel"
         >
           Cancel
@@ -257,7 +277,7 @@ export function TaskFormDialog({
           type="submit"
           form="task-form"
           variant="contained"
-          sx={{ minWidth: 120 }}
+          sx={styles.actionButton}
           data-testid="task-form-dialog-submit"
         >
           Save Task

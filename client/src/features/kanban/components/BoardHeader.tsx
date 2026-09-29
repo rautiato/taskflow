@@ -4,12 +4,59 @@ import Typography from '@mui/material/Typography'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import ToggleButton from '@mui/material/ToggleButton'
 import Button from '@mui/material/Button'
+import type { SxProps, Theme } from '@mui/material/styles'
 import GridViewIcon from '@mui/icons-material/GridView'
 import ViewListIcon from '@mui/icons-material/ViewList'
 import AddIcon from '@mui/icons-material/Add'
 import { Breadcrumbs } from '../../../components/Breadcrumbs'
 
 export type BoardView = 'kanban' | 'list'
+
+const styles = {
+  // Phones: title on its own row, controls on the next.
+  root: {
+    display: 'flex',
+    flexDirection: { xs: 'column', sm: 'row' },
+    alignItems: { xs: 'stretch', sm: 'flex-end' },
+    justifyContent: 'space-between',
+    gap: 1.5,
+  },
+  titleBlock: {
+    minWidth: 0,
+  },
+  controls: {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: { xs: 1, sm: 2 },
+    flexShrink: 0,
+  },
+  viewToggle: {
+    '& .MuiToggleButton-root': {
+      textTransform: 'none',
+      fontWeight: 600,
+      color: 'text.secondary',
+      borderColor: 'divider',
+      px: 1.5,
+      '&.Mui-selected': {
+        bgcolor: 'primary.main',
+        color: 'common.white',
+        '&:hover': { bgcolor: 'primary.dark' },
+      },
+    },
+  },
+  viewIcon: {
+    fontSize: 16,
+    mr: { xs: 0, sm: 0.75 },
+  },
+  // Icon-only on phones; aria-label keeps the name.
+  viewLabel: {
+    display: { xs: 'none', sm: 'inline' },
+  },
+  newTaskButton: {
+    ml: { xs: 'auto', sm: 0 },
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function BoardHeader({
   projectName,
@@ -28,42 +75,21 @@ export function BoardHeader({
   columnsMenu?: ReactNode
 }) {
   return (
-    // Phones: title on its own row, controls on the next.
-    <Box
-      data-testid="board-header"
-      sx={{
-        display: 'flex',
-        flexDirection: { xs: 'column', sm: 'row' },
-        alignItems: { xs: 'stretch', sm: 'flex-end' },
-        justifyContent: 'space-between',
-        gap: 1.5,
-      }}
-    >
-      <Box sx={{ minWidth: 0 }}>
+    <Box data-testid="board-header" sx={styles.root}>
+      <Box sx={styles.titleBlock}>
         <Breadcrumbs
           items={[
             { label: 'Projects', to: '/projects' },
             { label: projectName },
           ]}
         />
-        <Typography
-          sx={{ fontSize: { xs: 20, sm: 25 }, fontWeight: 700 }}
-          data-testid="board-header-title"
-        >
+        <Typography variant="pageTitle" data-testid="board-header-title">
           {projectName}
         </Typography>
       </Box>
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: { xs: 1, sm: 2 },
-          flexShrink: 0,
-        }}
-      >
+      <Box sx={styles.controls}>
         <Typography
-          sx={{ fontSize: 13, color: 'text.secondary' }}
+          variant="secondaryText"
           data-testid="board-header-task-count"
         >
           {taskCount} tasks
@@ -76,32 +102,15 @@ export function BoardHeader({
           onChange={(_event, next: BoardView | null) => {
             if (next) onViewChange(next)
           }}
-          sx={{
-            '& .MuiToggleButton-root': {
-              textTransform: 'none',
-              fontWeight: 600,
-              color: 'text.secondary',
-              borderColor: 'divider',
-              px: 1.5,
-              '&.Mui-selected': {
-                bgcolor: 'primary.main',
-                color: '#fff',
-                '&:hover': { bgcolor: 'primary.dark' },
-              },
-            },
-          }}
+          sx={styles.viewToggle}
         >
-          {/* Icon-only on phones; aria-label keeps the name. */}
           <ToggleButton
             value="kanban"
             aria-label="Kanban"
             data-testid="board-header-view-kanban"
           >
-            <GridViewIcon sx={{ fontSize: 16, mr: { xs: 0, sm: 0.75 } }} />
-            <Box
-              component="span"
-              sx={{ display: { xs: 'none', sm: 'inline' } }}
-            >
+            <GridViewIcon sx={styles.viewIcon} />
+            <Box component="span" sx={styles.viewLabel}>
               Kanban
             </Box>
           </ToggleButton>
@@ -110,11 +119,8 @@ export function BoardHeader({
             aria-label="List"
             data-testid="board-header-view-list"
           >
-            <ViewListIcon sx={{ fontSize: 16, mr: { xs: 0, sm: 0.75 } }} />
-            <Box
-              component="span"
-              sx={{ display: { xs: 'none', sm: 'inline' } }}
-            >
+            <ViewListIcon sx={styles.viewIcon} />
+            <Box component="span" sx={styles.viewLabel}>
               List
             </Box>
           </ToggleButton>
@@ -126,7 +132,7 @@ export function BoardHeader({
           variant="contained"
           startIcon={<AddIcon />}
           onClick={onNewTask}
-          sx={{ ml: { xs: 'auto', sm: 0 } }}
+          sx={styles.newTaskButton}
           data-testid="board-header-new-task"
         >
           New Task

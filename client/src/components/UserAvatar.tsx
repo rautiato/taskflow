@@ -1,4 +1,5 @@
 import Avatar from '@mui/material/Avatar'
+import type { SxProps, Theme } from '@mui/material/styles'
 
 const SIZES = {
   xs: { box: 24, font: 10 },
@@ -38,6 +39,13 @@ function colorForKey(key: string): string {
   return PALETTE[hash % PALETTE.length]
 }
 
+const styles = {
+  root: {
+    fontWeight: 700,
+    color: 'common.white',
+  },
+} satisfies Record<string, SxProps<Theme>>
+
 export function UserAvatar({
   id = null,
   name,
@@ -56,14 +64,15 @@ export function UserAvatar({
     <Avatar
       src={avatarUrl ?? undefined}
       data-testid="user-avatar"
-      sx={{
-        width: box,
-        height: box,
-        fontSize: font,
-        fontWeight: 700,
-        bgcolor: colorKey ? colorForKey(colorKey) : UNASSIGNED_COLOR,
-        color: '#FFFFFF',
-      }}
+      sx={[
+        styles.root,
+        {
+          width: box,
+          height: box,
+          fontSize: font,
+          bgcolor: colorKey ? colorForKey(colorKey) : UNASSIGNED_COLOR,
+        },
+      ]}
     >
       {name ? getInitials(name) : '?'}
     </Avatar>

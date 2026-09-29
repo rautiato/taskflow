@@ -3,14 +3,104 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
+import type { SxProps, Theme } from '@mui/material/styles'
 import { UserAvatar } from '../../../components/UserAvatar'
+import {
+  DeleteIconButton,
+  EditIconButton,
+} from '../../../components/ActionIconButtons'
 import { ConfirmDialog } from '../../../components/ConfirmDialog'
 import { useComments } from '../useComments'
 import type { UserDto } from '../../../models/user'
 import { testIdProps } from '../../../utils/testIdProps'
+
+const styles = {
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 1.5,
+  },
+  heading: {
+    fontSize: 12,
+    fontWeight: 700,
+    color: 'text.secondary',
+    textTransform: 'uppercase',
+  },
+  item: {
+    display: 'flex',
+    gap: 1.25,
+    '&:hover .comment-actions': { opacity: 1 },
+  },
+  itemBody: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 0.25,
+    flexGrow: 1,
+    minWidth: 0,
+  },
+  itemMeta: {
+    display: 'flex',
+    alignItems: 'baseline',
+    gap: 0.75,
+  },
+  author: {
+    fontSize: 13,
+    fontWeight: 700,
+  },
+  time: {
+    fontSize: 11,
+    color: 'text.secondary',
+  },
+  edited: {
+    fontSize: 11,
+    color: 'text.disabled',
+    fontStyle: 'italic',
+  },
+  actions: {
+    display: 'flex',
+    gap: 0.25,
+    ml: 'auto',
+    opacity: 0,
+    transition: 'opacity 0.15s ease',
+    // Touch screens can't hover, so keep the actions visible.
+    '@media (hover: none)': { opacity: 1 },
+  },
+  actionButton: {
+    p: 0.5,
+  },
+  editForm: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 0.75,
+  },
+  editButtons: {
+    display: 'flex',
+    gap: 1,
+  },
+  content: {
+    fontSize: 13,
+    lineHeight: 1.5,
+    whiteSpace: 'pre-wrap',
+  },
+  composer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 0.5,
+  },
+  composerRow: {
+    display: 'flex',
+    gap: 1,
+    alignItems: 'flex-end',
+  },
+  counter: {
+    fontSize: 11,
+    color: 'text.secondary',
+    alignSelf: 'flex-end',
+  },
+  counterTooLong: {
+    color: 'error.main',
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 const MAX_COMMENT_LENGTH = 32_767
 const COUNTER_WARNING_THRESHOLD = MAX_COMMENT_LENGTH - 500
@@ -101,19 +191,8 @@ export function CommentThread({
   }
 
   return (
-    <Box
-      sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}
-      data-testid="comment-thread"
-    >
-      <Typography
-        sx={{
-          fontSize: 12,
-          fontWeight: 700,
-          color: 'text.secondary',
-          textTransform: 'uppercase',
-        }}
-        data-testid="comment-thread-heading"
-      >
+    <Box sx={styles.root} data-testid="comment-thread">
+      <Typography sx={styles.heading} data-testid="comment-thread-heading">
         Comments ({comments.length})
       </Typography>
 
@@ -126,11 +205,7 @@ export function CommentThread({
           <Box
             key={comment.id}
             data-testid="comment-thread-item"
-            sx={{
-              display: 'flex',
-              gap: 1.25,
-              '&:hover .comment-actions': { opacity: 1 },
-            }}
+            sx={styles.item}
           >
             <UserAvatar
               id={author?.id}
@@ -138,78 +213,47 @@ export function CommentThread({
               avatarUrl={author?.avatarUrl}
               size="xs"
             />
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 0.25,
-                flexGrow: 1,
-                minWidth: 0,
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75 }}>
+            <Box sx={styles.itemBody}>
+              <Box sx={styles.itemMeta}>
                 <Typography
-                  sx={{ fontSize: 13, fontWeight: 700 }}
+                  sx={styles.author}
                   data-testid="comment-thread-item-author"
                 >
                   {author?.name ?? 'Unknown user'}
                 </Typography>
                 <Typography
-                  sx={{ fontSize: 11, color: 'text.secondary' }}
+                  sx={styles.time}
                   data-testid="comment-thread-item-time"
                 >
                   {formatTimestamp(comment.updatedAt ?? comment.createdAt)}
                 </Typography>
                 {comment.updatedAt && (
                   <Typography
-                    sx={{
-                      fontSize: 11,
-                      color: 'text.disabled',
-                      fontStyle: 'italic',
-                    }}
+                    sx={styles.edited}
                     data-testid="comment-thread-item-edited"
                   >
                     (edited)
                   </Typography>
                 )}
                 {isOwnComment && !isEditing && (
-                  <Box
-                    className="comment-actions"
-                    sx={{
-                      display: 'flex',
-                      gap: 0.25,
-                      ml: 'auto',
-                      opacity: 0,
-                      transition: 'opacity 0.15s ease',
-                      // Touch screens can't hover, so keep the actions visible.
-                      '@media (hover: none)': { opacity: 1 },
-                    }}
-                  >
-                    <IconButton
-                      size="small"
+                  <Box className="comment-actions" sx={styles.actions}>
+                    <EditIconButton
                       aria-label="Edit comment"
                       onClick={() => startEdit(comment.id, comment.content)}
-                      sx={{ p: 0.5 }}
+                      sx={styles.actionButton}
                       data-testid="comment-thread-item-edit"
-                    >
-                      <EditIcon sx={{ fontSize: 18, color: 'primary.main' }} />
-                    </IconButton>
-                    <IconButton
-                      size="small"
+                    />
+                    <DeleteIconButton
                       aria-label="Delete comment"
                       onClick={() => setDeleteTargetId(comment.id)}
-                      sx={{ p: 0.5 }}
+                      sx={styles.actionButton}
                       data-testid="comment-thread-item-delete"
-                    >
-                      <DeleteIcon sx={{ fontSize: 18, color: 'error.main' }} />
-                    </IconButton>
+                    />
                   </Box>
                 )}
               </Box>
               {isEditing ? (
-                <Box
-                  sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}
-                >
+                <Box sx={styles.editForm}>
                   <TextField
                     value={editDraft}
                     onChange={(e) => setEditDraft(e.target.value)}
@@ -225,7 +269,7 @@ export function CommentThread({
                       htmlInput: testIdProps('comment-thread-item-edit-input'),
                     }}
                   />
-                  <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Box sx={styles.editButtons}>
                     <Button
                       size="small"
                       variant="contained"
@@ -250,7 +294,7 @@ export function CommentThread({
                 </Box>
               ) : (
                 <Typography
-                  sx={{ fontSize: 13, lineHeight: 1.5, whiteSpace: 'pre-wrap' }}
+                  sx={styles.content}
                   data-testid="comment-thread-item-content"
                 >
                   {comment.content}
@@ -261,8 +305,8 @@ export function CommentThread({
         )
       })}
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-end' }}>
+      <Box sx={styles.composer}>
+        <Box sx={styles.composerRow}>
           <TextField
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
@@ -287,11 +331,7 @@ export function CommentThread({
         </Box>
         {showCounter && (
           <Typography
-            sx={{
-              fontSize: 11,
-              color: isTooLong ? 'error.main' : 'text.secondary',
-              alignSelf: 'flex-end',
-            }}
+            sx={[styles.counter, isTooLong && styles.counterTooLong]}
             data-testid="comment-thread-counter"
           >
             {draft.length} / {MAX_COMMENT_LENGTH}

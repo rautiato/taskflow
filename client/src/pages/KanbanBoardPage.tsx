@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Navigate, useParams, useSearchParams } from 'react-router-dom'
 import Box from '@mui/material/Box'
+import type { SxProps, Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { AppLayout } from '../features/layout/components/AppLayout'
 import { authService } from '../features/auth/authService'
@@ -29,6 +30,19 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import type { TaskItem } from '../models/task'
 
 type FormState = { task?: TaskItem; defaultColumnId: string }
+
+const styles = {
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 2,
+  },
+  list: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 1.5,
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function KanbanBoardPage() {
   const { projectId } = useParams<{ projectId: string }>()
@@ -124,10 +138,7 @@ export function KanbanBoardPage() {
 
   return (
     <AppLayout user={user}>
-      <Box
-        sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-        data-testid="kanban-board-page"
-      >
+      <Box sx={styles.root} data-testid="kanban-board-page">
         <BoardHeader
           projectName={project.name}
           taskCount={tasks.length}
@@ -173,10 +184,7 @@ export function KanbanBoardPage() {
             onToggleFavorite={toggleFavorite}
           />
         ) : (
-          <Box
-            sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}
-            data-testid="kanban-board-page-list"
-          >
+          <Box sx={styles.list} data-testid="kanban-board-page-list">
             <FilterBar
               filters={filters}
               onChange={setFilters}
@@ -185,7 +193,7 @@ export function KanbanBoardPage() {
             />
             {hasActiveFilters(filters) && (
               <Typography
-                sx={{ fontSize: 13, color: 'text.secondary' }}
+                variant="secondaryText"
                 data-testid="kanban-board-page-result-count"
               >
                 {listViewTasks.length} task

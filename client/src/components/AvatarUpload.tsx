@@ -2,10 +2,59 @@ import { useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
+import type { SxProps, Theme } from '@mui/material/styles'
 import CameraAltOutlinedIcon from '@mui/icons-material/CameraAltOutlined'
 import { UserAvatar } from './UserAvatar'
 import { AvatarCropDialog } from './AvatarCropDialog'
 import { MAX_ATTACHMENT_BYTES } from '../utils/fileToDataUrl'
+
+const styles = {
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 2,
+  },
+  avatarButton: {
+    position: 'relative',
+    display: 'inline-flex',
+    cursor: 'pointer',
+    borderRadius: '50%',
+    '&:hover .avatar-upload-overlay': { opacity: 1 },
+  },
+  overlay: {
+    position: 'absolute',
+    inset: 0,
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    bgcolor: 'rgba(0, 0, 0, 0.45)',
+    color: 'common.white',
+    opacity: 0,
+    transition: 'opacity 0.15s ease',
+  },
+  links: {
+    display: 'flex',
+    gap: 1.5,
+  },
+  changeLink: {
+    fontWeight: 600,
+    cursor: 'pointer',
+  },
+  removeLink: {
+    fontWeight: 600,
+  },
+  hint: {
+    fontSize: 12,
+    color: 'text.secondary',
+    mt: 0.5,
+  },
+  error: {
+    fontSize: 12,
+    color: 'error.main',
+    mt: 0.5,
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function AvatarUpload({
   id,
@@ -43,36 +92,10 @@ export function AvatarUpload({
 
   return (
     <>
-      <Box
-        sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
-        data-testid="avatar-upload"
-      >
-        <Box
-          component="label"
-          sx={{
-            position: 'relative',
-            display: 'inline-flex',
-            cursor: 'pointer',
-            borderRadius: '50%',
-            '&:hover .avatar-upload-overlay': { opacity: 1 },
-          }}
-        >
+      <Box sx={styles.root} data-testid="avatar-upload">
+        <Box component="label" sx={styles.avatarButton}>
           <UserAvatar id={id} name={name} avatarUrl={avatarUrl} size="lg" />
-          <Box
-            className="avatar-upload-overlay"
-            sx={{
-              position: 'absolute',
-              inset: 0,
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              bgcolor: 'rgba(0, 0, 0, 0.45)',
-              color: '#FFFFFF',
-              opacity: 0,
-              transition: 'opacity 0.15s ease',
-            }}
-          >
+          <Box className="avatar-upload-overlay" sx={styles.overlay}>
             <CameraAltOutlinedIcon fontSize="small" />
           </Box>
           <input
@@ -87,10 +110,10 @@ export function AvatarUpload({
           />
         </Box>
         <Box>
-          <Box sx={{ display: 'flex', gap: 1.5 }}>
+          <Box sx={styles.links}>
             <Link
               component="label"
-              sx={{ fontWeight: 600, cursor: 'pointer' }}
+              sx={styles.changeLink}
               data-testid="avatar-upload-change"
             >
               Change photo
@@ -110,7 +133,7 @@ export function AvatarUpload({
                 component="button"
                 type="button"
                 color="error"
-                sx={{ fontWeight: 600 }}
+                sx={styles.removeLink}
                 onClick={() => onChange(null)}
                 data-testid="avatar-upload-remove"
               >
@@ -118,14 +141,9 @@ export function AvatarUpload({
               </Link>
             )}
           </Box>
-          <Typography sx={{ fontSize: 12, color: 'text.secondary', mt: 0.5 }}>
-            JPG or PNG, up to 2MB.
-          </Typography>
+          <Typography sx={styles.hint}>JPG or PNG, up to 2MB.</Typography>
           {error && (
-            <Typography
-              sx={{ fontSize: 12, color: 'error.main', mt: 0.5 }}
-              data-testid="avatar-upload-error"
-            >
+            <Typography sx={styles.error} data-testid="avatar-upload-error">
               {error}
             </Typography>
           )}

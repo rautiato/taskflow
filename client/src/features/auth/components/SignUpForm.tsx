@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Alert from '@mui/material/Alert'
+import type { SxProps, Theme } from '@mui/material/styles'
 import { Link as RouterLink } from 'react-router-dom'
 import {
   emailSchema,
@@ -36,6 +37,15 @@ const signUpSchema = z
   })
 
 type SignUpFormValues = z.infer<typeof signUpSchema>
+
+const styles = {
+  footer: {
+    textAlign: 'center',
+  },
+  footerLink: {
+    fontWeight: 600,
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function SignUpForm() {
   const navigate = useNavigate()
@@ -111,16 +121,12 @@ export function SignUpForm() {
         Sign up
       </Button>
 
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ textAlign: 'center' }}
-      >
+      <Typography variant="body2" color="text.secondary" sx={styles.footer}>
         Already have an account?{' '}
         <Link
           component={RouterLink}
           to="/login"
-          sx={{ fontWeight: 600 }}
+          sx={styles.footerLink}
           data-testid="sign-up-form-sign-in"
         >
           Sign in

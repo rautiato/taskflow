@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
+import type { SxProps, Theme } from '@mui/material/styles'
 import { passwordSchema, PASSWORD_HINT } from '../validation'
 import { PasswordField } from './PasswordField'
 import { authService } from '../authService'
@@ -23,6 +24,13 @@ const changePasswordSchema = z
   })
 
 type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>
+
+const styles = {
+  actions: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
+} satisfies Record<string, SxProps<Theme>>
 
 export function ChangePasswordForm({ userId }: { userId: string }) {
   const [error, setError] = useState<string | null>(null)
@@ -91,7 +99,7 @@ export function ChangePasswordForm({ userId }: { userId: string }) {
         testId="change-password-form-confirm-password"
       />
 
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <Box sx={styles.actions}>
         <Button
           type="submit"
           variant="contained"
