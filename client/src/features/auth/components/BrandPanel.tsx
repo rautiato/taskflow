@@ -9,9 +9,21 @@ import type { Theme } from '@mui/material/styles'
 import { Logo } from '../../../components/Logo'
 
 const FEATURES = [
-  { icon: GridViewIcon, label: 'Kanban boards for every project' },
-  { icon: GroupOutlinedIcon, label: "Assign tasks and track who's doing what" },
-  { icon: SearchIcon, label: 'Search and filter across every board' },
+  {
+    id: 'kanban',
+    icon: GridViewIcon,
+    label: 'Kanban boards for every project',
+  },
+  {
+    id: 'assign',
+    icon: GroupOutlinedIcon,
+    label: "Assign tasks and track who's doing what",
+  },
+  {
+    id: 'search',
+    icon: SearchIcon,
+    label: 'Search and filter across every board',
+  },
 ]
 
 const styles = {
@@ -98,29 +110,41 @@ export function BrandPanel() {
         sx={{ position: 'relative', alignItems: 'center' }}
       >
         <Logo variant="inverted" />
-        <Typography sx={styles.logoText}>TaskFlow</Typography>
+        <Typography data-testid="brand-panel-logo-text" sx={styles.logoText}>
+          TaskFlow
+        </Typography>
       </Stack>
 
       <Stack spacing={2} sx={styles.headlineStack}>
-        <Typography sx={styles.headline}>
+        <Typography data-testid="brand-panel-headline" sx={styles.headline}>
           Organize. Collaborate. Get things done.
         </Typography>
-        <Typography sx={styles.subhead}>
+        <Typography data-testid="brand-panel-subhead" sx={styles.subhead}>
           Plan projects, track tasks across boards, and keep your work moving —
           a lightweight, visual way to stay organized.
         </Typography>
       </Stack>
 
-      <Stack spacing={1.75} sx={styles.featureList}>
-        {FEATURES.map(({ icon: Icon, label }) => (
+      <Stack
+        spacing={1.75}
+        sx={styles.featureList}
+        data-testid="brand-panel-features"
+      >
+        {FEATURES.map(({ id, icon: Icon, label }) => (
           <Stack
-            key={label}
+            key={id}
             direction="row"
             spacing={1.25}
             sx={styles.featureRow}
+            data-testid={`brand-panel-feature-${id}`}
           >
             <Icon sx={styles.featureIcon} />
-            <Typography sx={styles.featureLabel}>{label}</Typography>
+            <Typography
+              data-testid={`brand-panel-feature-${id}-label`}
+              sx={styles.featureLabel}
+            >
+              {label}
+            </Typography>
           </Stack>
         ))}
       </Stack>

@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Dialog from '@mui/material/Dialog'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -11,7 +11,6 @@ import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
-import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
 import Button from '@mui/material/Button'
 import type { KanbanColumn } from '../../../models/kanbanBoard'
@@ -29,6 +28,8 @@ import {
 import { notifyError } from '../../../services/notifications'
 import { errorMessage } from '../../../utils/errorMessage'
 import { testIdProps } from '../../../utils/testIdProps'
+import { FormTextField } from '../../../components/FormTextField'
+import { FormSingleSelect } from '../../../components/FormSingleSelect'
 import {
   AttachmentPicker,
   type AttachmentPickerHandle,
@@ -157,96 +158,50 @@ export function TaskFormDialog({
           sx={{ pt: 0.5 }}
           data-testid="task-form-dialog-form"
         >
-          <Controller
+          <FormTextField<TaskFormValues>
             name="title"
             control={control}
-            render={({ field, fieldState }) => (
-              <TextField
-                {...field}
-                label="Task Title"
-                required
-                fullWidth
-                error={!!fieldState.error}
-                helperText={fieldState.error?.message}
-                slotProps={{
-                  htmlInput: testIdProps('task-form-dialog-title-input'),
-                  formHelperText: testIdProps(
-                    'task-form-dialog-title-input-helper',
-                  ),
-                }}
-              />
-            )}
+            label="Task Title"
+            required
+            fullWidth
+            testId="task-form-dialog-title-input"
           />
 
           <Box sx={{ display: 'flex', gap: 2 }}>
-            <Controller
+            <FormSingleSelect<TaskFormValues>
               name="projectId"
               control={control}
-              render={({ field, fieldState }) => (
-                <TextField
-                  {...field}
-                  select
-                  label="Project"
-                  fullWidth
-                  error={!!fieldState.error}
-                  helperText={fieldState.error?.message}
-                  slotProps={{
-                    select: {
-                      SelectDisplayProps: testIdProps(
-                        'task-form-dialog-project',
-                      ),
-                    },
-                    formHelperText: testIdProps(
-                      'task-form-dialog-project-helper',
-                    ),
-                  }}
+              label="Project"
+              fullWidth
+              testId="task-form-dialog-project"
+            >
+              {projects.map((project) => (
+                <MenuItem
+                  key={project.id}
+                  value={project.id}
+                  data-testid="task-form-dialog-project-option"
                 >
-                  {projects.map((project) => (
-                    <MenuItem
-                      key={project.id}
-                      value={project.id}
-                      data-testid="task-form-dialog-project-option"
-                    >
-                      {project.name}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              )}
-            />
-            <Controller
+                  {project.name}
+                </MenuItem>
+              ))}
+            </FormSingleSelect>
+            <FormSingleSelect<TaskFormValues>
               name="columnId"
               control={control}
-              render={({ field, fieldState }) => (
-                <TextField
-                  {...field}
-                  select
-                  label="Status"
-                  fullWidth
-                  error={!!fieldState.error}
-                  helperText={fieldState.error?.message}
-                  slotProps={{
-                    select: {
-                      SelectDisplayProps: testIdProps(
-                        'task-form-dialog-status',
-                      ),
-                    },
-                    formHelperText: testIdProps(
-                      'task-form-dialog-status-helper',
-                    ),
-                  }}
+              label="Status"
+              fullWidth
+              testId="task-form-dialog-status"
+            >
+              {availableColumns.map((column) => (
+                <MenuItem
+                  key={column.id}
+                  value={column.id}
+                  data-testid="task-form-dialog-status-option"
                 >
-                  {availableColumns.map((column) => (
-                    <MenuItem
-                      key={column.id}
-                      value={column.id}
-                      data-testid="task-form-dialog-status-option"
-                    >
-                      {column.name}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              )}
-            />
+                  {column.name}
+                </MenuItem>
+              ))}
+            </FormSingleSelect>
           </Box>
 
           <Box sx={{ display: 'flex', gap: 2 }}>
@@ -254,45 +209,26 @@ export function TaskFormDialog({
             <PrioritySelect control={control} />
           </Box>
 
-          <Controller
+          <FormTextField<TaskFormValues>
             name="description"
             control={control}
-            render={({ field, fieldState }) => (
-              <TextField
-                {...field}
-                label="Description"
-                required
-                fullWidth
-                multiline
-                minRows={3}
-                error={!!fieldState.error}
-                helperText={fieldState.error?.message}
-                slotProps={{
-                  htmlInput: testIdProps('task-form-dialog-description'),
-                  formHelperText: testIdProps(
-                    'task-form-dialog-description-helper',
-                  ),
-                }}
-              />
-            )}
+            label="Description"
+            required
+            fullWidth
+            multiline
+            minRows={3}
+            testId="task-form-dialog-description"
           />
 
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Box sx={{ flex: '1 1 0', minWidth: 0 }}>
-              <Controller
+              <FormTextField<TaskFormValues>
                 name="dueDate"
                 control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    type="date"
-                    label="Deadline"
-                    fullWidth
-                    slotProps={{
-                      htmlInput: testIdProps('task-form-dialog-due-date'),
-                    }}
-                  />
-                )}
+                type="date"
+                label="Deadline"
+                fullWidth
+                testId="task-form-dialog-due-date"
               />
             </Box>
             <Box sx={{ flex: '1 1 0', minWidth: 0 }}>
