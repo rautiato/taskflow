@@ -24,11 +24,16 @@ import {
   writeSortToSearchParams,
   type SortState,
 } from '../features/tasks/taskListSort'
+import {
+  buildMyTasksLookups,
+  statusOptionsFor,
+} from '../features/tasks/myTasksLookups'
 import { MyTasksFilterBar } from '../features/kanban/components/MyTasksFilterBar'
 import { TaskListView } from '../features/kanban/components/TaskListView'
 import { TaskFormDialog } from '../features/kanban/components/TaskFormDialog'
 import { TaskDetailDrawer } from '../features/kanban/components/TaskDetailDrawer'
-import { ConfirmDialog } from '../components/ConfirmDialog'
+import { DeleteTaskDialog } from '../features/kanban/components/DeleteTaskDialog'
+import { TaskResultCount } from '../features/kanban/components/TaskResultCount'
 import { EmptyState } from '../components/EmptyState'
 import InboxOutlinedIcon from '@mui/icons-material/InboxOutlined'
 import type { TaskItem } from '../models/task'
@@ -115,52 +120,22 @@ export function MyTasksPage() {
     return <Navigate to="/login" replace />
   }
 
-  const boardById = new Map(boards.map((b) => [b.id, b]))
-  const projectById = new Map(projects.map((p) => [p.id, p]))
-
-  const projectIdByColumnId: Record<string, string> = {}
-  const projectNameByColumnId: Record<string, string> = {}
-  for (const column of columns) {
-    const board = boardById.get(column.boardId)
-    const project = board && projectById.get(board.projectId)
-    if (project) {
-      projectIdByColumnId[column.id] = project.id
-      projectNameByColumnId[column.id] = project.name
-    }
-  }
-
-  // Only projects the user actually has a task in — picking one that can
-  // only ever show "no tasks match" isn't a useful filter option.
-  const projectsWithMyTasks = projects.filter((project) =>
-    tasks.some((task) => projectIdByColumnId[task.columnId] === project.id),
+  const {
+    projectIdByColumnId,
+    projectNameByColumnId,
+    statusNameByColumnId,
+    projectsWithMyTasks,
+    creatorsWithMyTasks,
+  } = buildMyTasksLookups({ tasks, columns, boards, projects, users })
+  const statusOptions = statusOptionsFor(
+    columns,
+    projectIdByColumnId,
+    filters.projectIds,
   )
-
-  // Same reasoning as projectsWithMyTasks — only list users who actually
-  // created one of these tasks.
-  const creatorsWithMyTasks = users.filter((creator) =>
-    tasks.some((task) => task.createdById === creator.id),
+  const visibleTasks = sortTasks(
+    filterMyTasks(tasks, filters, projectIdByColumnId, statusNameByColumnId),
   )
-
-  // With no project selected, statuses collapse to their name across every
-  // project (one "To Do", not one per project) — with projects selected,
-  // it narrows to just those projects' own columns, in board order.
-  const statusOptions = (() => {
-    const relevant =
-      filters.projectIds.length === 0
-        ? columns
-        : columns.filter((c) =>
-            filters.projectIds.includes(projectIdByColumnId[c.id]),
-          )
-    const seen = new Set<string>()
-    const names: string[] = []
-    for (const column of [...relevant].sort((a, b) => a.order - b.order)) {
-      if (!seen.has(column.name)) {
-        seen.add(column.name)
-        names.push(column.name)
-      }
-    }
-    return names
-  })()
+  const detailTask = tasks.find((t) => t.id === openTaskId) ?? null
 
   function columnsForTask(task: TaskItem): KanbanColumn[] {
     const taskColumn = columns.find((c) => c.id === task.columnId)
@@ -180,17 +155,6 @@ export function MyTasksPage() {
     setDeleteTarget(task)
     closeTask()
   }
-
-  const detailTask = tasks.find((t) => t.id === openTaskId) ?? null
-
-  const statusNameByColumnId: Record<string, string> = {}
-  for (const column of columns) {
-    statusNameByColumnId[column.id] = column.name
-  }
-
-  const visibleTasks = sortTasks(
-    filterMyTasks(tasks, filters, projectIdByColumnId, statusNameByColumnId),
-  )
 
   return (
     <AppLayout user={user}>
@@ -223,13 +187,10 @@ export function MyTasksPage() {
             />
             {hasActiveMyTasksFilters(filters) && (
               <Box sx={styles.resultBar}>
-                <Typography
-                  variant="secondaryText"
-                  data-testid="my-tasks-page-result-count"
-                >
-                  {visibleTasks.length} task
-                  {visibleTasks.length === 1 ? '' : 's'} found
-                </Typography>
+                <TaskResultCount
+                  count={visibleTasks.length}
+                  testId="my-tasks-page-result-count"
+                />
                 <Link
                   component="button"
                   onClick={() => handleFiltersChange(EMPTY_MY_TASKS_FILTERS)}
@@ -272,33 +233,24 @@ export function MyTasksPage() {
       />
 
       <TaskDetailDrawer
-        open={!!detailTask}
         task={detailTask}
-        column={columns.find((c) => c.id === detailTask?.columnId)}
-        assignee={users.find((u) => u.id === detailTask?.assigneeId)}
-        creator={users.find((u) => u.id === detailTask?.createdById)}
+        columns={columns}
         users={users}
         currentUser={user}
         onClose={closeTask}
-        onEdit={() => detailTask && handleEditTask(detailTask)}
-        onDelete={() => detailTask && handleDeleteTask(detailTask)}
-        onToggleFavorite={() => detailTask && toggleFavorite(detailTask)}
+        onEdit={handleEditTask}
+        onDelete={handleDeleteTask}
+        onToggleFavorite={toggleFavorite}
       />
 
-      {deleteTarget && (
-        <ConfirmDialog
-          open
-          title="Delete this task?"
-          description={`This action can't be undone. "${deleteTarget.title}" will be permanently removed.`}
-          confirmLabel="Delete"
-          destructive
-          onConfirm={() => {
-            deleteTask(deleteTarget.id)
-            setDeleteTarget(null)
-          }}
-          onCancel={() => setDeleteTarget(null)}
-        />
-      )}
+      <DeleteTaskDialog
+        task={deleteTarget}
+        onConfirm={(task) => {
+          deleteTask(task.id)
+          setDeleteTarget(null)
+        }}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </AppLayout>
   )
 }
