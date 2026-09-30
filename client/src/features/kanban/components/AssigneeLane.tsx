@@ -2,13 +2,13 @@ import { useState, type KeyboardEvent } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { Droppable, Draggable } from '@hello-pangea/dnd'
 import type { SxProps, Theme } from '@mui/material/styles'
 import type { KanbanColumn } from '../../../models/kanbanBoard'
+import type { TaskItem } from '../../../models/task'
 
-import { TaskCard } from './TaskCard'
+import { AssigneeLaneCell } from './AssigneeLaneCell'
 import { COLUMN_WIDTH } from '../boardLayout'
-import { TASK_DND_TYPE, taskCellId } from '../taskCellId'
+import { taskCellId } from '../taskCellId'
 import { UserAvatar } from '../../../components/UserAvatar'
 import type { AssigneeLaneData } from '../../tasks/groupTasksByAssignee'
 
@@ -74,20 +74,6 @@ const styles = {
     width: COLUMN_WIDTH,
     flexShrink: 0,
   },
-  columnDroppable: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 0.75,
-    minHeight: 12,
-    borderRadius: 1.5,
-    transition: 'background-color 0.15s ease, outline-color 0.15s ease',
-  },
-  task: {
-    opacity: 1,
-  },
-  taskDragging: {
-    opacity: 0.85,
-  },
 } satisfies Record<string, SxProps<Theme>>
 
 export function AssigneeLane({
@@ -101,14 +87,10 @@ export function AssigneeLane({
 }: {
   lane: AssigneeLaneData
   columns: KanbanColumn[]
-  onTaskClick: (task: AssigneeLaneData['tasksByColumn'][string][number]) => void
-  onTaskEdit: (task: AssigneeLaneData['tasksByColumn'][string][number]) => void
-  onTaskDelete: (
-    task: AssigneeLaneData['tasksByColumn'][string][number],
-  ) => void
-  onToggleFavorite: (
-    task: AssigneeLaneData['tasksByColumn'][string][number],
-  ) => void
+  onTaskClick: (task: TaskItem) => void
+  onTaskEdit: (task: TaskItem) => void
+  onTaskDelete: (task: TaskItem) => void
+  onToggleFavorite: (task: TaskItem) => void
   // The cell a task is being dragged out of: it stops accepting drops, since
   // order within a cell is computed (pinned → priority → title), not manual.
   dragSourceCellId: string | null
@@ -159,68 +141,24 @@ export function AssigneeLane({
       </Box>
       {!collapsed && (
         <Box sx={styles.columnsRow}>
-          {columns.map((column) => (
-            <Box key={column.id} sx={styles.columnCell}>
-              <Droppable
-                droppableId={taskCellId(lane.assigneeId, column.id)}
-                type={TASK_DND_TYPE}
-                isDropDisabled={
-                  taskCellId(lane.assigneeId, column.id) === dragSourceCellId
-                }
-              >
-                {(dropProvided, dropSnapshot) => (
-                  <Box
-                    ref={dropProvided.innerRef}
-                    {...dropProvided.droppableProps}
-                    role="group"
-                    aria-label={`${lane.assigneeName}, ${column.name}`}
-                    data-testid="assignee-lane-cell"
-                    sx={[
-                      styles.columnDroppable,
-                      dropSnapshot.isDraggingOver && {
-                        bgcolor: 'action.hover',
-                        outline: '2px dashed',
-                        outlineColor: 'primary.main',
-                        outlineOffset: -2,
-                      },
-                    ]}
-                  >
-                    {(lane.tasksByColumn[column.id] ?? []).map(
-                      (task, index) => (
-                        <Draggable
-                          key={task.id}
-                          draggableId={task.id}
-                          index={index}
-                        >
-                          {(dragProvided, dragSnapshot) => (
-                            <Box
-                              ref={dragProvided.innerRef}
-                              {...dragProvided.draggableProps}
-                              {...dragProvided.dragHandleProps}
-                              sx={[
-                                styles.task,
-                                dragSnapshot.isDragging && styles.taskDragging,
-                              ]}
-                            >
-                              <TaskCard
-                                task={task}
-                                isDoneColumn={column.isDone}
-                                onClick={() => onTaskClick(task)}
-                                onEdit={() => onTaskEdit(task)}
-                                onDelete={() => onTaskDelete(task)}
-                                onToggleFavorite={() => onToggleFavorite(task)}
-                              />
-                            </Box>
-                          )}
-                        </Draggable>
-                      ),
-                    )}
-                    {dropProvided.placeholder}
-                  </Box>
-                )}
-              </Droppable>
-            </Box>
-          ))}
+          {columns.map((column) => {
+            const cellId = taskCellId(lane.assigneeId, column.id)
+            return (
+              <Box key={column.id} sx={styles.columnCell}>
+                <AssigneeLaneCell
+                  cellId={cellId}
+                  ariaLabel={`${lane.assigneeName}, ${column.name}`}
+                  tasks={lane.tasksByColumn[column.id] ?? []}
+                  isDoneColumn={column.isDone}
+                  isDropDisabled={cellId === dragSourceCellId}
+                  onTaskClick={onTaskClick}
+                  onTaskEdit={onTaskEdit}
+                  onTaskDelete={onTaskDelete}
+                  onToggleFavorite={onToggleFavorite}
+                />
+              </Box>
+            )
+          })}
         </Box>
       )}
     </Box>

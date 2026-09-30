@@ -26,7 +26,8 @@ import { FilterBar } from '../features/kanban/components/FilterBar'
 import { TaskListView } from '../features/kanban/components/TaskListView'
 import { TaskFormDialog } from '../features/kanban/components/TaskFormDialog'
 import { TaskDetailDrawer } from '../features/kanban/components/TaskDetailDrawer'
-import { ConfirmDialog } from '../components/ConfirmDialog'
+import { DeleteTaskDialog } from '../features/kanban/components/DeleteTaskDialog'
+import { TaskResultCount } from '../features/kanban/components/TaskResultCount'
 import type { TaskItem } from '../models/task'
 
 type FormState = { task?: TaskItem; defaultColumnId: string }
@@ -130,12 +131,6 @@ export function KanbanBoardPage() {
     closeTask()
   }
 
-  function handleConfirmDelete() {
-    if (!deleteTarget) return
-    deleteTask(deleteTarget.id)
-    setDeleteTarget(null)
-  }
-
   return (
     <AppLayout user={user}>
       <Box sx={styles.root} data-testid="kanban-board-page">
@@ -192,13 +187,10 @@ export function KanbanBoardPage() {
               users={users}
             />
             {hasActiveFilters(filters) && (
-              <Typography
-                variant="secondaryText"
-                data-testid="kanban-board-page-result-count"
-              >
-                {listViewTasks.length} task
-                {listViewTasks.length === 1 ? '' : 's'} found
-              </Typography>
+              <TaskResultCount
+                count={listViewTasks.length}
+                testId="kanban-board-page-result-count"
+              />
             )}
             <TaskListView
               tasks={listViewTasks}
@@ -235,30 +227,24 @@ export function KanbanBoardPage() {
       />
 
       <TaskDetailDrawer
-        open={!!detailTask}
         task={detailTask}
-        column={columns.find((c) => c.id === detailTask?.columnId)}
-        assignee={users.find((u) => u.id === detailTask?.assigneeId)}
-        creator={users.find((u) => u.id === detailTask?.createdById)}
+        columns={columns}
         users={users}
         currentUser={user}
         onClose={closeTask}
-        onEdit={() => detailTask && handleEditTask(detailTask)}
-        onDelete={() => detailTask && handleDeleteTask(detailTask)}
-        onToggleFavorite={() => detailTask && toggleFavorite(detailTask)}
+        onEdit={handleEditTask}
+        onDelete={handleDeleteTask}
+        onToggleFavorite={toggleFavorite}
       />
 
-      {deleteTarget && (
-        <ConfirmDialog
-          open
-          title="Delete this task?"
-          description={`This action can't be undone. "${deleteTarget.title}" will be permanently removed.`}
-          confirmLabel="Delete"
-          destructive
-          onConfirm={handleConfirmDelete}
-          onCancel={() => setDeleteTarget(null)}
-        />
-      )}
+      <DeleteTaskDialog
+        task={deleteTarget}
+        onConfirm={(task) => {
+          deleteTask(task.id)
+          setDeleteTarget(null)
+        }}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </AppLayout>
   )
 }

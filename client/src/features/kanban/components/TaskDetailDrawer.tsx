@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useState } from 'react'
 import Drawer from '@mui/material/Drawer'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -11,42 +11,21 @@ import CloseIcon from '@mui/icons-material/Close'
 import LinkIcon from '@mui/icons-material/Link'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
-import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined'
-import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined'
-import { getDueChip } from '../../tasks/taskDisplay'
-import { UserAvatar } from '../../../components/UserAvatar'
-import { useAttachments } from '../useAttachments'
 import type { TaskItem } from '../../../models/task'
 import type { KanbanColumn } from '../../../models/kanbanBoard'
 import type { UserDto } from '../../../models/user'
 import { CommentThread } from './CommentThread'
-import { ImagePreviewDialog } from './ImagePreviewDialog'
 import { FavoriteToggle } from './FavoriteToggle'
-import { PriorityChip } from './PriorityChip'
+import { TaskDetailMeta } from './TaskDetailMeta'
+import { TaskAttachmentsSection } from './TaskAttachmentsSection'
 import { testIdProps } from '../../../utils/testIdProps'
 
 const styles = {
-  metaRow: {
-    display: 'grid',
-    gridTemplateColumns: '120px 1fr',
-    alignItems: 'center',
-    gap: 1,
-    px: 2,
-    py: 1.25,
-    borderBottom: 1,
-    borderColor: 'divider',
-    '&:last-of-type': { borderBottom: 0 },
-  },
   label: {
     fontSize: 12,
     fontWeight: 700,
     color: 'text.secondary',
     textTransform: 'uppercase',
-  },
-  metaValue: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 1,
   },
   root: {
     width: { xs: '100vw', sm: 640 },
@@ -84,26 +63,6 @@ const styles = {
   title: {
     lineHeight: 1.3,
   },
-  metaTable: {
-    border: 1,
-    borderColor: 'divider',
-    borderRadius: 1.5,
-    overflow: 'hidden',
-  },
-  metaText: {
-    fontSize: 13,
-    fontWeight: 600,
-  },
-  priorityChip: {
-    px: 1.25,
-  },
-  dueIcon: {
-    fontSize: 15,
-  },
-  noDueDate: {
-    fontSize: 13,
-    color: 'text.disabled',
-  },
   body: {
     flexGrow: 1,
     overflowY: 'auto',
@@ -131,31 +90,6 @@ const styles = {
     lineHeight: 1.6,
     whiteSpace: 'pre-wrap',
   },
-  noAttachments: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 1,
-    color: 'text.disabled',
-  },
-  noAttachmentsIcon: {
-    fontSize: 18,
-  },
-  noAttachmentsText: {
-    fontSize: 13,
-  },
-  attachments: {
-    display: 'flex',
-    gap: 1,
-    flexWrap: 'wrap',
-  },
-  attachment: {
-    width: 120,
-    height: 90,
-    borderRadius: 1,
-    objectFit: 'cover',
-    bgcolor: 'background.default',
-    cursor: 'pointer',
-  },
   footer: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -177,31 +111,9 @@ const styles = {
   },
 } satisfies Record<string, SxProps<Theme>>
 
-function MetaRow({
-  label,
-  testId,
-  children,
-}: {
-  label: string
-  testId: string
-  children: ReactNode
-}) {
-  return (
-    <Box sx={styles.metaRow}>
-      <Typography sx={styles.label}>{label}</Typography>
-      <Box sx={styles.metaValue} data-testid={testId}>
-        {children}
-      </Box>
-    </Box>
-  )
-}
-
 export function TaskDetailDrawer({
-  open,
   task,
-  column,
-  assignee,
-  creator,
+  columns,
   users,
   currentUser,
   onClose,
@@ -209,30 +121,27 @@ export function TaskDetailDrawer({
   onDelete,
   onToggleFavorite,
 }: {
-  open: boolean
   task: TaskItem | null
-  column: KanbanColumn | undefined
+  columns: KanbanColumn[]
   users: UserDto[]
   currentUser: UserDto
-  assignee: UserDto | undefined
-  creator: UserDto | undefined
   onClose: () => void
-  onEdit: () => void
-  onDelete: () => void
-  onToggleFavorite: () => void
+  onEdit: (task: TaskItem) => void
+  onDelete: (task: TaskItem) => void
+  onToggleFavorite: (task: TaskItem) => void
 }) {
-  const { attachments } = useAttachments(task?.id ?? '')
-  const [previewIndex, setPreviewIndex] = useState<number | null>(null)
   // Keyed by task id, so "Link copied" resets when another task opens.
   const [copiedTaskId, setCopiedTaskId] = useState<string | null>(null)
 
   if (!task) return null
-  const dueChip = getDueChip(task, column?.isDone ?? false)
+  const column = columns.find((c) => c.id === task.columnId)
+  const assignee = users.find((u) => u.id === task.assigneeId)
+  const creator = users.find((u) => u.id === task.createdById)
 
   return (
     <Drawer
       anchor="right"
-      open={open}
+      open
       onClose={onClose}
       slotProps={{ paper: testIdProps('task-detail-drawer') }}
     >
@@ -270,7 +179,7 @@ export function TaskDetailDrawer({
           <Box sx={styles.titleRow}>
             <FavoriteToggle
               isFavorite={task.isFavorite}
-              onToggle={onToggleFavorite}
+              onToggle={() => onToggleFavorite(task)}
               size={24}
             />
             <Typography
@@ -282,54 +191,12 @@ export function TaskDetailDrawer({
             </Typography>
           </Box>
 
-          <Box sx={styles.metaTable}>
-            <MetaRow label="Status" testId="task-detail-drawer-status">
-              <Typography sx={styles.metaText}>
-                {column?.name ?? 'Unknown'}
-              </Typography>
-            </MetaRow>
-            <MetaRow label="Priority" testId="task-detail-drawer-priority">
-              <PriorityChip priority={task.priority} sx={styles.priorityChip} />
-            </MetaRow>
-            <MetaRow label="Assignee" testId="task-detail-drawer-assignee">
-              <UserAvatar
-                id={assignee?.id}
-                name={assignee?.name ?? null}
-                avatarUrl={assignee?.avatarUrl}
-                size="xs"
-              />
-              <Typography sx={styles.metaText}>
-                {assignee?.name ?? 'Unassigned'}
-              </Typography>
-            </MetaRow>
-            <MetaRow label="Created By" testId="task-detail-drawer-creator">
-              <UserAvatar
-                id={creator?.id}
-                name={creator?.name ?? null}
-                avatarUrl={creator?.avatarUrl}
-                size="xs"
-              />
-              <Typography sx={styles.metaText}>
-                {creator?.name ?? 'Unknown'}
-              </Typography>
-            </MetaRow>
-            <MetaRow label="Due Date" testId="task-detail-drawer-due-date">
-              {dueChip ? (
-                <>
-                  <CalendarTodayOutlinedIcon
-                    sx={[styles.dueIcon, { color: dueChip.sx.color }]}
-                  />
-                  <Typography
-                    sx={[styles.metaText, { color: dueChip.sx.color }]}
-                  >
-                    {dueChip.label}
-                  </Typography>
-                </>
-              ) : (
-                <Typography sx={styles.noDueDate}>No due date</Typography>
-              )}
-            </MetaRow>
-          </Box>
+          <TaskDetailMeta
+            task={task}
+            column={column}
+            assignee={assignee}
+            creator={creator}
+          />
         </Box>
 
         <Box sx={styles.body}>
@@ -345,40 +212,7 @@ export function TaskDetailDrawer({
             </Box>
           </Box>
 
-          <Box sx={styles.section}>
-            <Typography sx={styles.label}>
-              Attachments
-              {attachments.length > 0 ? ` (${attachments.length})` : ''}
-            </Typography>
-            {attachments.length === 0 ? (
-              <Box
-                sx={styles.noAttachments}
-                data-testid="task-detail-drawer-no-attachments"
-              >
-                <ImageOutlinedIcon sx={styles.noAttachmentsIcon} />
-                <Typography sx={styles.noAttachmentsText}>
-                  No attachments yet
-                </Typography>
-              </Box>
-            ) : (
-              <Box
-                sx={styles.attachments}
-                data-testid="task-detail-drawer-attachments"
-              >
-                {attachments.map((a, index) => (
-                  <Box
-                    key={a.id}
-                    component="img"
-                    src={a.blobUrl}
-                    alt={a.fileName}
-                    onClick={() => setPreviewIndex(index)}
-                    data-testid="task-detail-drawer-attachment"
-                    sx={styles.attachment}
-                  />
-                ))}
-              </Box>
-            )}
-          </Box>
+          <TaskAttachmentsSection taskId={task.id} />
 
           <Divider />
 
@@ -391,7 +225,7 @@ export function TaskDetailDrawer({
 
         <Box sx={styles.footer}>
           <Button
-            onClick={onDelete}
+            onClick={() => onDelete(task)}
             variant="contained"
             startIcon={<DeleteIcon />}
             data-testid="task-detail-drawer-delete"
@@ -400,7 +234,7 @@ export function TaskDetailDrawer({
             Delete
           </Button>
           <Button
-            onClick={onEdit}
+            onClick={() => onEdit(task)}
             variant="outlined"
             startIcon={<EditIcon />}
             data-testid="task-detail-drawer-edit"
@@ -410,13 +244,6 @@ export function TaskDetailDrawer({
           </Button>
         </Box>
       </Box>
-
-      <ImagePreviewDialog
-        open={previewIndex !== null}
-        slides={attachments.map((a) => ({ src: a.blobUrl, alt: a.fileName }))}
-        index={previewIndex ?? 0}
-        onClose={() => setPreviewIndex(null)}
-      />
     </Drawer>
   )
 }
