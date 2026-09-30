@@ -18,6 +18,7 @@ const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', path: '/dashboard' },
   { id: 'projects', label: 'Projects', path: '/projects' },
   { id: 'my-tasks', label: 'My Tasks', path: '/my-tasks' },
+  { id: 'all-tasks', label: 'All Tasks', path: '/tasks' },
 ] as const
 
 const styles = {
@@ -34,11 +35,13 @@ const styles = {
   brandGroup: {
     display: 'flex',
     alignItems: 'center',
-    gap: { xs: 0.5, sm: 3.5 },
+    gap: { xs: 0.5, md: 3.5 },
     height: '100%',
   },
+  // Hamburger menu below 900px: the full menu (4 links) needs a laptop-wide
+  // header to fit beside the logo and avatar.
   menuButton: {
-    display: { xs: 'inline-flex', sm: 'none' },
+    display: { xs: 'inline-flex', md: 'none' },
   },
   brandRow: {
     display: 'flex',
@@ -52,7 +55,7 @@ const styles = {
     fontWeight: 700,
   },
   navRow: {
-    display: { xs: 'none', sm: 'flex' },
+    display: { xs: 'none', md: 'flex' },
     alignItems: 'center',
     gap: 2.75,
     height: '100%',

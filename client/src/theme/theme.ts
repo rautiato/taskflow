@@ -89,6 +89,15 @@ export const theme = createTheme(baseTheme, {
     pageSubtitle: { ...body1, fontSize: 14, color: secondary },
     sectionTitle: { ...body1, fontSize: 16, fontWeight: 700 },
     secondaryText: { ...body1, fontSize: 13, color: secondary },
+    // Small uppercase heading above a group of fields or content
+    // ("DESCRIPTION", "COMMENTS", a stat tile's name).
+    sectionLabel: {
+      ...body1,
+      fontSize: 12,
+      fontWeight: 700,
+      color: secondary,
+      textTransform: 'uppercase',
+    },
   },
   components: {
     MuiTypography: {
@@ -99,6 +108,7 @@ export const theme = createTheme(baseTheme, {
           pageSubtitle: 'p',
           sectionTitle: 'p',
           secondaryText: 'p',
+          sectionLabel: 'p',
         },
       },
     },

@@ -110,6 +110,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 0,
     createdAt: '2026-09-10T00:00:00.000Z',
     updatedAt: '2026-09-10T00:00:00.000Z',
+    completedAt: null,
   },
   {
     id: 'task-2',
@@ -124,6 +125,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 0,
     createdAt: '2026-09-05T00:00:00.000Z',
     updatedAt: '2026-09-05T00:00:00.000Z',
+    completedAt: null,
   },
   {
     id: 'task-3',
@@ -138,6 +140,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 0,
     createdAt: '2026-09-01T00:00:00.000Z',
     updatedAt: '2026-09-05T00:00:00.000Z',
+    completedAt: '2026-09-05T00:00:00.000Z',
   },
   // Jane Doe (seed-1)
   {
@@ -153,6 +156,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 1,
     createdAt: '2026-09-08T00:00:00.000Z',
     updatedAt: '2026-09-08T00:00:00.000Z',
+    completedAt: null,
   },
   {
     id: 'task-5',
@@ -167,6 +171,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 1,
     createdAt: '2026-09-15T00:00:00.000Z',
     updatedAt: '2026-09-15T00:00:00.000Z',
+    completedAt: null,
   },
   {
     id: 'task-6',
@@ -181,6 +186,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 1,
     createdAt: '2026-08-28T00:00:00.000Z',
     updatedAt: '2026-09-03T00:00:00.000Z',
+    completedAt: '2026-09-03T00:00:00.000Z',
   },
   {
     id: 'task-7',
@@ -195,6 +201,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 2,
     createdAt: '2026-09-12T00:00:00.000Z',
     updatedAt: '2026-09-12T00:00:00.000Z',
+    completedAt: null,
   },
   {
     id: 'task-8',
@@ -209,6 +216,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 3,
     createdAt: '2026-09-12T00:00:00.000Z',
     updatedAt: '2026-09-12T00:00:00.000Z',
+    completedAt: null,
   },
   {
     id: 'task-9',
@@ -223,6 +231,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 2,
     createdAt: '2026-09-14T00:00:00.000Z',
     updatedAt: '2026-09-14T00:00:00.000Z',
+    completedAt: null,
   },
   {
     id: 'task-10',
@@ -237,6 +246,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 2,
     createdAt: '2026-08-20T00:00:00.000Z',
     updatedAt: '2026-09-06T00:00:00.000Z',
+    completedAt: '2026-09-06T00:00:00.000Z',
   },
   // Unassigned
   {
@@ -252,6 +262,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 4,
     createdAt: '2026-09-16T00:00:00.000Z',
     updatedAt: '2026-09-16T00:00:00.000Z',
+    completedAt: null,
   },
   {
     id: 'task-12',
@@ -266,6 +277,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 3,
     createdAt: '2026-09-17T00:00:00.000Z',
     updatedAt: '2026-09-17T00:00:00.000Z',
+    completedAt: null,
   },
   {
     id: 'task-13',
@@ -280,6 +292,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 3,
     createdAt: '2026-09-18T00:00:00.000Z',
     updatedAt: '2026-09-18T18:00:00.000Z',
+    completedAt: '2026-09-18T18:00:00.000Z',
   },
   // ---- Project 2: Mobile App ----
   {
@@ -295,6 +308,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 0,
     createdAt: '2026-09-19T00:00:00.000Z',
     updatedAt: '2026-09-19T00:00:00.000Z',
+    completedAt: null,
   },
   {
     id: 'task-15',
@@ -309,6 +323,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 1,
     createdAt: '2026-09-19T00:00:00.000Z',
     updatedAt: '2026-09-19T00:00:00.000Z',
+    completedAt: null,
   },
   {
     id: 'task-16',
@@ -323,6 +338,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 0,
     createdAt: '2026-09-17T00:00:00.000Z',
     updatedAt: '2026-09-17T00:00:00.000Z',
+    completedAt: null,
   },
   {
     id: 'task-17',
@@ -337,6 +353,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 0,
     createdAt: '2026-09-11T00:00:00.000Z',
     updatedAt: '2026-09-15T00:00:00.000Z',
+    completedAt: '2026-09-15T00:00:00.000Z',
   },
   // ---- Administrator (seed-4) ----
   {
@@ -352,6 +369,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 4,
     createdAt: '2026-09-15T00:00:00.000Z',
     updatedAt: '2026-09-20T00:00:00.000Z',
+    completedAt: null,
   },
   {
     id: 'task-19',
@@ -367,6 +385,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 5,
     createdAt: '2026-09-20T00:00:00.000Z',
     updatedAt: '2026-09-20T00:00:00.000Z',
+    completedAt: null,
   },
   {
     id: 'task-20',
@@ -382,6 +401,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 6,
     createdAt: '2026-09-21T00:00:00.000Z',
     updatedAt: '2026-09-21T00:00:00.000Z',
+    completedAt: null,
   },
   {
     id: 'task-21',
@@ -397,6 +417,7 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 1,
     createdAt: '2026-09-18T00:00:00.000Z',
     updatedAt: '2026-09-18T00:00:00.000Z',
+    completedAt: null,
   },
   {
     id: 'task-22',
@@ -411,5 +432,6 @@ export const SEEDED_TASKS: TaskItem[] = [
     order: 2,
     createdAt: '2026-09-19T00:00:00.000Z',
     updatedAt: '2026-09-19T00:00:00.000Z',
+    completedAt: null,
   },
 ]

@@ -21,12 +21,6 @@ const styles = {
     color: 'inherit',
     textDecoration: 'none',
   },
-  label: {
-    fontSize: 12,
-    fontWeight: 700,
-    color: 'text.secondary',
-    textTransform: 'uppercase',
-  },
   value: {
     fontSize: 30,
     fontWeight: 700,
@@ -76,7 +70,7 @@ export function StatCard({
         sx={styles.link}
         data-testid={`${testId}-link`}
       >
-        <Typography sx={styles.label} data-testid={`${testId}-label`}>
+        <Typography variant="sectionLabel" data-testid={`${testId}-label`}>
           {label}
         </Typography>
         <Typography sx={[styles.value, accent]} data-testid={`${testId}-value`}>

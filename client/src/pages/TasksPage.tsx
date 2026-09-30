@@ -8,27 +8,27 @@ import { AppLayout } from '../features/layout/components/AppLayout'
 import { authService } from '../features/auth/authService'
 import { useUsers } from '../features/auth/useUsers'
 import { useProjects } from '../features/projects/useProjects'
-import { useMyTasks } from '../features/kanban/useMyTasks'
+import { useAllTasks, useMyTasks } from '../features/kanban/useTaskLists'
 import { useKanbanBoard } from '../features/kanban/useKanbanBoard'
 import { sortTasks } from '../features/tasks/sortTasks'
 import {
-  EMPTY_MY_TASKS_FILTERS,
-  hasActiveMyTasksFilters,
-  filterMyTasks,
+  EMPTY_TASK_LIST_FILTERS,
+  hasActiveTaskListFilters,
+  filterTaskList,
   filtersFromSearchParams,
   filtersToSearchParams,
-  type MyTasksFilters,
-} from '../features/tasks/filterMyTasks'
+  type TaskListFilters,
+} from '../features/tasks/taskListFilters'
 import {
   sortFromSearchParams,
   writeSortToSearchParams,
   type SortState,
 } from '../features/tasks/taskListSort'
 import {
-  buildMyTasksLookups,
+  buildTaskListLookups,
   statusOptionsFor,
-} from '../features/tasks/myTasksLookups'
-import { MyTasksFilterBar } from '../features/kanban/components/MyTasksFilterBar'
+} from '../features/tasks/taskListLookups'
+import { TaskListFilterBar } from '../features/kanban/components/TaskListFilterBar'
 import { TaskListView } from '../features/kanban/components/TaskListView'
 import { TaskFormDialog } from '../features/kanban/components/TaskFormDialog'
 import { TaskDetailDrawer } from '../features/kanban/components/TaskDetailDrawer'
@@ -66,7 +66,29 @@ const styles = {
   },
 } satisfies Record<string, SxProps<Theme>>
 
-export function MyTasksPage() {
+export type TasksScope = 'mine' | 'all'
+
+// What differs between My Tasks and All Tasks; everything else is shared.
+const SCOPES = {
+  mine: {
+    title: 'My Tasks',
+    testId: 'my-tasks-page',
+    emptyTitle: 'No tasks assigned to you',
+    emptyDescription:
+      'Tasks assigned to you across every project will show up here.',
+  },
+  all: {
+    title: 'All Tasks',
+    testId: 'all-tasks-page',
+    emptyTitle: 'No tasks yet',
+    emptyDescription: 'Tasks from every project will show up here.',
+  },
+} as const
+
+// My Tasks (scope "mine") and All Tasks (scope "all") are one page: the
+// same filters, table and drawer, over the viewer's tasks or everyone's.
+export function TasksPage({ scope }: { scope: TasksScope }) {
+  const config = SCOPES[scope]
   const user = authService.getSession()
   // Filters, sort and the open task all live in the URL, so any view is
   // linkable — the dashboard tiles link straight to one.
@@ -84,7 +106,7 @@ export function MyTasksPage() {
     setSearchParams(next, { replace })
   }
 
-  function handleFiltersChange(next: MyTasksFilters) {
+  function handleFiltersChange(next: TaskListFilters) {
     // Filters are rewritten; sort and the open task are kept.
     const params = filtersToSearchParams(next)
     writeSortToSearchParams(params, sort)
@@ -110,10 +132,13 @@ export function MyTasksPage() {
 
   const { projects } = useProjects()
   const users = useUsers()
-  const { tasks, columns, boards, isLoading } = useMyTasks(user?.id ?? '')
+  // Both hooks always run (React's rule); only the one for this scope fetches.
+  const mine = useMyTasks(scope === 'mine' ? (user?.id ?? '') : '')
+  const all = useAllTasks(scope === 'all')
+  const { tasks, columns, boards, isLoading } = scope === 'mine' ? mine : all
   // Mutations only — the read query stays disabled (empty projectId). Safe:
   // with no cached board the optimistic updates are no-ops, and every
-  // mutation invalidates My Tasks, so this page still refreshes.
+  // mutation invalidates the task lists, so this page still refreshes.
   const { updateTask, toggleFavorite, deleteTask } = useKanbanBoard('')
 
   if (!user) {
@@ -124,22 +149,36 @@ export function MyTasksPage() {
     projectIdByColumnId,
     projectNameByColumnId,
     statusNameByColumnId,
-    projectsWithMyTasks,
-    creatorsWithMyTasks,
-  } = buildMyTasksLookups({ tasks, columns, boards, projects, users })
+    projectStatusByColumnId,
+    projectsWithTasks,
+    creatorsWithTasks,
+    assigneesWithTasks,
+  } = buildTaskListLookups({ tasks, columns, boards, projects, users })
   const statusOptions = statusOptionsFor(
     columns,
     projectIdByColumnId,
     filters.projectIds,
   )
   const visibleTasks = sortTasks(
-    filterMyTasks(tasks, filters, projectIdByColumnId, statusNameByColumnId),
+    filterTaskList(
+      tasks,
+      filters,
+      projectIdByColumnId,
+      statusNameByColumnId,
+      projectStatusByColumnId,
+    ),
   )
   const detailTask = tasks.find((t) => t.id === openTaskId) ?? null
 
+  // Hidden columns are unused, so they aren't offered. The task's own column
+  // is kept, so a task already in one keeps its status until it's moved.
   function columnsForTask(task: TaskItem): KanbanColumn[] {
     const taskColumn = columns.find((c) => c.id === task.columnId)
-    return columns.filter((c) => c.boardId === taskColumn?.boardId)
+    return columns.filter(
+      (c) =>
+        c.boardId === taskColumn?.boardId &&
+        (c.isVisible || c.id === task.columnId),
+    )
   }
 
   function projectIdForTask(task: TaskItem): string {
@@ -158,44 +197,45 @@ export function MyTasksPage() {
 
   return (
     <AppLayout user={user}>
-      <Box sx={styles.root} data-testid="my-tasks-page">
-        <Typography variant="pageTitle" data-testid="my-tasks-page-title">
-          My Tasks
+      <Box sx={styles.root} data-testid={config.testId}>
+        <Typography variant="pageTitle" data-testid={`${config.testId}-title`}>
+          {config.title}
         </Typography>
 
         {isLoading ? (
           <Typography
             color="text.secondary"
-            data-testid="my-tasks-page-loading"
+            data-testid={`${config.testId}-loading`}
           >
             Loading…
           </Typography>
         ) : tasks.length === 0 ? (
           <EmptyState
             icon={<InboxOutlinedIcon sx={styles.emptyIcon} />}
-            title="No tasks assigned to you"
-            description="Tasks assigned to you across every project will show up here."
+            title={config.emptyTitle}
+            description={config.emptyDescription}
           />
         ) : (
           <Box sx={styles.content}>
-            <MyTasksFilterBar
+            <TaskListFilterBar
               filters={filters}
               onChange={handleFiltersChange}
-              projects={projectsWithMyTasks}
+              projects={projectsWithTasks}
               statusOptions={statusOptions}
-              creators={creatorsWithMyTasks}
+              creators={creatorsWithTasks}
+              assignees={scope === 'all' ? assigneesWithTasks : undefined}
             />
-            {hasActiveMyTasksFilters(filters) && (
+            {hasActiveTaskListFilters(filters) && (
               <Box sx={styles.resultBar}>
                 <TaskResultCount
                   count={visibleTasks.length}
-                  testId="my-tasks-page-result-count"
+                  testId={`${config.testId}-result-count`}
                 />
                 <Link
                   component="button"
-                  onClick={() => handleFiltersChange(EMPTY_MY_TASKS_FILTERS)}
+                  onClick={() => handleFiltersChange(EMPTY_TASK_LIST_FILTERS)}
                   sx={styles.clearFilters}
-                  data-testid="my-tasks-page-clear-filters"
+                  data-testid={`${config.testId}-clear-filters`}
                 >
                   Clear filters
                 </Link>
@@ -206,6 +246,7 @@ export function MyTasksPage() {
               columns={columns}
               users={users}
               projectNameByColumnId={projectNameByColumnId}
+              projectStatusByColumnId={projectStatusByColumnId}
               onTaskClick={openTask}
               sort={sort}
               onSortChange={handleSortChange}

@@ -23,6 +23,7 @@ import {
 import { KanbanView } from '../features/kanban/components/KanbanView'
 import { ManageColumnsButton } from '../features/kanban/components/ManageColumnsButton'
 import { FilterBar } from '../features/kanban/components/FilterBar'
+import { NewTaskButton } from '../features/kanban/components/NewTaskButton'
 import { TaskListView } from '../features/kanban/components/TaskListView'
 import { TaskFormDialog } from '../features/kanban/components/TaskFormDialog'
 import { TaskDetailDrawer } from '../features/kanban/components/TaskDetailDrawer'
@@ -43,6 +44,25 @@ const styles = {
     flexDirection: 'column',
     gap: 1.5,
   },
+  // New Task sits in the header row on phones and tablets, beside the view
+  // toggle (the filters fill the width there); on desktops it sits at the
+  // end of the filter row.
+  newTaskInHeader: {
+    display: { xs: 'inline-flex', md: 'none' },
+    ml: 'auto',
+  },
+  newTaskInToolbar: {
+    display: { xs: 'none', md: 'inline-flex' },
+  },
+  listToolbar: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: 1.5,
+  },
+  filters: {
+    flexGrow: 1,
+    minWidth: 0,
+  },
 } satisfies Record<string, SxProps<Theme>>
 
 export function KanbanBoardPage() {
@@ -60,6 +80,10 @@ export function KanbanBoardPage() {
 
   const { projects, isLoading: projectsLoading } = useProjects()
   const users = useUsers()
+  // Load the board only once the project is known to exist: loading a board
+  // creates a default one, which an unknown id (a typo, a stale link) must
+  // never get.
+  const projectExists = projects.some((p) => p.id === projectId)
   const {
     board,
     columns,
@@ -74,7 +98,7 @@ export function KanbanBoardPage() {
     showColumn,
     deleteColumn,
     createColumn,
-  } = useKanbanBoard(projectId ?? '')
+  } = useKanbanBoard(projectExists ? (projectId ?? '') : '')
 
   if (!user) {
     return <Navigate to="/login" replace />
@@ -121,6 +145,10 @@ export function KanbanBoardPage() {
     setSearchParams({}, { replace: true })
   }
 
+  function openNewTask() {
+    setFormState({ defaultColumnId: visibleColumns[0]?.id ?? '' })
+  }
+
   function handleEditTask(task: TaskItem) {
     setFormState({ task, defaultColumnId: task.columnId })
     closeTask()
@@ -136,14 +164,12 @@ export function KanbanBoardPage() {
       <Box sx={styles.root} data-testid="kanban-board-page">
         <BoardHeader
           projectName={project.name}
+          isProjectClosed={project.status === 'Closed'}
           taskCount={tasks.length}
           view={view}
           onViewChange={setView}
-          onNewTask={() =>
-            setFormState({ defaultColumnId: visibleColumns[0]?.id ?? '' })
-          }
-          columnsMenu={
-            view === 'kanban' && (
+          actions={
+            view === 'kanban' ? (
               <ManageColumnsButton
                 columns={columns}
                 taskCountByColumn={taskCountByColumn}
@@ -153,6 +179,11 @@ export function KanbanBoardPage() {
                 onCreateColumn={(name) => {
                   if (board) createColumn(board.id, name)
                 }}
+              />
+            ) : (
+              <NewTaskButton
+                onClick={openNewTask}
+                sx={styles.newTaskInHeader}
               />
             )
           }
@@ -180,12 +211,20 @@ export function KanbanBoardPage() {
           />
         ) : (
           <Box sx={styles.list} data-testid="kanban-board-page-list">
-            <FilterBar
-              filters={filters}
-              onChange={setFilters}
-              columns={visibleColumns}
-              users={users}
-            />
+            <Box sx={styles.listToolbar}>
+              <Box sx={styles.filters}>
+                <FilterBar
+                  filters={filters}
+                  onChange={setFilters}
+                  columns={visibleColumns}
+                  users={users}
+                />
+              </Box>
+              <NewTaskButton
+                onClick={openNewTask}
+                sx={styles.newTaskInToolbar}
+              />
+            </Box>
             {hasActiveFilters(filters) && (
               <TaskResultCount
                 count={listViewTasks.length}

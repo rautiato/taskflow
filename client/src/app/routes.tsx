@@ -34,8 +34,8 @@ const KanbanBoardPage = lazy(() =>
     default: m.KanbanBoardPage,
   })),
 )
-const MyTasksPage = lazy(() =>
-  import('../pages/MyTasksPage').then((m) => ({ default: m.MyTasksPage })),
+const TasksPage = lazy(() =>
+  import('../pages/TasksPage').then((m) => ({ default: m.TasksPage })),
 )
 const ProfilePage = lazy(() =>
   import('../pages/ProfilePage').then((m) => ({ default: m.ProfilePage })),
@@ -64,7 +64,8 @@ export function AppRoutes() {
             path="/projects/:projectId/board"
             element={<KanbanBoardPage />}
           />
-          <Route path="/my-tasks" element={<MyTasksPage />} />
+          <Route path="/my-tasks" element={<TasksPage scope="mine" />} />
+          <Route path="/tasks" element={<TasksPage scope="all" />} />
           <Route path="/tasks/:taskId" element={<TaskRedirectPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />

@@ -7,12 +7,14 @@ declare module '@mui/material/styles' {
     pageSubtitle: CSSProperties
     sectionTitle: CSSProperties
     secondaryText: CSSProperties
+    sectionLabel: CSSProperties
   }
   interface TypographyVariantsOptions {
     pageTitle?: CSSProperties
     pageSubtitle?: CSSProperties
     sectionTitle?: CSSProperties
     secondaryText?: CSSProperties
+    sectionLabel?: CSSProperties
   }
   interface TypeBackground {
     subtle: string
@@ -25,5 +27,6 @@ declare module '@mui/material/Typography' {
     pageSubtitle: true
     sectionTitle: true
     secondaryText: true
+    sectionLabel: true
   }
 }

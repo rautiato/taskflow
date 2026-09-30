@@ -9,7 +9,9 @@ import {
 import { loadSeededData } from '../../services/localStorageSeed'
 import { writeJson } from '../../services/storage'
 import type { ProjectStats } from '../../models/project'
-import { matchesDueFilter } from '../tasks/filterMyTasks'
+import { matchesDueFilter } from '../tasks/taskListFilters'
+import { getDoneColumnIds } from '../tasks/taskDisplay'
+import { nextCompletedAt } from '../tasks/taskCompletion'
 import { attachmentService } from './attachmentService'
 import { commentService } from './commentService'
 
@@ -27,8 +29,39 @@ function loadColumns(): KanbanColumn[] {
   return loadSeededData(COLUMNS_KEY, KANBAN_SEED_VERSION, SEEDED_COLUMNS)
 }
 
+// NO-BACKEND: tasks saved before completedAt existed don't have it.
+type StoredTask = Omit<TaskItem, 'completedAt'> & {
+  completedAt?: string | null
+}
+
 function loadTasks(): TaskItem[] {
-  return loadSeededData(TASKS_KEY, KANBAN_SEED_VERSION, SEEDED_TASKS)
+  const tasks: StoredTask[] = loadSeededData(
+    TASKS_KEY,
+    KANBAN_SEED_VERSION,
+    SEEDED_TASKS,
+  )
+  // NO-BACKEND: fill in completedAt once for tasks saved without it, using
+  // updatedAt as the best available guess; a backend would do this in a
+  // one-off data migration instead.
+  if (tasks.every((t) => t.completedAt !== undefined)) {
+    return tasks as TaskItem[]
+  }
+  const doneColumnIds = getDoneColumnIds(loadColumns())
+  const migrated: TaskItem[] = tasks.map((t) => ({
+    ...t,
+    completedAt:
+      t.completedAt !== undefined
+        ? t.completedAt
+        : doneColumnIds.has(t.columnId)
+          ? t.updatedAt
+          : null,
+  }))
+  saveTasks(migrated)
+  return migrated
+}
+
+function isDoneColumnId(columnId: string): boolean {
+  return loadColumns().some((c) => c.id === columnId && c.isDone)
 }
 
 function saveTasks(tasks: TaskItem[]): void {
@@ -111,6 +144,7 @@ function createTask(
     order,
     createdAt: now,
     updatedAt: now,
+    completedAt: nextCompletedAt(null, isDoneColumnId(input.columnId), now),
   }
   saveTasks([...allTasks, task])
   return task
@@ -119,10 +153,16 @@ function createTask(
 function updateTask(taskId: string, input: TaskInput): TaskItem {
   const allTasks = loadTasks()
   const now = new Date().toISOString()
+  const isDone = isDoneColumnId(input.columnId)
   let updated: TaskItem | undefined
   const nextTasks = allTasks.map((t) => {
     if (t.id !== taskId) return t
-    updated = { ...t, ...input, updatedAt: now }
+    updated = {
+      ...t,
+      ...input,
+      updatedAt: now,
+      completedAt: nextCompletedAt(t.completedAt, isDone, now),
+    }
     return updated
   })
   if (!updated) {
@@ -161,6 +201,9 @@ function reorderColumns(
 function hideColumn(columnId: string): void {
   const allColumns = loadColumns()
   const allTasks = loadTasks()
+  if (allColumns.find((c) => c.id === columnId)?.isDone) {
+    throw new Error('The Done column cannot be hidden.')
+  }
   const hasTasks = allTasks.some((t) => t.columnId === columnId)
   if (hasTasks) {
     throw new Error('Cannot hide a column that still has tasks.')
@@ -180,6 +223,9 @@ function showColumn(columnId: string): void {
 function deleteColumn(columnId: string): void {
   const allColumns = loadColumns()
   const allTasks = loadTasks()
+  if (allColumns.find((c) => c.id === columnId)?.isDone) {
+    throw new Error('The Done column cannot be deleted.')
+  }
   const hasTasks = allTasks.some((t) => t.columnId === columnId)
   if (hasTasks) {
     throw new Error('Cannot delete a column that still has tasks.')
@@ -190,6 +236,11 @@ function deleteColumn(columnId: string): void {
 function createColumn(boardId: string, name: string): KanbanColumn {
   const allColumns = loadColumns()
   const boardColumns = allColumns.filter((c) => c.boardId === boardId)
+  // Same rule as the Manage Columns menu: names are unique per board,
+  // ignoring case (hidden columns included).
+  if (boardColumns.some((c) => c.name.toLowerCase() === name.toLowerCase())) {
+    throw new Error('A column with this name already exists.')
+  }
   const order = boardColumns.length
     ? Math.max(...boardColumns.map((c) => c.order)) + 1
     : 0
@@ -209,14 +260,18 @@ function getColumnsForProject(projectId: string): KanbanColumn[] {
   return getBoardForProject(projectId).columns.filter((c) => c.isVisible)
 }
 
-function getMyTasksData(assigneeId: string): {
+// Tasks across every project — all of them, or only one user's.
+function getTaskListData(assigneeId?: string): {
   tasks: TaskItem[]
   columns: KanbanColumn[]
   boards: KanbanBoard[]
 } {
   const boards = loadBoards()
   const columns = loadColumns()
-  const tasks = loadTasks().filter((t) => t.assigneeId === assigneeId)
+  const allTasks = loadTasks()
+  const tasks = assigneeId
+    ? allTasks.filter((t) => t.assigneeId === assigneeId)
+    : allTasks
   return { tasks, columns, boards }
 }
 
@@ -268,7 +323,7 @@ export const kanbanService = {
   getBoardForProject,
   getProjectStats,
   getProjectIdForTask,
-  getMyTasksData,
+  getTaskListData,
   createTask,
   updateTask,
   deleteTask,

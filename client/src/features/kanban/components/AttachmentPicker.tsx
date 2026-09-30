@@ -33,12 +33,6 @@ const styles = {
   rootDragOver: {
     outlineStyle: 'dashed',
   },
-  label: {
-    fontSize: 12,
-    fontWeight: 700,
-    color: 'text.secondary',
-    textTransform: 'uppercase',
-  },
   item: {
     display: 'flex',
     alignItems: 'center',
@@ -217,7 +211,7 @@ export function AttachmentPicker({
         data-testid="attachment-picker"
         sx={[styles.root, isDragOver && styles.rootDragOver]}
       >
-        <Typography sx={styles.label}>Attachment</Typography>
+        <Typography variant="sectionLabel">Attachment</Typography>
 
         {attachments.map((a, index) => (
           <Box

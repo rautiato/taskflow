@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import type { SxProps, Theme } from '@mui/material/styles'
 import { testIdProps } from '../../../utils/testIdProps'
-import { MAX_COMMENT_LENGTH } from '../commentLimits'
+import { MAX_COMMENT_LENGTH } from '../commentService'
 
 const COUNTER_WARNING_THRESHOLD = MAX_COMMENT_LENGTH - 500
 

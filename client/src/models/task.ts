@@ -13,4 +13,6 @@ export interface TaskItem {
   order: number
   createdAt: string
   updatedAt: string
+  // When the task last moved into Done; null while it's open.
+  completedAt: string | null
 }

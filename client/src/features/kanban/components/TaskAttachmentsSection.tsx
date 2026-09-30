@@ -12,12 +12,6 @@ const styles = {
     flexDirection: 'column',
     gap: 1,
   },
-  label: {
-    fontSize: 12,
-    fontWeight: 700,
-    color: 'text.secondary',
-    textTransform: 'uppercase',
-  },
   noAttachments: {
     display: 'flex',
     alignItems: 'center',
@@ -51,7 +45,7 @@ export function TaskAttachmentsSection({ taskId }: { taskId: string }) {
 
   return (
     <Box sx={styles.section}>
-      <Typography sx={styles.label}>
+      <Typography variant="sectionLabel">
         Attachments
         {attachments.length > 0 ? ` (${attachments.length})` : ''}
       </Typography>

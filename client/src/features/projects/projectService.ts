@@ -9,6 +9,10 @@ import { kanbanService } from '../kanban/kanbanService'
 
 const PROJECTS_KEY = 'taskflow.projects'
 
+// Long enough for real names, short enough that task lists and filters can
+// show a name in full (wrapping to at most two lines).
+export const PROJECT_NAME_MAX_LENGTH = 40
+
 function loadProjects(): StoredProject[] {
   return loadSeededData(PROJECTS_KEY, PROJECTS_SEED_VERSION, SEEDED_PROJECTS)
 }
@@ -57,6 +61,11 @@ function initialsFor(name: string): string {
 type ProjectInput = { name: string }
 
 function createProject(input: ProjectInput): Project {
+  if (input.name.length > PROJECT_NAME_MAX_LENGTH) {
+    throw new Error(
+      `Project names can be up to ${PROJECT_NAME_MAX_LENGTH} characters.`,
+    )
+  }
   const all = loadProjects()
   const project: StoredProject = {
     id: crypto.randomUUID(),

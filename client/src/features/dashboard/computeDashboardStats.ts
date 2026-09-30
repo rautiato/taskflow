@@ -2,7 +2,7 @@ import type { TaskItem, TaskPriority } from '../../models/task'
 import type { KanbanBoard, KanbanColumn } from '../../models/kanbanBoard'
 import type { Project } from '../../models/project'
 import { getDoneColumnIds } from '../tasks/taskDisplay'
-import { matchesDueFilter } from '../tasks/filterMyTasks'
+import { matchesDueFilter } from '../tasks/taskListFilters'
 
 export type DashboardStats = {
   open: number

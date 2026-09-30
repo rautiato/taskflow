@@ -13,14 +13,18 @@ import {
 import type { TaskItem } from '../../../models/task'
 import type { KanbanColumn } from '../../../models/kanbanBoard'
 import type { UserDto } from '../../../models/user'
+import type { ProjectStatus } from '../../../models/project'
 import { TaskListCard } from './TaskListCard'
 import { TaskListRow } from './TaskListRow'
 
 const BASE_COLUMN_TEMPLATE = '32px 2.2fr 0.9fr 0.9fr 0.9fr 0.9fr 1.3fr 84px'
+// Project gets the room the Due date column doesn't need: due chips are
+// short, but never narrower than the longest one ("Completed Sep 18").
 const PROJECT_COLUMN_TEMPLATE =
-  '32px 1.8fr 1fr 0.8fr 0.8fr 0.8fr 0.8fr 1.2fr 84px'
-// Tablets can be narrower than the table; below these widths it scrolls
-// sideways inside its own box. Phones get cards instead (see below).
+  '32px 1.8fr 1.3fr 0.8fr 0.8fr 0.8fr 0.8fr minmax(130px, 0.9fr) 84px'
+// A laptop window can be narrower than the table; below these widths it
+// scrolls sideways inside its own box. Phones and tablets get cards
+// instead (see below).
 const BASE_MIN_WIDTH = 900
 const PROJECT_MIN_WIDTH = 1000
 
@@ -80,6 +84,7 @@ export function TaskListView({
   onTaskDelete,
   onToggleFavorite,
   projectNameByColumnId,
+  projectStatusByColumnId,
   sort: sortProp,
   onSortChange,
 }: {
@@ -91,6 +96,8 @@ export function TaskListView({
   onTaskDelete: (task: TaskItem) => void
   onToggleFavorite: (task: TaskItem) => void
   projectNameByColumnId?: Record<string, string>
+  // Marks rows whose project is closed; omit it to show no marks.
+  projectStatusByColumnId?: Record<string, ProjectStatus>
   // Pass both to let the page own the sort (e.g. keep it in the URL);
   // omit them and the list keeps its own sort state.
   sort?: SortState
@@ -99,10 +106,11 @@ export function TaskListView({
   const [localSort, setLocalSort] = useState<SortState>(null)
   const sort = sortProp !== undefined ? sortProp : localSort
   const setSort = onSortChange ?? setLocalSort
-  // Phones get one card per task instead of the table; the cards follow
-  // the same sort, there's just no header to change it from.
+  // Phones and tablets (below 900px) get one card per task instead of the
+  // table, which needs more width than they have; the cards follow the
+  // same sort, there's just no header to change it from.
   const theme = useTheme()
-  const isPhone = useMediaQuery(theme.breakpoints.down('sm'))
+  const showCards = useMediaQuery(theme.breakpoints.down('md'))
   const columnById = new Map(columns.map((c) => [c.id, c]))
   const userById = new Map(users.map((u) => [u.id, u]))
 
@@ -136,7 +144,7 @@ export function TaskListView({
     </Box>
   )
 
-  if (isPhone) {
+  if (showCards) {
     return (
       <Box data-testid="task-list-view" sx={styles.cardList}>
         {displayedTasks.length === 0
@@ -153,6 +161,9 @@ export function TaskListView({
                     task.assigneeId ? userById.get(task.assigneeId) : undefined
                   }
                   projectName={projectNameByColumnId?.[task.columnId]}
+                  isProjectClosed={
+                    projectStatusByColumnId?.[task.columnId] === 'Closed'
+                  }
                   onClick={() => onTaskClick(task)}
                   onEdit={() => onTaskEdit(task)}
                   onDelete={() => onTaskDelete(task)}
@@ -208,6 +219,9 @@ export function TaskListView({
                   projectNameByColumnId
                     ? (projectNameByColumnId[task.columnId] ?? 'Unknown')
                     : undefined
+                }
+                isProjectClosed={
+                  projectStatusByColumnId?.[task.columnId] === 'Closed'
                 }
                 columnTemplate={columnTemplate}
                 onClick={() => onTaskClick(task)}

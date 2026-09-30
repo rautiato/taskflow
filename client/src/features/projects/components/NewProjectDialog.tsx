@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import type { SxProps, Theme } from '@mui/material/styles'
 import { testIdProps } from '../../../utils/testIdProps'
+import { PROJECT_NAME_MAX_LENGTH } from '../projectService'
 
 const styles = {
   title: {
@@ -82,7 +83,13 @@ export function NewProjectDialog({
               handleCreate()
             }
           }}
-          slotProps={{ htmlInput: testIdProps('new-project-dialog-name') }}
+          helperText={`${name.length} / ${PROJECT_NAME_MAX_LENGTH}`}
+          slotProps={{
+            htmlInput: {
+              ...testIdProps('new-project-dialog-name'),
+              maxLength: PROJECT_NAME_MAX_LENGTH,
+            },
+          }}
         />
       </DialogContent>
       <DialogActions sx={styles.actions}>
