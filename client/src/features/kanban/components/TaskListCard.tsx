@@ -10,6 +10,7 @@ import { PRIORITY_STYLES, getDueChip } from '../../tasks/taskDisplay'
 import type { TaskItem } from '../../../models/task'
 import type { UserDto } from '../../../models/user'
 import { FavoriteToggle } from './FavoriteToggle'
+import { ClosedProjectTag } from './ClosedProjectTag'
 
 const styles = {
   root: {
@@ -79,6 +80,7 @@ export function TaskListCard({
   statusName,
   assignee,
   projectName,
+  isProjectClosed = false,
   onClick,
   onEdit,
   onDelete,
@@ -89,6 +91,7 @@ export function TaskListCard({
   statusName: string
   assignee?: UserDto
   projectName?: string
+  isProjectClosed?: boolean
   onClick: () => void
   onEdit: () => void
   onDelete: () => void
@@ -147,6 +150,8 @@ export function TaskListCard({
               </>
             )}
           </Typography>
+          {/* Outside the truncated text, so it stays visible. */}
+          {isProjectClosed && <ClosedProjectTag />}
         </Box>
       </Box>
       <Box sx={styles.actions}>

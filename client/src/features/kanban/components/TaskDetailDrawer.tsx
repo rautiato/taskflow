@@ -21,12 +21,6 @@ import { TaskAttachmentsSection } from './TaskAttachmentsSection'
 import { testIdProps } from '../../../utils/testIdProps'
 
 const styles = {
-  label: {
-    fontSize: 12,
-    fontWeight: 700,
-    color: 'text.secondary',
-    textTransform: 'uppercase',
-  },
   root: {
     width: { xs: '100vw', sm: 640 },
     height: '100%',
@@ -201,7 +195,7 @@ export function TaskDetailDrawer({
 
         <Box sx={styles.body}>
           <Box sx={styles.section}>
-            <Typography sx={styles.label}>Description</Typography>
+            <Typography variant="sectionLabel">Description</Typography>
             <Box sx={styles.descriptionBox}>
               <Typography
                 sx={styles.description}

@@ -8,6 +8,16 @@ import { writeJson } from '../../services/storage'
 
 const COMMENTS_KEY = 'taskflow.comments'
 
+export const MAX_COMMENT_LENGTH = 32_767
+
+function assertValidLength(content: string): void {
+  if (content.length > MAX_COMMENT_LENGTH) {
+    throw new Error(
+      `Comments can be up to ${MAX_COMMENT_LENGTH.toLocaleString()} characters.`,
+    )
+  }
+}
+
 function loadComments(): Comment[] {
   return loadSeededData(COMMENTS_KEY, COMMENTS_SEED_VERSION, SEEDED_COMMENTS)
 }
@@ -29,6 +39,7 @@ type CommentInput = {
 }
 
 function createComment(input: CommentInput): Comment {
+  assertValidLength(input.content)
   const allComments = loadComments()
   const comment: Comment = {
     id: crypto.randomUUID(),
@@ -45,6 +56,7 @@ type CommentUpdateInput = {
 }
 
 function updateComment({ id, content }: CommentUpdateInput): Comment {
+  assertValidLength(content)
   const allComments = loadComments()
   const index = allComments.findIndex((c) => c.id === id)
   if (index === -1) throw new Error(`Comment not found: ${id}`)

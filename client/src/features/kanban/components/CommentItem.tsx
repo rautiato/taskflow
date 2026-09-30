@@ -13,7 +13,7 @@ import type { Comment } from '../../../models/comment'
 import type { UserDto } from '../../../models/user'
 import { formatRelativeTime } from '../../../utils/formatRelativeTime'
 import { testIdProps } from '../../../utils/testIdProps'
-import { MAX_COMMENT_LENGTH } from '../commentLimits'
+import { MAX_COMMENT_LENGTH } from '../commentService'
 
 const styles = {
   root: {

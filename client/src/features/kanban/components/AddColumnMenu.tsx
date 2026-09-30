@@ -100,10 +100,9 @@ export function AddColumnMenu({
       slotProps={{ paper: testIdProps('add-column-menu') }}
     >
       <Box sx={styles.root}>
-        <Typography sx={styles.title}>Board columns</Typography>
+        <Typography sx={styles.title}>Manage Columns</Typography>
         <Typography sx={styles.hint}>
-          Empty columns can be hidden or deleted — the last visible one always
-          stays.
+          Only empty columns can be hidden or deleted. Done always stays.
         </Typography>
 
         <Box sx={styles.section}>
@@ -111,13 +110,9 @@ export function AddColumnMenu({
 
           {shownColumns.map((column) => {
             const hasTasks = (taskCountByColumn[column.id] ?? 0) > 0
-            const isLastVisible = shownColumns.length <= 1
             const disabledReason = hasTasks
               ? 'Move or delete its tasks first.'
-              : isLastVisible
-                ? 'A board needs at least one visible column.'
-                : undefined
-            const actionsDisabled = hasTasks || isLastVisible
+              : undefined
             return (
               <Box
                 key={column.id}
@@ -130,27 +125,29 @@ export function AddColumnMenu({
                 >
                   {column.name}
                 </Typography>
-                <Box sx={styles.columnActions}>
-                  <Button
-                    size="small"
-                    disabled={actionsDisabled}
-                    onClick={() => onHide(column.id)}
-                    title={disabledReason}
-                    data-testid="add-column-menu-hide"
-                  >
-                    Hide
-                  </Button>
-                  <Button
-                    size="small"
-                    color="error"
-                    disabled={actionsDisabled}
-                    onClick={() => onDelete(column.id)}
-                    title={disabledReason}
-                    data-testid="add-column-menu-delete"
-                  >
-                    Delete
-                  </Button>
-                </Box>
+                {!column.isDone && (
+                  <Box sx={styles.columnActions}>
+                    <Button
+                      size="small"
+                      disabled={hasTasks}
+                      onClick={() => onHide(column.id)}
+                      title={disabledReason}
+                      data-testid="add-column-menu-hide"
+                    >
+                      Hide
+                    </Button>
+                    <Button
+                      size="small"
+                      color="error"
+                      disabled={hasTasks}
+                      onClick={() => onDelete(column.id)}
+                      title={disabledReason}
+                      data-testid="add-column-menu-delete"
+                    >
+                      Delete
+                    </Button>
+                  </Box>
+                )}
               </Box>
             )
           })}
@@ -177,16 +174,18 @@ export function AddColumnMenu({
                     onClick={() => onShow(column.id)}
                     data-testid="add-column-menu-show"
                   >
-                    + Add
+                    Show
                   </Button>
-                  <Button
-                    size="small"
-                    color="error"
-                    onClick={() => onDelete(column.id)}
-                    data-testid="add-column-menu-delete"
-                  >
-                    Delete
-                  </Button>
+                  {!column.isDone && (
+                    <Button
+                      size="small"
+                      color="error"
+                      onClick={() => onDelete(column.id)}
+                      data-testid="add-column-menu-delete"
+                    >
+                      Delete
+                    </Button>
+                  )}
                 </Box>
               </Box>
             ))}

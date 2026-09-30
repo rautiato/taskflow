@@ -28,8 +28,10 @@ export function formatShortDate(iso: string) {
  * agree on what "overdue" means.
  */
 export function daysUntilDue(dueDate: string, now = new Date()): number {
+  // getTime() is in ms; divide by ms per day (24 h × 60 min × 60 s × 1000 ms).
   return Math.ceil(
-    (new Date(dueDate).getTime() - startOfDay(now).getTime()) / 86_400_000,
+    (new Date(dueDate).getTime() - startOfDay(now).getTime()) /
+      (24 * 60 * 60 * 1000),
   )
 }
 
@@ -41,13 +43,15 @@ export function getDoneColumnIds(columns: KanbanColumn[]): Set<string> {
 
 /**
  * Label and colours for a task's due-date chip, or `null` when an open
- * task has no due date. Done tasks show their last update date as the
- * completion date.
+ * task has no due date. Done tasks show when they were completed.
  */
 export function getDueChip(task: TaskItem, isDone: boolean) {
   if (isDone) {
     return {
-      label: `Completed ${formatShortDate(task.updatedAt)}`,
+      // completedAt is always set for a task in Done; updatedAt only covers
+      // the moment a card was just moved between boards and hasn't
+      // refreshed yet.
+      label: `Completed ${formatShortDate(task.completedAt ?? task.updatedAt)}`,
       sx: { bgcolor: 'success.light', color: 'success.main' },
     }
   }

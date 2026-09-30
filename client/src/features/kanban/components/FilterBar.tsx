@@ -18,27 +18,30 @@ import { testIdProps } from '../../../utils/testIdProps'
 const PRIORITIES: TaskPriority[] = ['High', 'Medium', 'Low']
 
 const styles = {
-  // Phones: 2-column grid with search spanning both columns.
-  // Wider screens: one wrapping row.
+  // Phones and tablets: a grid (2 columns on phones, as many as fit on
+  // tablets) with search on its own row. Desktops: one wrapping row.
   root: {
-    display: { xs: 'grid', sm: 'flex' },
-    gridTemplateColumns: '1fr 1fr',
+    display: { xs: 'grid', md: 'flex' },
+    gridTemplateColumns: {
+      xs: '1fr 1fr',
+      sm: 'repeat(auto-fill, minmax(160px, 1fr))',
+    },
     flexWrap: 'wrap',
     gap: 1.5,
   },
   search: {
     gridColumn: '1 / -1',
-    width: { sm: 300 },
+    width: { md: 300 },
   },
   searchIcon: {
     fontSize: 18,
     color: 'text.secondary',
   },
   select: {
-    minWidth: { sm: 140 },
+    minWidth: { md: 140 },
   },
   personSelect: {
-    minWidth: { sm: 160 },
+    minWidth: { md: 160 },
   },
 } satisfies Record<string, SxProps<Theme>>
 

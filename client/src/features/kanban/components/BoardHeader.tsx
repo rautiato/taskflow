@@ -3,12 +3,11 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import ToggleButton from '@mui/material/ToggleButton'
-import Button from '@mui/material/Button'
 import type { SxProps, Theme } from '@mui/material/styles'
 import GridViewIcon from '@mui/icons-material/GridView'
 import ViewListIcon from '@mui/icons-material/ViewList'
-import AddIcon from '@mui/icons-material/Add'
 import { Breadcrumbs } from '../../../components/Breadcrumbs'
+import { ClosedProjectTag } from './ClosedProjectTag'
 
 export type BoardView = 'kanban' | 'list'
 
@@ -23,6 +22,15 @@ const styles = {
   },
   titleBlock: {
     minWidth: 0,
+  },
+  // Same Closed tag as the task lists, so a closed project reads the same
+  // everywhere.
+  titleRow: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    columnGap: 1.25,
+    rowGap: 0.5,
   },
   controls: {
     display: 'flex',
@@ -53,26 +61,24 @@ const styles = {
   viewLabel: {
     display: { xs: 'none', sm: 'inline' },
   },
-  newTaskButton: {
-    ml: { xs: 'auto', sm: 0 },
-  },
 } satisfies Record<string, SxProps<Theme>>
 
 export function BoardHeader({
   projectName,
+  isProjectClosed = false,
   taskCount,
   view,
   onViewChange,
-  onNewTask,
-  columnsMenu,
+  actions,
 }: {
   projectName: string
+  isProjectClosed?: boolean
   taskCount: number
   view: BoardView
   onViewChange: (view: BoardView) => void
-  onNewTask: () => void
-  // Shown between the view toggle and New Task (the board's Manage columns).
-  columnsMenu?: ReactNode
+  // Shown after the view toggle: the view's own action (Manage Columns on
+  // the Kanban view, New Task on the List view on phones).
+  actions?: ReactNode
 }) {
   return (
     <Box data-testid="board-header" sx={styles.root}>
@@ -83,9 +89,12 @@ export function BoardHeader({
             { label: projectName },
           ]}
         />
-        <Typography variant="pageTitle" data-testid="board-header-title">
-          {projectName}
-        </Typography>
+        <Box sx={styles.titleRow}>
+          <Typography variant="pageTitle" data-testid="board-header-title">
+            {projectName}
+          </Typography>
+          {isProjectClosed && <ClosedProjectTag />}
+        </Box>
       </Box>
       <Box sx={styles.controls}>
         <Typography
@@ -125,18 +134,7 @@ export function BoardHeader({
             </Box>
           </ToggleButton>
         </ToggleButtonGroup>
-        {columnsMenu}
-        {/* In the header, not the list toolbar, so it's in the same place in
-            both views. */}
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={onNewTask}
-          sx={styles.newTaskButton}
-          data-testid="board-header-new-task"
-        >
-          New Task
-        </Button>
+        {actions}
       </Box>
     </Box>
   )

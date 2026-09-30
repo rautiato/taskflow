@@ -9,17 +9,21 @@ export function MultiSelectFilter<T extends string>({
   value,
   options,
   onChange,
-  minWidth = 160,
+  width = 140,
   testId,
 }: {
   label: string
   value: T[]
-  options: { value: T; label: string }[]
+  // `menuLabel` replaces `label` in the open list only, for extra detail
+  // that would crowd the closed box (e.g. "Mobile App (Closed)").
+  options: { value: T; label: string; menuLabel?: string }[]
   onChange: (next: T[]) => void
-  minWidth?: number
+  width?: number
   testId: string
 }) {
   const labelOf = (v: T) => options.find((o) => o.value === v)?.label ?? v
+  // Full selection on hover, for labels the fixed width cuts off.
+  const fullSelection = value.map(labelOf).join(', ')
 
   return (
     <TextField
@@ -31,17 +35,27 @@ export function MultiSelectFilter<T extends string>({
         const next = event.target.value as unknown as T[] | string
         onChange(typeof next === 'string' ? (next.split(',') as T[]) : next)
       }}
-      sx={{ minWidth: { sm: minWidth } }}
+      // Fixed width so picking options never reflows the filter bar; long
+      // labels end in "…" and the open menu shows everything.
+      sx={{ width: { md: width } }}
       slotProps={{
         inputLabel: { shrink: true },
         select: {
           multiple: true,
           displayEmpty: true,
+          // "All", one label, or the first label plus a count ("To Do +3").
           renderValue: (selected) => {
             const values = selected as T[]
-            return values.length ? values.map(labelOf).join(', ') : 'All'
+            if (values.length === 0) return 'All'
+            const first = labelOf(values[0])
+            return values.length === 1
+              ? first
+              : `${first} +${values.length - 1}`
           },
-          SelectDisplayProps: testIdProps(testId),
+          SelectDisplayProps: {
+            ...testIdProps(testId),
+            title: fullSelection || undefined,
+          },
         },
       }}
     >
@@ -52,7 +66,7 @@ export function MultiSelectFilter<T extends string>({
           data-testid={`${testId}-option`}
         >
           <Checkbox size="small" checked={value.includes(option.value)} />
-          <ListItemText primary={option.label} />
+          <ListItemText primary={option.menuLabel ?? option.label} />
         </MenuItem>
       ))}
     </TextField>

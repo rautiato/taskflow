@@ -14,12 +14,6 @@ const styles = {
     flexDirection: 'column',
     gap: 1.5,
   },
-  heading: {
-    fontSize: 12,
-    fontWeight: 700,
-    color: 'text.secondary',
-    textTransform: 'uppercase',
-  },
 } satisfies Record<string, SxProps<Theme>>
 
 export function CommentThread({
@@ -45,7 +39,7 @@ export function CommentThread({
 
   return (
     <Box sx={styles.root} data-testid="comment-thread">
-      <Typography sx={styles.heading} data-testid="comment-thread-heading">
+      <Typography variant="sectionLabel" data-testid="comment-thread-heading">
         Comments ({comments.length})
       </Typography>
 

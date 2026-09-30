@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { kanbanService } from './kanbanService'
+import { TASK_LISTS_KEY } from './useTaskLists'
+import { nextCompletedAt } from '../tasks/taskCompletion'
 import type { TaskItem } from '../../models/task'
 
 export type TaskInput = Parameters<typeof kanbanService.createTask>[0]
@@ -24,8 +26,8 @@ function kanbanBoardQueryKey(projectId: string) {
 /**
  * Loads a project's board (columns and tasks) and exposes its mutations.
  * Task and column-order updates are applied optimistically and rolled back
- * on error. Every mutation invalidates all boards, My Tasks and the
- * projects list, since a task change can affect each of them.
+ * on error. Every mutation invalidates all boards, the cross-project task
+ * lists and the projects list, since a task change can affect each of them.
  */
 export function useKanbanBoard(projectId: string) {
   const queryClient = useQueryClient()
@@ -41,12 +43,12 @@ export function useKanbanBoard(projectId: string) {
     // Prefix match, not the exact key — a task move can change a
     // different project's board too, so every cached board is marked
     // stale, not just the one currently open. Also invalidates the
-    // cross-project My Tasks query, since a task mutation here can affect
-    // what that page shows too, and the projects list, whose task counts and
-    // progress are derived from tasks.
+    // cross-project task lists (My Tasks, All Tasks, the dashboard), since a
+    // task mutation here can affect what those show too, and the projects
+    // list, whose task counts and progress are derived from tasks.
     return Promise.all([
       queryClient.invalidateQueries({ queryKey: ['kanbanBoard'] }),
-      queryClient.invalidateQueries({ queryKey: ['myTasks'] }),
+      queryClient.invalidateQueries({ queryKey: [TASK_LISTS_KEY] }),
       queryClient.invalidateQueries({ queryKey: ['projects'] }),
     ])
   }
@@ -77,11 +79,22 @@ export function useKanbanBoard(projectId: string) {
       const previous = queryClient.getQueryData<BoardData>(queryKey)
       queryClient.setQueryData<BoardData>(queryKey, (old) => {
         if (!old) return old
+        const now = new Date().toISOString()
+        // Same completion rule as the service, so a card dropped into Done
+        // shows its "Completed" date straight away.
+        const isDone = old.columns.some(
+          (c) => c.id === input.columnId && c.isDone,
+        )
         return {
           ...old,
           tasks: old.tasks.map((t) =>
             t.id === taskId
-              ? { ...t, ...input, updatedAt: new Date().toISOString() }
+              ? {
+                  ...t,
+                  ...input,
+                  updatedAt: now,
+                  completedAt: nextCompletedAt(t.completedAt, isDone, now),
+                }
               : t,
           ),
         }

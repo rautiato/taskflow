@@ -102,7 +102,7 @@ export function NextTasksList({
             sx={styles.subtitle}
             data-testid="next-tasks-list-subtitle"
           >
-            Open tasks assigned to you, soonest due first
+            Open tasks assigned to you in active projects, soonest due first
           </Typography>
         </Box>
         <Link

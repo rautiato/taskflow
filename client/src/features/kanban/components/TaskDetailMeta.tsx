@@ -28,12 +28,6 @@ const styles = {
     borderColor: 'divider',
     '&:last-of-type': { borderBottom: 0 },
   },
-  label: {
-    fontSize: 12,
-    fontWeight: 700,
-    color: 'text.secondary',
-    textTransform: 'uppercase',
-  },
   metaValue: {
     display: 'flex',
     alignItems: 'center',
@@ -66,7 +60,7 @@ function MetaRow({
 }) {
   return (
     <Box sx={styles.metaRow}>
-      <Typography sx={styles.label}>{label}</Typography>
+      <Typography variant="sectionLabel">{label}</Typography>
       <Box sx={styles.metaValue} data-testid={testId}>
         {children}
       </Box>

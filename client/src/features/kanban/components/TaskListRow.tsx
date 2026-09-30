@@ -12,6 +12,7 @@ import type { KanbanColumn } from '../../../models/kanbanBoard'
 import type { UserDto } from '../../../models/user'
 import { FavoriteToggle } from './FavoriteToggle'
 import { PriorityChip } from './PriorityChip'
+import { ClosedProjectTag } from './ClosedProjectTag'
 
 const styles = {
   root: {
@@ -34,6 +35,16 @@ const styles = {
   titleDone: {
     textDecoration: 'line-through',
     color: 'text.secondary',
+  },
+  // The name wraps instead of being cut off, and the Closed tag drops
+  // below it when there's no room beside it.
+  project: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    columnGap: 0.75,
+    rowGap: 0.25,
+    minWidth: 0,
   },
   priorityChip: {
     width: 'fit-content',
@@ -80,6 +91,7 @@ export function TaskListRow({
   assignee,
   creator,
   projectName,
+  isProjectClosed = false,
   columnTemplate,
   onClick,
   onEdit,
@@ -92,6 +104,7 @@ export function TaskListRow({
   creator?: UserDto
   // Undefined hides the Project column.
   projectName?: string
+  isProjectClosed?: boolean
   columnTemplate: string
   onClick: () => void
   onEdit: () => void
@@ -119,9 +132,12 @@ export function TaskListRow({
         {task.title}
       </Typography>
       {projectName !== undefined && (
-        <Typography variant="secondaryText" data-testid="task-row-project">
-          {projectName}
-        </Typography>
+        <Box sx={styles.project}>
+          <Typography variant="secondaryText" data-testid="task-row-project">
+            {projectName}
+          </Typography>
+          {isProjectClosed && <ClosedProjectTag />}
+        </Box>
       )}
       <PriorityChip priority={task.priority} sx={styles.priorityChip} />
       <Typography variant="secondaryText" data-testid="task-row-status">

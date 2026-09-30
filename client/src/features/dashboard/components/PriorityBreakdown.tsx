@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import type { SxProps, Theme } from '@mui/material/styles'
 import type { TaskPriority } from '../../../models/task'
 import { PRIORITY_STYLES } from '../../tasks/taskDisplay'
-import { PRIORITIES } from '../../tasks/filterMyTasks'
+import { PRIORITIES } from '../../tasks/taskListFilters'
 
 const styles = {
   row: {
