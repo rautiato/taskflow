@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
+    "module": "commonjs",
+    "verbatimModuleSyntax": false,
+    "types": ["vite/client", "jest", "node"],
+    "allowJs": true
+  },
+  "include": [
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/setupTests.ts",
+    "src/**/*.d.ts"
+  ],
+  "exclude": []
+}
