@@ -30,3 +30,7 @@ jobs:
       - run: yarn lint
       - run: yarn build
       - run: yarn test:unit
+        env:
+          # Vietnam (UTC+7). GitHub runners use UTC, where date bugs that
+          # shift a day east of UTC don't show up.
+          TZ: Asia/Ho_Chi_Minh

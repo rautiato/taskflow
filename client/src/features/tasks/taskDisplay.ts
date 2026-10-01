@@ -1,3 +1,4 @@
+import { differenceInCalendarDays, format, parseISO } from 'date-fns'
 import type { TaskItem, TaskPriority } from '../../models/task'
 import type { KanbanColumn } from '../../models/kanbanBoard'
 
@@ -10,29 +11,23 @@ export const PRIORITY_STYLES: Record<
   Low: { bgcolor: 'success.light', color: 'success.main' },
 }
 
-function startOfDay(d: Date) {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate())
-}
-
-export function formatShortDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', {
-    timeZone: 'UTC',
-    month: 'short',
-    day: 'numeric',
-  })
+/**
+ * "Sep 5, 2026" in the user's time zone. Takes a calendar date ("2026-09-05",
+ * like a due date) or a timestamp (like completedAt); parseISO reads a
+ * calendar date as local midnight, so it never shifts to the day before.
+ */
+export function formatShortDate(isoDateOrTimestamp: string) {
+  return format(parseISO(isoDateOrTimestamp), 'MMM d, yyyy')
 }
 
 /**
  * Whole days from today until the task's due date: negative = overdue,
  * 0 = due today. Shared by the due chips and the dashboard's stats so both
- * agree on what "overdue" means.
+ * agree on what "overdue" means. Counts calendar days in the user's time
+ * zone, so a task due today is "today" everywhere.
  */
 export function daysUntilDue(dueDate: string, now = new Date()): number {
-  // getTime() is in ms; divide by ms per day (24 h × 60 min × 60 s × 1000 ms).
-  return Math.ceil(
-    (new Date(dueDate).getTime() - startOfDay(now).getTime()) /
-      (24 * 60 * 60 * 1000),
-  )
+  return differenceInCalendarDays(parseISO(dueDate), now)
 }
 
 export const DUE_SOON_DAYS = 7

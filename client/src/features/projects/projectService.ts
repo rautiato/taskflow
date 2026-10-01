@@ -1,3 +1,4 @@
+import { format, parseISO } from 'date-fns'
 import type { Project, StoredProject } from '../../models/project'
 import {
   SEEDED_PROJECTS,
@@ -94,13 +95,9 @@ function updateProjectStatus(id: string, status: Project['status']): Project {
   return withStats(updated)
 }
 
+// "Sep 19" or "Sep 19, 2026", in the user's time zone.
 export function formatProjectDate(iso: string, withYear = false): string {
-  return new Date(iso).toLocaleDateString('en-US', {
-    timeZone: 'UTC',
-    month: 'short',
-    day: 'numeric',
-    ...(withYear ? { year: 'numeric' as const } : {}),
-  })
+  return format(parseISO(iso), withYear ? 'MMM d, yyyy' : 'MMM d')
 }
 
 export const projectService = {

@@ -29,7 +29,7 @@ export function toFormValues(
     columnId: task?.columnId ?? defaultColumnId,
     assigneeId: task?.assigneeId ?? UNASSIGNED,
     priority: task?.priority ?? 'Medium',
-    dueDate: task?.dueDate ? task.dueDate.slice(0, 10) : '',
+    dueDate: task?.dueDate ?? '',
     isFavorite: task?.isFavorite ?? false,
   }
 }

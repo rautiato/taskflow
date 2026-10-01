@@ -19,7 +19,7 @@ import { TaskListRow } from './TaskListRow'
 
 const BASE_COLUMN_TEMPLATE = '32px 2.2fr 0.9fr 0.9fr 0.9fr 0.9fr 1.3fr 84px'
 // Project gets the room the Due date column doesn't need: due chips are
-// short, but never narrower than the longest one ("Completed Sep 18").
+// short, but never narrower than the longest one ("Completed Sep 18, 2026").
 const PROJECT_COLUMN_TEMPLATE =
   '32px 1.8fr 1.3fr 0.8fr 0.8fr 0.8fr 0.8fr minmax(130px, 0.9fr) 84px'
 // A laptop window can be narrower than the table; below these widths it
