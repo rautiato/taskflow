@@ -170,4 +170,47 @@ describe('kanbanService', () => {
       expect(tasks.find((t) => t.id === task.id)?.dueDate).toBe('2026-06-15')
     })
   })
+
+  describe('getProjectStats', () => {
+    // Far from today, so the test doesn't depend on the current date.
+    const LONG_AGO = '2020-01-01'
+    const FAR_AHEAD = '2099-01-01'
+
+    it('counts tasks, progress, and open overdue and unassigned tasks', () => {
+      const todo = columnNamed('To Do').id
+      const done = columnNamed('Done').id
+      createTaskInColumn(todo, { dueDate: LONG_AGO, assigneeId: 'seed-1' })
+      createTaskInColumn(todo, { dueDate: FAR_AHEAD })
+      // Finished tasks are never overdue or unassigned work.
+      createTaskInColumn(done, { dueDate: LONG_AGO })
+
+      expect(kanbanService.getProjectStats(PROJECT_ID)).toMatchObject({
+        taskCount: 3,
+        completedCount: 1,
+        progress: 33,
+        overdueCount: 1,
+        unassignedCount: 1,
+      })
+    })
+
+    it('returns zeros for a project with no tasks', () => {
+      getBoard()
+
+      expect(kanbanService.getProjectStats(PROJECT_ID)).toEqual({
+        taskCount: 0,
+        progress: 0,
+        completedCount: 0,
+        overdueCount: 0,
+        unassignedCount: 0,
+        lastTaskUpdatedAt: null,
+      })
+    })
+
+    it('returns zeros for a project without a board', () => {
+      expect(kanbanService.getProjectStats('no-such-project')).toMatchObject({
+        taskCount: 0,
+        progress: 0,
+      })
+    })
+  })
 })

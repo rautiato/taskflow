@@ -4,7 +4,11 @@ import {
   EMPTY_TASK_LIST_FILTERS,
   UNASSIGNED,
   filterTaskList,
+  filtersFromSearchParams,
+  filtersToSearchParams,
+  hasActiveTaskListFilters,
   matchesDueFilter,
+  myTasksHref,
   type DueFilter,
   type TaskListFilters,
 } from './taskListFilters'
@@ -142,5 +146,75 @@ describe('filterTaskList', () => {
     expect(filter({ priorities: ['High'], projectStatus: 'Active' })).toEqual([
       'Write homepage copy',
     ])
+  })
+})
+
+describe('hasActiveTaskListFilters', () => {
+  it('is false for the empty filters', () => {
+    expect(hasActiveTaskListFilters(EMPTY_TASK_LIST_FILTERS)).toBe(false)
+  })
+
+  it('ignores a search of only spaces', () => {
+    expect(
+      hasActiveTaskListFilters({ ...EMPTY_TASK_LIST_FILTERS, search: '   ' }),
+    ).toBe(false)
+  })
+
+  it('is true once any filter is set', () => {
+    expect(
+      hasActiveTaskListFilters({
+        ...EMPTY_TASK_LIST_FILTERS,
+        projectStatus: 'Closed',
+      }),
+    ).toBe(true)
+  })
+})
+
+describe('filters in the URL', () => {
+  it('reads back every filter it writes', () => {
+    const filters: TaskListFilters = {
+      search: 'homepage',
+      assigneeIds: ['ann', UNASSIGNED],
+      projectIds: ['website'],
+      projectStatus: 'Active',
+      // A comma inside a value must survive the round trip.
+      statusNames: ['To Do', 'Blocked, waiting'],
+      priorities: ['High', 'Low'],
+      createdByIds: ['bob'],
+      due: ['overdue', 'none'],
+    }
+
+    expect(filtersFromSearchParams(filtersToSearchParams(filters))).toEqual(
+      filters,
+    )
+  })
+
+  it('writes nothing for the empty filters', () => {
+    expect(filtersToSearchParams(EMPTY_TASK_LIST_FILTERS).toString()).toBe('')
+  })
+
+  it('drops values that are not valid options', () => {
+    const params = new URLSearchParams(
+      'priority=Urgent&priority=High&due=someday&due=today&projectStatus=Archived',
+    )
+
+    expect(filtersFromSearchParams(params)).toEqual({
+      ...EMPTY_TASK_LIST_FILTERS,
+      priorities: ['High'],
+      due: ['today'],
+      projectStatus: 'All',
+    })
+  })
+
+  describe('myTasksHref', () => {
+    it('links to My Tasks without a query when nothing is set', () => {
+      expect(myTasksHref({})).toBe('/my-tasks')
+    })
+
+    it('adds the filters and sort to the link', () => {
+      expect(
+        myTasksHref({ due: ['overdue'] }, { key: 'dueDate', dir: 'desc' }),
+      ).toBe('/my-tasks?due=overdue&sort=dueDate&dir=desc')
+    })
   })
 })

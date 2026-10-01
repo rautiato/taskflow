@@ -1,6 +1,12 @@
+import type { KanbanBoard } from '../../models/kanbanBoard'
 import { createMockColumn } from '../../test/createMockColumn'
+import { createMockProject } from '../../test/createMockProject'
 import { createMockTask } from '../../test/createMockTask'
-import { computeDashboardStats } from './computeDashboardStats'
+import {
+  computeDashboardStats,
+  selectUpNext,
+  selectYourProjects,
+} from './computeDashboardStats'
 
 // Noon on 15 June 2026, local time. No daylight-saving changes nearby.
 const NOW = new Date(2026, 5, 15, 12)
@@ -63,5 +69,119 @@ describe('computeDashboardStats', () => {
       completed: 0,
       assigned: 0,
     })
+  })
+})
+
+describe('selectUpNext', () => {
+  const tasks = [
+    createMockTask({ title: 'No due date', priority: 'High', dueDate: null }),
+    createMockTask({ title: 'Later', priority: 'Low', dueDate: '2026-06-20' }),
+    createMockTask({ title: 'Overdue', dueDate: '2026-06-10' }),
+    createMockTask({ title: 'Same day, Medium', dueDate: '2026-06-18' }),
+    createMockTask({
+      title: 'Same day, High',
+      priority: 'High',
+      dueDate: '2026-06-18',
+    }),
+    createMockTask({
+      title: 'Finished',
+      columnId: 'done',
+      dueDate: '2026-06-01',
+    }),
+  ]
+
+  it('orders open tasks by due date, then priority, with undated tasks last', () => {
+    expect(selectUpNext(tasks, columns).map((t) => t.title)).toEqual([
+      'Overdue',
+      'Same day, High',
+      'Same day, Medium',
+      'Later',
+      'No due date',
+    ])
+  })
+
+  it('returns at most `limit` tasks', () => {
+    expect(selectUpNext(tasks, columns, 2).map((t) => t.title)).toEqual([
+      'Overdue',
+      'Same day, High',
+    ])
+  })
+})
+
+describe('selectYourProjects', () => {
+  // One board per project; "alpha" also has a Done column.
+  const boards: KanbanBoard[] = [
+    'alpha',
+    'beta',
+    'gamma',
+    'delta',
+    'closed',
+    'finished',
+  ].map((projectId) => ({ id: `${projectId}-board`, projectId, name: 'Board' }))
+  const projectColumns = [
+    createMockColumn({ id: 'alpha-todo', boardId: 'alpha-board' }),
+    createMockColumn({
+      id: 'alpha-done',
+      boardId: 'alpha-board',
+      isDone: true,
+    }),
+    createMockColumn({ id: 'beta-todo', boardId: 'beta-board' }),
+    createMockColumn({ id: 'gamma-todo', boardId: 'gamma-board' }),
+    createMockColumn({ id: 'delta-todo', boardId: 'delta-board' }),
+    createMockColumn({ id: 'closed-todo', boardId: 'closed-board' }),
+    createMockColumn({
+      id: 'finished-done',
+      boardId: 'finished-board',
+      isDone: true,
+    }),
+  ]
+  const projects = [
+    createMockProject({ id: 'alpha', updatedAt: '2026-06-10T12:00:00.000Z' }),
+    createMockProject({ id: 'beta', updatedAt: '2026-06-14T12:00:00.000Z' }),
+    createMockProject({ id: 'gamma', updatedAt: '2026-06-12T12:00:00.000Z' }),
+    createMockProject({ id: 'delta', updatedAt: '2026-06-01T12:00:00.000Z' }),
+    createMockProject({
+      id: 'closed',
+      status: 'Closed',
+      updatedAt: '2026-06-15T12:00:00.000Z',
+    }),
+    createMockProject({
+      id: 'finished',
+      updatedAt: '2026-06-16T12:00:00.000Z',
+    }),
+  ]
+  const tasks = [
+    createMockTask({ title: 'Alpha 1', columnId: 'alpha-todo' }),
+    createMockTask({ title: 'Alpha 2', columnId: 'alpha-todo' }),
+    createMockTask({ title: 'Alpha done', columnId: 'alpha-done' }),
+    createMockTask({ title: 'Beta 1', columnId: 'beta-todo' }),
+    createMockTask({ title: 'Gamma 1', columnId: 'gamma-todo' }),
+    createMockTask({ title: 'Delta 1', columnId: 'delta-todo' }),
+    createMockTask({ title: 'Closed 1', columnId: 'closed-todo' }),
+    createMockTask({ title: 'Finished 1', columnId: 'finished-done' }),
+  ]
+
+  function select(limit?: number) {
+    return selectYourProjects(tasks, projectColumns, boards, projects, limit)
+  }
+
+  it('shows the 3 most recently updated active projects with open tasks', () => {
+    expect(select().map((p) => p.project.id)).toEqual([
+      'beta',
+      'gamma',
+      'alpha',
+    ])
+  })
+
+  it('leaves out closed projects and projects with only finished tasks', () => {
+    const ids = select(10).map((p) => p.project.id)
+
+    expect(ids).toEqual(['beta', 'gamma', 'alpha', 'delta'])
+  })
+
+  it("counts only the user's open tasks in each project", () => {
+    const alpha = select().find((p) => p.project.id === 'alpha')
+
+    expect(alpha?.myOpenCount).toBe(2)
   })
 })

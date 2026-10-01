@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import type { Project } from '../../../models/project'
 import { createMockColumn } from '../../../test/createMockColumn'
+import { createMockProject } from '../../../test/createMockProject'
 import { createMockTask } from '../../../test/createMockTask'
 import { TaskFormDialog } from './TaskFormDialog'
 
@@ -13,21 +13,7 @@ const columns = [
   createMockColumn({ id: 'done', name: 'Done', order: 1, isDone: true }),
 ]
 
-const projects: Project[] = [
-  {
-    id: PROJECT_ID,
-    name: 'Website',
-    initials: 'W',
-    paletteColor: 'primary',
-    updatedAt: '2026-01-01T00:00:00.000Z',
-    status: 'Active',
-    taskCount: 0,
-    progress: 0,
-    completedCount: 0,
-    overdueCount: 0,
-    unassignedCount: 0,
-  },
-]
+const projects = [createMockProject({ id: PROJECT_ID, name: 'Website' })]
 
 function renderDialog(task?: ReturnType<typeof createMockTask>) {
   const onSave = jest.fn()
