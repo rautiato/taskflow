@@ -34,21 +34,31 @@ type StoredTask = Omit<TaskItem, 'completedAt'> & {
   completedAt?: string | null
 }
 
+// NO-BACKEND: due dates used to be saved as midnight UTC timestamps
+// ("2026-09-23T00:00:00.000Z"); their first 10 characters are the date the
+// user picked.
+function isOldDueDate(dueDate: string | null): dueDate is string {
+  return !!dueDate && dueDate.length > 'YYYY-MM-DD'.length
+}
+
 function loadTasks(): TaskItem[] {
   const tasks: StoredTask[] = loadSeededData(
     TASKS_KEY,
     KANBAN_SEED_VERSION,
     SEEDED_TASKS,
   )
-  // NO-BACKEND: fill in completedAt once for tasks saved without it, using
-  // updatedAt as the best available guess; a backend would do this in a
-  // one-off data migration instead.
-  if (tasks.every((t) => t.completedAt !== undefined)) {
+  // NO-BACKEND: update tasks saved in an older format once — completedAt
+  // filled in from updatedAt as the best available guess, due dates cut to
+  // YYYY-MM-DD; a backend would do this in a one-off data migration instead.
+  if (
+    tasks.every((t) => t.completedAt !== undefined && !isOldDueDate(t.dueDate))
+  ) {
     return tasks as TaskItem[]
   }
   const doneColumnIds = getDoneColumnIds(loadColumns())
   const migrated: TaskItem[] = tasks.map((t) => ({
     ...t,
+    dueDate: isOldDueDate(t.dueDate) ? t.dueDate.slice(0, 10) : t.dueDate,
     completedAt:
       t.completedAt !== undefined
         ? t.completedAt

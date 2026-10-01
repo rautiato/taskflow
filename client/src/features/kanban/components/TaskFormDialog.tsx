@@ -130,7 +130,7 @@ export function TaskFormDialog({
         columnId: values.columnId,
         assigneeId: values.assigneeId || null,
         priority: values.priority as TaskPriority,
-        dueDate: values.dueDate ? new Date(values.dueDate).toISOString() : null,
+        dueDate: values.dueDate || null,
         isFavorite: values.isFavorite,
       },
       taskId,

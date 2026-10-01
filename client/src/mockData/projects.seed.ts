@@ -8,7 +8,7 @@ export const SEEDED_PROJECTS: StoredProject[] = [
     name: 'Task Management App',
     initials: 'TA',
     paletteColor: 'error',
-    updatedAt: '2026-09-19T00:00:00.000Z',
+    updatedAt: '2026-09-19T12:00:00.000Z',
     status: 'Active',
   },
   {
@@ -16,7 +16,7 @@ export const SEEDED_PROJECTS: StoredProject[] = [
     name: 'Mobile App',
     initials: 'MA',
     paletteColor: 'primary',
-    updatedAt: '2026-09-18T00:00:00.000Z',
+    updatedAt: '2026-09-18T12:00:00.000Z',
     status: 'Active',
   },
   {
@@ -24,7 +24,7 @@ export const SEEDED_PROJECTS: StoredProject[] = [
     name: 'Internal Tools',
     initials: 'IT',
     paletteColor: 'success',
-    updatedAt: '2026-09-12T00:00:00.000Z',
+    updatedAt: '2026-09-12T12:00:00.000Z',
     status: 'Active',
   },
   {
@@ -32,7 +32,7 @@ export const SEEDED_PROJECTS: StoredProject[] = [
     name: 'Marketing Campaign',
     initials: 'MC',
     paletteColor: 'warning',
-    updatedAt: '2026-09-10T00:00:00.000Z',
+    updatedAt: '2026-09-10T12:00:00.000Z',
     status: 'Closed',
   },
 ]
