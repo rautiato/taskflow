@@ -45,6 +45,9 @@ test.describe('Sign out', () => {
     await page.getByRole('menuitem', { name: 'Log out' }).click()
 
     await expect(page).toHaveURL('/login')
+    // The URL changes before React renders the new page. Wait for the sign-in
+    // form so Back doesn't interrupt that render (seen flaky in CI).
+    await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible()
     const cookies = await context.cookies()
     expect(cookies.map((cookie) => cookie.name)).not.toContain(
       'taskflow.session',
