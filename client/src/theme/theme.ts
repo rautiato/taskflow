@@ -103,8 +103,10 @@ export const theme = createTheme(baseTheme, {
     MuiTypography: {
       defaultProps: {
         // Custom variants otherwise render as <span>, which would break layout.
+        // The page title is the page's main heading, for screen readers and
+        // heading navigation.
         variantMapping: {
-          pageTitle: 'p',
+          pageTitle: 'h1',
           pageSubtitle: 'p',
           sectionTitle: 'p',
           secondaryText: 'p',

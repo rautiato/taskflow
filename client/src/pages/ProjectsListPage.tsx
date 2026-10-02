@@ -113,7 +113,10 @@ export function ProjectsListPage() {
             size="small"
             fullWidth
             slotProps={{
-              htmlInput: testIdProps('projects-page-search'),
+              htmlInput: {
+                ...testIdProps('projects-page-search'),
+                'aria-label': 'Search projects',
+              },
               input: {
                 startAdornment: (
                   <InputAdornment position="start">

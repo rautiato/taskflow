@@ -67,7 +67,10 @@ export function FilterBar({
         }
         sx={styles.search}
         slotProps={{
-          htmlInput: testIdProps('filter-bar-search'),
+          htmlInput: {
+            ...testIdProps('filter-bar-search'),
+            'aria-label': 'Search tasks',
+          },
           input: {
             startAdornment: (
               <InputAdornment position="start">

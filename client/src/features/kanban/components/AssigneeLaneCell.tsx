@@ -62,6 +62,9 @@ export function AssigneeLaneCell({
           role="group"
           aria-label={ariaLabel}
           data-testid="assignee-lane-cell"
+          // Drag state as attributes too, so E2E tests can wait on it without
+          // depending on how it's styled.
+          data-drag-over={dropSnapshot.isDraggingOver || undefined}
           sx={[
             styles.root,
             dropSnapshot.isDraggingOver && styles.rootDraggingOver,
@@ -74,6 +77,7 @@ export function AssigneeLaneCell({
                   ref={dragProvided.innerRef}
                   {...dragProvided.draggableProps}
                   {...dragProvided.dragHandleProps}
+                  data-dragging={dragSnapshot.isDragging || undefined}
                   sx={[
                     styles.task,
                     dragSnapshot.isDragging && styles.taskDragging,
