@@ -4,6 +4,9 @@
 
 A lightweight, Jira-style project and task management app built with React and TypeScript.
 
+**Live demo:** https://taskflow-hatran.vercel.app (sign in with one of the
+[sample accounts](#quick-start)). Data is saved in your browser only.
+
 ![TaskFlow Kanban board](docs/screenshots/board.png)
 
 <details>
@@ -89,6 +92,15 @@ yarn test:e2e
 
 More frontend detail (all scripts, project structure, conventions) is in
 [client/README.md](client/README.md).
+
+## Deployment
+
+The frontend is deployed on [Vercel](https://vercel.com/) from `client/`:
+
+- Every merge to `master` deploys to production.
+- Every pull request gets its own preview deployment.
+- [client/vercel.json](client/vercel.json) sends all routes to `index.html`
+  so React Router can handle them.
 
 ---
 
