@@ -82,7 +82,10 @@ export function TaskListFilterBar({
         }
         sx={styles.search}
         slotProps={{
-          htmlInput: testIdProps('task-list-filter-bar-search'),
+          htmlInput: {
+            ...testIdProps('task-list-filter-bar-search'),
+            'aria-label': 'Search tasks',
+          },
           input: {
             startAdornment: (
               <InputAdornment position="start">

@@ -15,10 +15,11 @@ export default defineConfig({
   retries: isCI ? 2 : 0,
   workers: isCI ? 1 : undefined,
 
-  // CI: `github` shows failures as annotations on the PR; `html` builds the
-  // report uploaded as an artifact (`open: 'never'`, since there's no browser
-  // in CI). Locally: the HTML report opens automatically when a test fails.
-  reporter: isCI ? [['github'], ['html', { open: 'never' }]] : 'html',
+  // CI: `list` prints one line per test in the job log; `github` shows
+  // failures as annotations on the PR; `html` builds the report uploaded as
+  // an artifact (`open: 'never'`, since there's no browser in CI). Locally:
+  // the HTML report opens automatically when a test fails.
+  reporter: isCI ? [['list'], ['github'], ['html', { open: 'never' }]] : 'html',
 
   // Defaults for every test in every project.
   use: {
@@ -38,17 +39,17 @@ export default defineConfig({
   },
 
   projects: [
-    // Runs auth.setup.ts once before the main project, so the sign-in
-    // happens a single time instead of in every test.
-    { name: 'setup', testMatch: /.*\.setup\.ts/ },
     {
-      // The main project: every *.spec.ts file, in desktop Chrome, starting
-      // signed in from the saved session.
+      // All *.spec.ts files, in desktop Chrome, starting signed in.
+      // It's first in this list only so UI Mode shows it by default.
+      // `dependencies` below still makes setup run before it.
       name: 'chromium',
       use: { ...devices['Desktop Chrome'], storageState: AUTH_FILE },
-      // Wait for the setup project to finish (and pass) first.
       dependencies: ['setup'],
     },
+    // Signs in once (auth.setup.ts) and saves the session, so the
+    // specs above don't each have to sign in.
+    { name: 'setup', testMatch: /.*\.setup\.ts/ },
   ],
 
   // Starts the app before the tests and stops it afterwards.

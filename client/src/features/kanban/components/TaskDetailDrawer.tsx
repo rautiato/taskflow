@@ -176,8 +176,10 @@ export function TaskDetailDrawer({
               onToggle={() => onToggleFavorite(task)}
               size={24}
             />
+            {/* h2: the drawer opens over a page that already has an h1. */}
             <Typography
               variant="pageTitle"
+              component="h2"
               sx={styles.title}
               data-testid="task-detail-drawer-title"
             >
