@@ -11,6 +11,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Alert from '@mui/material/Alert'
+import Divider from '@mui/material/Divider'
 import type { SxProps, Theme } from '@mui/material/styles'
 import { Link as RouterLink } from 'react-router-dom'
 import { emailSchema } from '../validation'
@@ -21,6 +22,12 @@ import { InfoNote } from './InfoNote'
 import { authService } from '../authService'
 import { errorMessage } from '../../../utils/errorMessage'
 import { testIdProps } from '../../../utils/testIdProps'
+
+// NO-BACKEND: replace with a server-provisioned demo account once a backend exists.
+const DEMO_ACCOUNT = {
+  email: 'administrator@example.com',
+  password: '123456',
+}
 
 const loginSchema = z.object({
   email: emailSchema,
@@ -56,14 +63,22 @@ export function LoginForm() {
     defaultValues: { email: '', password: '', rememberMe: false },
   })
 
-  function onSubmit(values: LoginFormValues) {
+  function signInAndGo(email: string, password: string, rememberMe: boolean) {
     setAuthError(null)
     try {
-      authService.signIn(values.email, values.password, values.rememberMe)
+      authService.signIn(email, password, rememberMe)
       navigate('/dashboard')
     } catch (error) {
       setAuthError(errorMessage(error, 'Unable to sign in.'))
     }
+  }
+
+  function onSubmit(values: LoginFormValues) {
+    signInAndGo(values.email, values.password, values.rememberMe)
+  }
+
+  function onDemoSignIn() {
+    signInAndGo(DEMO_ACCOUNT.email, DEMO_ACCOUNT.password, false)
   }
 
   return (
@@ -137,6 +152,23 @@ export function LoginForm() {
         Sign in
       </Button>
 
+      <Divider>
+        <Typography variant="caption" color="text.secondary">
+          or
+        </Typography>
+      </Divider>
+
+      <Button
+        type="button"
+        variant="outlined"
+        size="large"
+        fullWidth
+        onClick={onDemoSignIn}
+        data-testid="login-form-demo"
+      >
+        Continue as demo user
+      </Button>
+
       <Typography variant="body2" color="text.secondary" sx={styles.footer}>
         Don't have an account?{' '}
         <Link
@@ -152,9 +184,9 @@ export function LoginForm() {
       {/* NO-BACKEND: remove this note once real accounts exist. */}
       <InfoNote>
         Note: accounts are stored in this browser. Sign up for a new account, or
-        use the sample account <strong>administrator@example.com</strong> /{' '}
-        <strong>123456</strong>. Real accounts will be added once a backend is
-        in place.
+        click <strong>Continue as demo user</strong> (
+        <strong>administrator@example.com</strong> / <strong>123456</strong>).
+        Real accounts will be added once a backend is in place.
       </InfoNote>
     </Stack>
   )
