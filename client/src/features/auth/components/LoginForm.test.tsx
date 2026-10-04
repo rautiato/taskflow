@@ -74,6 +74,16 @@ describe('LoginForm', () => {
     expect(authService.getSession()?.email).toBe('administrator@example.com')
   })
 
+  it('signs in with the demo account without filling in the form', async () => {
+    const user = userEvent.setup()
+    renderLoginForm()
+
+    await user.click(screen.getByTestId('login-form-demo'))
+
+    expect(await screen.findByText('Dashboard page')).toBeInTheDocument()
+    expect(authService.getSession()?.email).toBe('administrator@example.com')
+  })
+
   it('accepts the email in any letter case', async () => {
     const user = userEvent.setup()
     renderLoginForm()
